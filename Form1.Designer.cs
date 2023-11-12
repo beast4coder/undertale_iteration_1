@@ -36,17 +36,17 @@
             // 
             // pbArena
             // 
-            pbArena.BackColor = SystemColors.ButtonHighlight;
-            pbArena.Location = new Point(365, 173);
+            pbArena.BackColor = Color.Transparent;
+            pbArena.Location = new Point(-1, -1);
             pbArena.Name = "pbArena";
-            pbArena.Size = new Size(250, 250);
+            pbArena.Size = new Size(964, 543);
             pbArena.TabIndex = 0;
             pbArena.TabStop = false;
-            pbArena.Paint += Update_Sprites;
             // 
             // tmrGameTimer
             // 
             tmrGameTimer.Enabled = true;
+            tmrGameTimer.Interval = 10;
             tmrGameTimer.Tick += tmrGameTimer_Tick;
             // 
             // GameForm
@@ -60,6 +60,7 @@
             Name = "GameForm";
             Text = "undertale";
             Load += GameForm_Load;
+            Paint += Update_Sprites;
             KeyDown += GameForm_KeyDown;
             KeyUp += GameForm_KeyUp;
             ((System.ComponentModel.ISupportInitialize)pbArena).EndInit();
