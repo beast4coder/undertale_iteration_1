@@ -75,7 +75,7 @@ namespace undertale_iteration_1
 
             //checks boundaries against the picturebox
             //picture box position hard coded for iteration 1, will be changed later
-            /* if (player.Center.X < 365 + player.Picture.Width) x = 0;
+            /*if (player.Center.X < 365 + player.Picture.Width) x = 0;
             if (player.Center.X > 365 + 250 - player.Picture.Width) x = 0;
 
             if (player.Center.Y < 173 + player.Picture.Height) y = 0;
