@@ -20,13 +20,16 @@ namespace undertale_iteration_1
             InitializeComponent();
         }
 
-        ImageSprite player;
+        Player player;
+        Projectile box;
         float fltPlayerSpeed = 1f;
 
         private void GameForm_Load(object sender, EventArgs e)
         {
             Point StartPosition = new Point(490, 297);
-            player = new ImageSprite(Resource1.red_heart, StartPosition);
+            player = new Player(Resource1.red_heart, StartPosition, 20);
+            StartPosition = new Point(590, 257);
+            box = new Projectile(Resource1.projectile_box, StartPosition, 2);
         }
 
 
@@ -63,6 +66,12 @@ namespace undertale_iteration_1
 
         private void tmrGameTimer_Tick(object sender, EventArgs e)
         {
+            Movement_System();
+            Update_System();
+        }
+
+        private void Movement_System()
+        {
             //x and y track final displacement of player
             float x = 0;
             float y = 0;
@@ -75,17 +84,25 @@ namespace undertale_iteration_1
 
             //checks boundaries against the picturebox
             //picture box position hard coded for iteration 1, will be changed later
-            /*if (player.Center.X < 365 + player.Picture.Width) x = 0;
+
+            /*
+            if (player.Center.X < 365 + player.Picture.Width) x = 0;
             if (player.Center.X > 365 + 250 - player.Picture.Width) x = 0;
 
             if (player.Center.Y < 173 + player.Picture.Height) y = 0;
-            if (player.Center.Y > 173 + 250 - player.Picture.Height) y = 0;*/
+            if (player.Center.Y > 173 + 250 - player.Picture.Height) y = 0;
+            */
 
             //moves player final x and y values
             player.Location = new PointF(player.Location.X + x, player.Location.Y + y);
+        }
 
+        private void Update_System()
+        {
             //refresh the picture box to update the sprite's position
             pbArena.Refresh();
+
+            lblPlayerHealth.Text = player.GetHealth() + "/20" ;
         }
     }
 }
