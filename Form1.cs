@@ -26,16 +26,22 @@ namespace undertale_iteration_1
 
         private void GameForm_Load(object sender, EventArgs e)
         {
+            Setup();
+        }
+
+        private void Setup()
+        {
+            //spawns everything required
             Point StartPosition = new Point(490, 297);
             player = new Player(Resource1.red_heart, StartPosition, 20);
             StartPosition = new Point(590, 257);
-            box = new Projectile(Resource1.projectile_box, StartPosition, 2);
+            box = new Projectile(Resource1.projectile_box, StartPosition, 1);
         }
-
 
         private void Update_Sprites(object sender, PaintEventArgs e)
         {
             player.Draw(e.Graphics);
+            box.Draw(e.Graphics);
         }
 
         #region Key Presses
@@ -68,6 +74,7 @@ namespace undertale_iteration_1
         {
             Movement_System();
             Update_System();
+            Damage_System();
         }
 
         private void Movement_System()
@@ -82,16 +89,16 @@ namespace undertale_iteration_1
             if (L) x -= fltPlayerSpeed;
             if (R) x += fltPlayerSpeed;
 
-            //checks boundaries against the picturebox
-            //picture box position hard coded for iteration 1, will be changed later
+            //checks boundaries against the arena
+            //arena position hard coded for iteration 1, will be changed later
 
-            /*
+            
             if (player.Center.X < 365 + player.Picture.Width) x = 0;
             if (player.Center.X > 365 + 250 - player.Picture.Width) x = 0;
 
             if (player.Center.Y < 173 + player.Picture.Height) y = 0;
             if (player.Center.Y > 173 + 250 - player.Picture.Height) y = 0;
-            */
+            
 
             //moves player final x and y values
             player.Location = new PointF(player.Location.X + x, player.Location.Y + y);
@@ -103,6 +110,19 @@ namespace undertale_iteration_1
             pbArena.Refresh();
 
             lblPlayerHealth.Text = player.GetHealth() + "/20" ;
+        }
+
+        private void Damage_System()
+        {
+            //checks if the player is touching the box
+            if (player.Location.X + player.Picture.Width > box.Location.X && player.Location.X < box.Location.X + box.Picture.Width)
+            {
+                if (player.Location.Y + player.Picture.Height > box.Location.Y && player.Location.Y < box.Location.Y + box.Picture.Height)
+                {
+                    //if the player is touching the box, the player takes damage
+                    player.Set_Health(player.GetHealth() - box.Get_Damage());
+                }
+            }
         }
     }
 }

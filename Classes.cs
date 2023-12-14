@@ -27,12 +27,14 @@ namespace undertale_iteration_1
     internal class Player: ImageSprite
     {
         private int Health;
+        private int MaxHealth;
 
         public Player(Bitmap pImg, Point pLoc, int pHealth) : base(pImg, pLoc)
         {
             Picture = pImg;
             Location = pLoc;
             Health = pHealth;
+            MaxHealth = pHealth;
         }
 
         public int GetHealth()
@@ -42,7 +44,18 @@ namespace undertale_iteration_1
 
         public void Set_Health(int pHealth)
         {
-            Health = pHealth;
+            if (pHealth > MaxHealth)
+            {
+                Health = MaxHealth;
+            }
+            else if (pHealth <= 0)
+            {
+                Health = 0;
+            }
+            else if (Health > 0) 
+            {
+                Health = pHealth;
+            }
         }
     }
 
