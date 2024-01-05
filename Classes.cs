@@ -22,6 +22,12 @@ namespace undertale_iteration_1
         {
             g.DrawImage(Picture, Location);
         }
+
+        public void MOVE(float x, float y)
+        {
+            Location = new PointF(Location.X + x, Location.Y + y);
+            Center = new PointF(Location.X + Picture.Width / 2, Location.Y + Picture.Height / 2);
+        }
     }
 
     internal class Player: ImageSprite
@@ -35,6 +41,7 @@ namespace undertale_iteration_1
             Location = pLoc;
             Health = pHealth;
             MaxHealth = pHealth;
+            Center = new PointF(Location.X + Picture.Width / 2, Location.Y + Picture.Height / 2);
         }
 
         public int GetHealth()

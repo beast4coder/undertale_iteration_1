@@ -92,16 +92,27 @@ namespace undertale_iteration_1
             //checks boundaries against the arena
             //arena position hard coded for iteration 1, will be changed later
 
-            
-            if (player.Center.X < 365 + player.Picture.Width) x = 0;
-            if (player.Center.X > 365 + 250 - player.Picture.Width) x = 0;
+            if (player.Center.X < (265 + (player.Picture.Width / 2)) && x < 0)
+            {
+                x = 0;
+            }
+            if (player.Center.X > (715 - (player.Picture.Width / 2)) && x > 0)
+            {
+                x = 0;
+            }
 
-            if (player.Center.Y < 173 + player.Picture.Height) y = 0;
-            if (player.Center.Y > 173 + 250 - player.Picture.Height) y = 0;
-            
+            if (player.Center.Y < (73 + (player.Picture.Height / 2)) && y < 0)
+            {
+                y = 0;
+            }
+            if (player.Center.Y > (523 - (player.Picture.Height / 2)) && y > 0)
+            {
+                y = 0;
+            }
+
 
             //moves player final x and y values
-            player.Location = new PointF(player.Location.X + x, player.Location.Y + y);
+            player.MOVE(x , y);
         }
 
         private void Update_System()
@@ -109,7 +120,7 @@ namespace undertale_iteration_1
             //refresh the picture box to update the sprite's position
             pbArena.Refresh();
 
-            lblPlayerHealth.Text = player.GetHealth() + "/20" ;
+            lblPlayerHealth.Text = player.GetHealth() + "/20";
         }
 
         private void Damage_System()
