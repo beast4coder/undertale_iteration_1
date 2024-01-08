@@ -22,8 +22,13 @@ namespace undertale_iteration_1
 
         #region Global Variables
 
+        //objects
         Player player;
         Projectile box;
+
+        Label lblPlayerHealth;
+
+        //consts (idc its not in caps i dont like it and no one else is using the code lol)
         float fltPlayerSpeed = 1f;
 
         #endregion
@@ -35,11 +40,27 @@ namespace undertale_iteration_1
 
         private void Setup()
         {
-            //spawns everything required
+            //spawn all objects required
             Point StartPosition = new Point(490, 297);
             player = new Player(Resource1.red_heart, StartPosition, 20);
             StartPosition = new Point(590, 257);
             box = new Projectile(Resource1.projectile_box, StartPosition, 1);
+
+            //spawn all controls required
+            #region lblPlayerHealth
+            lblPlayerHealth = new Label
+            {
+                AutoSize = true,
+                ForeColor =  Color.White,
+                Location = new Point(411, 363),
+                Name = "lblPlayerHealth",
+                Size = new Size(36, 15),
+                TabIndex = 1,
+                Text = "20/20",
+            }; 
+            this.Controls.Add(lblPlayerHealth);
+            lblPlayerHealth.BringToFront();
+            #endregion
         }
 
         private void Update_Sprites(object sender, PaintEventArgs e)
@@ -48,6 +69,7 @@ namespace undertale_iteration_1
             box.Draw(e.Graphics);
         }
 
+        //handles all key presses and releases
         #region Key Presses
 
         //corresponding bools for each key

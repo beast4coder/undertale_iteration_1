@@ -31,7 +31,6 @@
             components = new System.ComponentModel.Container();
             pbArena = new PictureBox();
             tmrGameTimer = new System.Windows.Forms.Timer(components);
-            lblPlayerHealth = new Label();
             ((System.ComponentModel.ISupportInitialize)pbArena).BeginInit();
             SuspendLayout();
             // 
@@ -50,23 +49,12 @@
             tmrGameTimer.Interval = 10;
             tmrGameTimer.Tick += tmrGameTimer_Tick;
             // 
-            // lblPlayerHealth
-            // 
-            lblPlayerHealth.AutoSize = true;
-            lblPlayerHealth.ForeColor = SystemColors.Control;
-            lblPlayerHealth.Location = new Point(411, 363);
-            lblPlayerHealth.Name = "lblPlayerHealth";
-            lblPlayerHealth.Size = new Size(36, 15);
-            lblPlayerHealth.TabIndex = 1;
-            lblPlayerHealth.Text = "20/20";
-            // 
             // GameForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Desktop;
             ClientSize = new Size(960, 540);
-            Controls.Add(lblPlayerHealth);
             Controls.Add(pbArena);
             MinimumSize = new Size(976, 579);
             Name = "GameForm";
@@ -84,6 +72,5 @@
 
         private PictureBox pbArena;
         private System.Windows.Forms.Timer tmrGameTimer;
-        private Label lblPlayerHealth;
     }
 }
