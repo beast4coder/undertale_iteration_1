@@ -20,9 +20,13 @@ namespace undertale_iteration_1
             InitializeComponent();
         }
 
+        #region Global Variables
+
         Player player;
         Projectile box;
         float fltPlayerSpeed = 1f;
+
+        #endregion
 
         private void GameForm_Load(object sender, EventArgs e)
         {
@@ -92,24 +96,11 @@ namespace undertale_iteration_1
             //checks boundaries against the arena
             //arena position hard coded for iteration 1, will be changed later
 
-            if (player.Center.X < (265 + (player.Picture.Width / 2)) && x < 0)
-            {
-                x = 0;
-            }
-            if (player.Center.X > (715 - (player.Picture.Width / 2)) && x > 0)
-            {
-                x = 0;
-            }
+            if (player.Center.X < (265 + (player.Picture.Width / 2)) && x < 0) x = 0;
+            if (player.Center.X > (715 - (player.Picture.Width / 2)) && x > 0) x = 0;
 
-            if (player.Center.Y < (73 + (player.Picture.Height / 2)) && y < 0)
-            {
-                y = 0;
-            }
-            if (player.Center.Y > (523 - (player.Picture.Height / 2)) && y > 0)
-            {
-                y = 0;
-            }
-
+            if (player.Center.Y < (73 + (player.Picture.Height / 2)) && y < 0) y = 0;
+            if (player.Center.Y > (523 - (player.Picture.Height / 2)) && y > 0)y = 0;
 
             //moves player final x and y values
             player.MOVE(x , y);
@@ -125,9 +116,10 @@ namespace undertale_iteration_1
 
         private void Damage_System()
         {
-            //checks if the player is touching the box
+            //checks if the player is touching the box in x-axis
             if (player.Location.X + player.Picture.Width > box.Location.X && player.Location.X < box.Location.X + box.Picture.Width)
             {
+                //checks if the player is touching the box in y-axis
                 if (player.Location.Y + player.Picture.Height > box.Location.Y && player.Location.Y < box.Location.Y + box.Picture.Height)
                 {
                     //if the player is touching the box, the player takes damage
