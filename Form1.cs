@@ -26,10 +26,13 @@ namespace undertale_iteration_1
         Player player;
         Projectile box;
 
+        //controls
         Label lblPlayerHealth;
 
-        //consts (idc its not in caps i dont like it and no one else is using the code lol)
-        float fltPlayerSpeed = 1f;
+        //consts
+        const float flt_PLAYER_SPEED = 1f;
+        const float flt_FORM_WIDTH = 640f;
+        const float flt_FORM_HEIGHT = 480f;
 
         #endregion
 
@@ -41,7 +44,7 @@ namespace undertale_iteration_1
         private void Setup()
         {
             //spawn all objects required
-            Point StartPosition = new Point(490, 297);
+            Point StartPosition = new Point(Convert.ToInt32(flt_FORM_WIDTH/2), Convert.ToInt32(flt_FORM_HEIGHT/2));
             player = new Player(Resource1.red_heart, StartPosition, 20);
             StartPosition = new Point(590, 257);
             box = new Projectile(Resource1.projectile_box, StartPosition, 1);
@@ -72,11 +75,13 @@ namespace undertale_iteration_1
         //handles all key presses and releases
         #region Key Presses
 
-        //corresponding bools for each key
+        //global variables for all keys, tracks whether they are pressed wor not
         bool D = false;
         bool U = false;
         bool L = false;
         bool R = false;
+        bool Z = false;
+        bool X = false;
 
         //keeps track of what buttons are held by setting a corresponding bool to true when they go down and setting it false when they go up
         private void GameForm_KeyDown(object sender, KeyEventArgs e)
@@ -85,6 +90,8 @@ namespace undertale_iteration_1
             if (e.KeyCode == Keys.Up) U = true;
             if (e.KeyCode == Keys.Left) L = true;
             if (e.KeyCode == Keys.Right) R = true;
+            if (e.KeyCode == Keys.Z) Z = true;
+            if (e.KeyCode == Keys.X) X = true;
         }
 
         private void GameForm_KeyUp(object sender, KeyEventArgs e)
@@ -93,6 +100,8 @@ namespace undertale_iteration_1
             if (e.KeyCode == Keys.Up) U = false;
             if (e.KeyCode == Keys.Left) L = false;
             if (e.KeyCode == Keys.Right) R = false;
+            if (e.KeyCode == Keys.Z) Z = false;
+            if (e.KeyCode == Keys.X) X = false;
         }
         #endregion
 
@@ -110,10 +119,10 @@ namespace undertale_iteration_1
             float y = 0;
 
             //checks which keys are helds and alters x and y accordingly
-            if (D) y += fltPlayerSpeed;
-            if (U) y -= fltPlayerSpeed;
-            if (L) x -= fltPlayerSpeed;
-            if (R) x += fltPlayerSpeed;
+            if (D) y += flt_PLAYER_SPEED;
+            if (U) y -= flt_PLAYER_SPEED;
+            if (L) x -= flt_PLAYER_SPEED;
+            if (R) x += flt_PLAYER_SPEED;
 
             //checks boundaries against the arena
             //arena position hard coded for iteration 1, will be changed later
@@ -125,7 +134,7 @@ namespace undertale_iteration_1
             if (player.Center.Y > (523 - (player.Picture.Height / 2)) && y > 0)y = 0;
 
             //moves player final x and y values
-            player.MOVE(x , y);
+            player.Move(x , y);
         }
 
         private void Update_System()
