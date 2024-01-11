@@ -63,6 +63,26 @@ namespace undertale_iteration_1 {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Attack_Effects_Sprite_Sheet {
+            get {
+                object obj = ResourceManager.GetObject("Attack_Effects_Sprite_Sheet", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Battle_Menu_Sprite_Sheet {
+            get {
+                object obj = ResourceManager.GetObject("Battle_Menu_Sprite_Sheet", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap projectile_box {
             get {
                 object obj = ResourceManager.GetObject("projectile_box", resourceCulture);
@@ -76,6 +96,16 @@ namespace undertale_iteration_1 {
         public static System.Drawing.Bitmap red_heart {
             get {
                 object obj = ResourceManager.GetObject("red_heart", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Souls_Sprite_Sheet {
+            get {
+                object obj = ResourceManager.GetObject("Souls_Sprite_Sheet", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

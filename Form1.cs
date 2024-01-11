@@ -44,25 +44,29 @@ namespace undertale_iteration_1
         private void Setup()
         {
             //spawn all objects required
-            Point StartPosition = new Point(Convert.ToInt32(flt_FORM_WIDTH/2), Convert.ToInt32(flt_FORM_HEIGHT/2));
+
+            Point StartPosition = new Point(Convert.ToInt32((flt_FORM_WIDTH / 2) - 8), Convert.ToInt32((flt_FORM_HEIGHT / 2) - 8));//spawns at the center of the form
             player = new Player(Resource1.red_heart, StartPosition, 20);
+
             StartPosition = new Point(590, 257);
             box = new Projectile(Resource1.projectile_box, StartPosition, 1);
 
             //spawn all controls required
+
             #region lblPlayerHealth
             lblPlayerHealth = new Label
             {
                 AutoSize = true,
-                ForeColor =  Color.White,
+                ForeColor = Color.White,
                 Location = new Point(411, 363),
                 Name = "lblPlayerHealth",
                 Size = new Size(36, 15),
                 TabIndex = 1,
-                Text = "20/20",
-            }; 
+                Text = player.GetHealth() + "/20",
+            };
             this.Controls.Add(lblPlayerHealth);
             lblPlayerHealth.BringToFront();
+
             #endregion
         }
 
@@ -131,10 +135,10 @@ namespace undertale_iteration_1
             if (player.Center.X > (715 - (player.Picture.Width / 2)) && x > 0) x = 0;
 
             if (player.Center.Y < (73 + (player.Picture.Height / 2)) && y < 0) y = 0;
-            if (player.Center.Y > (523 - (player.Picture.Height / 2)) && y > 0)y = 0;
+            if (player.Center.Y > (523 - (player.Picture.Height / 2)) && y > 0) y = 0;
 
             //moves player final x and y values
-            player.Move(x , y);
+            player.Move(x, y);
         }
 
         private void Update_System()

@@ -54,9 +54,10 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Desktop;
-            ClientSize = new Size(960, 540);
+            ClientSize = new Size(640, 480);
             Controls.Add(pbArena);
-            MinimumSize = new Size(976, 579);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            MinimumSize = new Size(640, 480);
             Name = "GameForm";
             Text = "undertale";
             Load += GameForm_Load;
