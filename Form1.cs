@@ -50,11 +50,11 @@ namespace undertale_iteration_1
             PointF offset = new PointF(0, 0);
             PointF padding = new PointF(0, 0);
             PointF loc = new PointF(flt_FORM_WIDTH - (size.X/2), flt_FORM_HEIGHT - (size.Y/2));
-            player = new Player(Resource1.red_heart, size, rows_cols, offset, padding, loc, 20, 20);
+            player = new Player(Resource1.Souls_Sprite_Sheet, size, rows_cols, offset, padding, loc, 20, 20);
             #endregion
 
             #region box
-            size = new PointF(20, 32);
+            size = new PointF(50, 20);
             rows_cols = new PointF(1, 1);
             offset = new PointF(0, 0);
             padding = new PointF(0, 0);
