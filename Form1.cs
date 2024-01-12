@@ -44,12 +44,23 @@ namespace undertale_iteration_1
         private void Setup()
         {
             //spawn all objects required
+            #region Player
+            PointF size = new PointF(16,16);
+            PointF rows_cols = new PointF(1, 1);
+            PointF offset = new PointF(0, 0);
+            PointF padding = new PointF(0, 0);
+            PointF loc = new PointF(flt_FORM_WIDTH - (size.X/2), flt_FORM_HEIGHT - (size.Y/2));
+            player = new Player(Resource1.red_heart, size, rows_cols, offset, padding, loc, 20, 20);
+            #endregion
 
-            Point StartPosition = new Point(Convert.ToInt32((flt_FORM_WIDTH / 2) - 8), Convert.ToInt32((flt_FORM_HEIGHT / 2) - 8));//spawns at the center of the form
-            player = new Player(Resource1.red_heart, StartPosition, 20);
-
-            StartPosition = new Point(590, 257);
-            box = new Projectile(Resource1.projectile_box, StartPosition, 1);
+            #region box
+            size = new PointF(20, 32);
+            rows_cols = new PointF(1, 1);
+            offset = new PointF(0, 0);
+            padding = new PointF(0, 0);
+            loc = new PointF(400, 300);
+            box = new Projectile(Resource1.projectile_box, size, rows_cols, offset, padding, loc, 1);
+            #endregion
 
             //spawn all controls required
 
@@ -131,11 +142,11 @@ namespace undertale_iteration_1
             //checks boundaries against the arena
             //arena position hard coded for iteration 1, will be changed later
 
-            if (player.Center.X < (265 + (player.Picture.Width / 2)) && x < 0) x = 0;
-            if (player.Center.X > (715 - (player.Picture.Width / 2)) && x > 0) x = 0;
+            if (player.Center.X < (265 + (player.Size.X / 2)) && x < 0) x = 0;
+            if (player.Center.X > (715 - (player.Size.X / 2)) && x > 0) x = 0;
 
-            if (player.Center.Y < (73 + (player.Picture.Height / 2)) && y < 0) y = 0;
-            if (player.Center.Y > (523 - (player.Picture.Height / 2)) && y > 0) y = 0;
+            if (player.Center.Y < (73 + (player.Size.Y / 2)) && y < 0) y = 0;
+            if (player.Center.Y > (523 - (player.Size.Y / 2)) && y > 0) y = 0;
 
             //moves player final x and y values
             player.Move(x, y);
@@ -152,10 +163,10 @@ namespace undertale_iteration_1
         private void Damage_System()
         {
             //checks if the player is touching the box in x-axis
-            if (player.Location.X + player.Picture.Width > box.Location.X && player.Location.X < box.Location.X + box.Picture.Width)
+            if (player.Location.X + player.Size.X > box.Location.X && player.Location.X < box.Location.X + box.Size.X)
             {
                 //checks if the player is touching the box in y-axis
-                if (player.Location.Y + player.Picture.Height > box.Location.Y && player.Location.Y < box.Location.Y + box.Picture.Height)
+                if (player.Location.Y + player.Size.Y > box.Location.Y && player.Location.Y < box.Location.Y + box.Size.Y)
                 {
                     //if the player is touching the box, the player takes damage
                     player.Set_Health(player.GetHealth() - box.Get_Damage());
