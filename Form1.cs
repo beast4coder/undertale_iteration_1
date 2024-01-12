@@ -47,9 +47,9 @@ namespace undertale_iteration_1
             #region Player
             PointF size = new PointF(16,16);
             PointF rows_cols = new PointF(1, 1);
-            PointF offset = new PointF(0, 0);
+            PointF offset = new PointF(7, 6);
             PointF padding = new PointF(0, 0);
-            PointF loc = new PointF(flt_FORM_WIDTH - (size.X/2), flt_FORM_HEIGHT - (size.Y/2));
+            PointF loc = new PointF((flt_FORM_WIDTH - size.X)/2, (flt_FORM_HEIGHT - size.Y)/2);
             player = new Player(Resource1.Souls_Sprite_Sheet, size, rows_cols, offset, padding, loc, 20, 20);
             #endregion
 
