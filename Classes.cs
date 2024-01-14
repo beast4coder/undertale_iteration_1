@@ -8,16 +8,16 @@ namespace undertale_iteration_1
 {
     internal class Sprite_Handler
     {
-        public Bitmap Sheet;
-        public Bitmap Sprite;
-        public PointF Size;
-        public PointF Ttl_Rows_Cols;
-        public PointF Offset;
-        public PointF Padding;
-        public PointF Location;
-        public PointF Center;
-        public PointF Crnt_Row_Col;
-        public Rectangle SpriteArea;
+        protected Bitmap Sheet;
+        protected Bitmap Sprite;
+        protected PointF Size;
+        protected PointF Ttl_Rows_Cols;
+        protected PointF Offset;
+        protected PointF Padding;
+        protected PointF Location;
+        protected PointF Center;
+        protected PointF Crnt_Row_Col;
+        protected Rectangle SpriteArea;
 
         public Sprite_Handler(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc)
         {
@@ -52,19 +52,22 @@ namespace undertale_iteration_1
             }
             return pSheet;
         }
-        public void Update_SpriteArea()
+        #region Sprite Sheet Manipulation 
+        private void Update_SpriteArea()
         {
             //calculate total offset for x
             //use current column which as that moves it across
             int Ttl_Offset_X = (int)Offset.X + (int)((Padding.X+Size.X)*Crnt_Row_Col.Y);
+
             //calculate total offset for y
             //use current row which as that moves it across
             int Ttl_Offset_Y = (int)Offset.Y + (int)((Padding.Y+Size.Y)*Crnt_Row_Col.X);
+
             //calculate new sprite area and redefine the sprite
             SpriteArea = new Rectangle(Ttl_Offset_X, Ttl_Offset_Y, (int)Size.X, (int)Size.Y);
             Sprite = Sheet.Clone(SpriteArea, Sheet.PixelFormat);
         }
-        
+       
         public void Next()
         {
             //if not at the end of the a row, go to the next column
@@ -82,37 +85,120 @@ namespace undertale_iteration_1
             Crnt_Row_Col = new_Row_Col;
             Update_SpriteArea();
         }
+        #endregion
 
+        #region Get/Set methods
+        #region Size
+        //get size
+        public PointF Get_Size()
+        {
+            return Size;
+        }
+        //set size
+        public void Set_Size(PointF pSize)
+        {
+            Size = pSize;
+            Update_SpriteArea();
+        }
+        //note: be very careful using set size, will aboslutely screw with the sprite sheet cloning
+        #endregion
+        #region Location
+        //get location
+        public PointF Get_Location()
+        {
+            return Location;
+        }
+        //set location
         public void Move(float x, float y)
         {
             Location = new PointF(Location.X + x, Location.Y + y);
-            Center = new PointF(Location.X + Size.X / 2, Location.Y + Size.Y / 2);
+            Center = new PointF(Location.X + (Size.X / 2), Location.Y + (Size.Y / 2));
         }
+        #endregion
+        #region Center
+        //get center
+        public PointF Get_Center()
+        {
+            return Center;
+        }
+        //set center
+        public void Set_Center(PointF pCenter)
+        {
+            Center = pCenter;
+            Location = new PointF(Center.X - (Size.X / 2), Center.Y - (Size.Y / 2));
+        }
+        #endregion
+        #endregion
     }
 
     internal class Player: Sprite_Handler
     {
+        private string Name;
         private int Health;
         private int MaxHealth;
+        private bool TurnState;
 
-        public Player(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, int pHealth, int pMaxHealth)
+        public Player(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, string pName, int pHealth, int pMaxHealth, bool  pTurn)
         : base(pSheet, pBackground_Colour, pSize, pRows_Cols, pOffset, pPadding, pLoc)
         {
+            Name = pName;
             Health = pHealth;
-            MaxHealth = pHealth;
+            MaxHealth = pMaxHealth;
+            TurnState = pTurn;
         }
 
+        #region Get/Set methods
+        #region Name
+        //get name
+        public string Get_Name()
+        {
+            return Name;
+        }
+        //set name
+        public void Set_Name(string pName)
+        {
+            Name = pName;
+        }
+        #endregion
+        #region Health
+        //get health
         public int GetHealth()
         {
             return Health;
         }
-
+        //set health
         public void Set_Health(int pHealth)
         {
             if (pHealth > MaxHealth) Health = MaxHealth;
             else if (pHealth <= 0) Health = 0;
             else if (Health > 0) Health = pHealth;
         }
+        #endregion
+        #region MaxHealth
+        //get max health
+        public int Get_MaxHealth()
+        {
+            return MaxHealth;
+        }
+        //set max health
+        public void Set_MaxHealth(int pMaxHealth)
+        {
+            MaxHealth = pMaxHealth;
+        }
+        #endregion
+        #region TurnState
+        //get turn state
+        public bool Get_TurnState()
+        {
+            return TurnState;
+        }
+        //set turn state
+        public void Set_TurnState(bool pTurnState)
+        {
+            TurnState = pTurnState;
+        }
+        #endregion
+        #endregion
     }
 
     internal class Projectile : Sprite_Handler

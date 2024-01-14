@@ -24,7 +24,6 @@ namespace undertale_iteration_1
 
         //objects
         Player player;
-        Projectile box;
         Sprite_Handler FightBox;
         Sprite_Handler ActBox;
         Sprite_Handler ItemBox;
@@ -42,76 +41,82 @@ namespace undertale_iteration_1
 
         private void GameForm_Load(object sender, EventArgs e)
         {
-            Setup();
+            Arena_Setup();
         }
 
-        private void Setup()
+        private void Arena_Setup()
         {
-            //spawn all objects required
-            #region Player
+            //spawn player
+            #region Spawn Player
             string background_colour = "#FFFF66FF";
             PointF size = new PointF(16,16);
             PointF rows_cols = new PointF(1, 1);
             PointF offset = new PointF(7, 6);
             PointF padding = new PointF(0, 0);
             PointF loc = new PointF((flt_FORM_WIDTH - size.X)/2, (flt_FORM_HEIGHT - size.Y)/2);
-            player = new Player(Resource1.Souls_Sprite_Sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc, 20, 20);
+            player = new Player(Resource1.Souls_Sprite_Sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc, "TEST1", 20, 20, false);
             #endregion
 
-            #region FightBox
+            //spawn option boxes
+            #region Spawn FightBox
             background_colour = "#FFC386FF";
             size = new PointF(112, 44);
             rows_cols = new PointF(2, 1);
             offset = new PointF(7, 110);
             padding = new PointF(0, 3);
-            loc = new PointF(39, flt_FORM_HEIGHT - size.Y);
+            loc = new PointF(39, flt_FORM_HEIGHT - size.Y - 1);
             FightBox = new Sprite_Handler(Resource1.Battle_Menu_Sprite_Sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
             #endregion
 
-            #region ActBox
+            #region Spawn ActBox
             background_colour = "#FFC386FF";
             size = new PointF(112, 44);
             rows_cols = new PointF(2, 1);
             offset = new PointF(7, 8);
             padding = new PointF(0, 3);
-            loc = new PointF(189, flt_FORM_HEIGHT - size.Y);
+            loc = new PointF(189, flt_FORM_HEIGHT - size.Y - 1);
             ActBox = new Sprite_Handler(Resource1.Battle_Menu_Sprite_Sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
             #endregion
 
-            #region ItemBox
+            #region Spawn ItemBox
             background_colour = "#FFC386FF";
             size = new PointF(112, 44);
             rows_cols = new PointF(2, 1);
             offset = new PointF(7, 211);
             padding = new PointF(0, 3);
-            loc = new PointF(339, flt_FORM_HEIGHT - size.Y);
+            loc = new PointF(339, flt_FORM_HEIGHT - size.Y - 1);
             ItemBox = new Sprite_Handler(Resource1.Battle_Menu_Sprite_Sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
             #endregion
 
-            #region MercyBox
+            #region Spawn MercyBox
             background_colour = "#FFC386FF";
             size = new PointF(112, 44);
             rows_cols = new PointF(2, 1);
             offset = new PointF(7, 312);
             padding = new PointF(0, 3);
-            loc = new PointF(489, flt_FORM_HEIGHT - size.Y);
+            loc = new PointF(489, flt_FORM_HEIGHT - size.Y - 1);
             MercyBox = new Sprite_Handler(Resource1.Battle_Menu_Sprite_Sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
+            #endregion
+
+            //spawn arena box
+            #region Spawn Arena
+
             #endregion
 
             //spawn all controls required
             #region lblPlayerHealth
-            lblPlayerHealth = new Label
-            {
-                AutoSize = true,
-                ForeColor = Color.White,
-                Location = new Point(411, 363),
-                Name = "lblPlayerHealth",
-                Size = new Size(36, 15),
-                TabIndex = 1,
-                Text = player.GetHealth() + "/20",
-            };
-            this.Controls.Add(lblPlayerHealth);
-            lblPlayerHealth.BringToFront();
+            //lblPlayerHealth = new Label
+            //{
+            //    AutoSize = true,
+            //    ForeColor = Color.White,
+            //    Location = new Point(411, 363),
+            //    Name = "lblPlayerHealth",
+            //    Size = new Size(36, 15),
+            //    TabIndex = 1,
+            //    Text = player.GetHealth() + "/20",
+            //};
+            //this.Controls.Add(lblPlayerHealth);
+            //lblPlayerHealth.BringToFront();
 
             #endregion
 
@@ -181,11 +186,13 @@ namespace undertale_iteration_1
             //checks boundaries against the arena
             //arena position hard coded for iteration 1, will be changed later
 
+            /*
             if (player.Center.X < (265 + (player.Size.X / 2)) && x < 0) x = 0;
             if (player.Center.X > (715 - (player.Size.X / 2)) && x > 0) x = 0;
 
             if (player.Center.Y < (73 + (player.Size.Y / 2)) && y < 0) y = 0;
             if (player.Center.Y > (523 - (player.Size.Y / 2)) && y > 0) y = 0;
+            */
 
             //moves player final x and y values
             player.Move(x, y);
@@ -196,9 +203,10 @@ namespace undertale_iteration_1
             //refresh the picture box to update the sprite's position
             pbArena.Refresh();
 
-            lblPlayerHealth.Text = player.GetHealth() + "/20";
+            //lblPlayerHealth.Text = player.GetHealth() + "/20";
         }
 
+        /*
         private void Damage_System()
         {
             //checks if the player is touching the box in x-axis
@@ -212,5 +220,6 @@ namespace undertale_iteration_1
                 }
             }
         }
+        */
     }
 }
