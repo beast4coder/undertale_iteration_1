@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace undertale_iteration_1
 {
-    internal class ImageSprite
+    internal class Sprite_Handler
     {
         public Bitmap Sheet;
         public Bitmap Sprite;
@@ -19,9 +19,9 @@ namespace undertale_iteration_1
         public PointF Crnt_Row_Col;
         public Rectangle SpriteArea;
 
-        public ImageSprite(Bitmap pSheet, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc)
+        public Sprite_Handler(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc)
         {
-            Sheet = pSheet;
+            Sheet = Process_SpriteSheet(pSheet, pBackground_Colour);
             Size = pSize;
             Ttl_Rows_Cols = pRows_Cols;
             Offset = pOffset;
@@ -34,6 +34,23 @@ namespace undertale_iteration_1
         public void Draw(Graphics g)
         {
             g.DrawImage(Sprite, Location);
+        }
+        private Bitmap Process_SpriteSheet(Bitmap pSheet, Color pTarget_Colour)
+        {
+            //checks for pixels in the sheet that are supposed to be transparent and makes them transparent
+            //loops through every pixel in the sheet
+            for (int x = 0; x < pSheet.Width; x++)
+            {
+                for (int y = 0; y < pSheet.Height; y++)
+                {
+                    //if the pixel colour matches the hex code, make it transparent
+                    if (pSheet.GetPixel(x, y) == pTarget_Colour)
+                    {
+                        pSheet.SetPixel(x, y, Color.Transparent);
+                    }
+                }
+            }
+            return pSheet;
         }
         public void Update_SpriteArea()
         {
@@ -73,13 +90,13 @@ namespace undertale_iteration_1
         }
     }
 
-    internal class Player: ImageSprite
+    internal class Player: Sprite_Handler
     {
         private int Health;
         private int MaxHealth;
 
-        public Player(Bitmap pSheet, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, int pHealth, int pMaxHealth)
-        : base(pSheet, pSize, pRows_Cols, pOffset, pPadding, pLoc)
+        public Player(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, int pHealth, int pMaxHealth)
+        : base(pSheet, pBackground_Colour, pSize, pRows_Cols, pOffset, pPadding, pLoc)
         {
             Health = pHealth;
             MaxHealth = pHealth;
@@ -98,12 +115,12 @@ namespace undertale_iteration_1
         }
     }
 
-    internal class Projectile : ImageSprite
+    internal class Projectile : Sprite_Handler
     {
         private int Damage;
 
-        public Projectile(Bitmap pSheet, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, int pDamage)
-        : base(pSheet, pSize, pRows_Cols, pOffset, pPadding, pLoc)
+        public Projectile(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, int pDamage)
+        : base(pSheet, pBackground_Colour, pSize, pRows_Cols, pOffset, pPadding, pLoc)
         {
             Damage = pDamage;
         }

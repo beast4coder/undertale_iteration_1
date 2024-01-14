@@ -25,6 +25,10 @@ namespace undertale_iteration_1
         //objects
         Player player;
         Projectile box;
+        Sprite_Handler FightBox;
+        Sprite_Handler ActBox;
+        Sprite_Handler ItemBox;
+        Sprite_Handler MercyBox;
 
         //controls
         Label lblPlayerHealth;
@@ -45,25 +49,56 @@ namespace undertale_iteration_1
         {
             //spawn all objects required
             #region Player
+            string background_colour = "#FFFF66FF";
             PointF size = new PointF(16,16);
             PointF rows_cols = new PointF(1, 1);
             PointF offset = new PointF(7, 6);
             PointF padding = new PointF(0, 0);
             PointF loc = new PointF((flt_FORM_WIDTH - size.X)/2, (flt_FORM_HEIGHT - size.Y)/2);
-            player = new Player(Resource1.Souls_Sprite_Sheet, size, rows_cols, offset, padding, loc, 20, 20);
+            player = new Player(Resource1.Souls_Sprite_Sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc, 20, 20);
             #endregion
 
-            #region box
-            size = new PointF(50, 20);
-            rows_cols = new PointF(1, 1);
-            offset = new PointF(0, 0);
-            padding = new PointF(0, 0);
-            loc = new PointF(400, 300);
-            box = new Projectile(Resource1.projectile_box, size, rows_cols, offset, padding, loc, 1);
+            #region FightBox
+            background_colour = "#FFC386FF";
+            size = new PointF(112, 44);
+            rows_cols = new PointF(2, 1);
+            offset = new PointF(7, 110);
+            padding = new PointF(0, 3);
+            loc = new PointF(39, flt_FORM_HEIGHT - size.Y);
+            FightBox = new Sprite_Handler(Resource1.Battle_Menu_Sprite_Sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
+            #endregion
+
+            #region ActBox
+            background_colour = "#FFC386FF";
+            size = new PointF(112, 44);
+            rows_cols = new PointF(2, 1);
+            offset = new PointF(7, 8);
+            padding = new PointF(0, 3);
+            loc = new PointF(189, flt_FORM_HEIGHT - size.Y);
+            ActBox = new Sprite_Handler(Resource1.Battle_Menu_Sprite_Sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
+            #endregion
+
+            #region ItemBox
+            background_colour = "#FFC386FF";
+            size = new PointF(112, 44);
+            rows_cols = new PointF(2, 1);
+            offset = new PointF(7, 211);
+            padding = new PointF(0, 3);
+            loc = new PointF(339, flt_FORM_HEIGHT - size.Y);
+            ItemBox = new Sprite_Handler(Resource1.Battle_Menu_Sprite_Sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
+            #endregion
+
+            #region MercyBox
+            background_colour = "#FFC386FF";
+            size = new PointF(112, 44);
+            rows_cols = new PointF(2, 1);
+            offset = new PointF(7, 312);
+            padding = new PointF(0, 3);
+            loc = new PointF(489, flt_FORM_HEIGHT - size.Y);
+            MercyBox = new Sprite_Handler(Resource1.Battle_Menu_Sprite_Sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
             #endregion
 
             //spawn all controls required
-
             #region lblPlayerHealth
             lblPlayerHealth = new Label
             {
@@ -79,12 +114,16 @@ namespace undertale_iteration_1
             lblPlayerHealth.BringToFront();
 
             #endregion
+
         }
 
         private void Update_Sprites(object sender, PaintEventArgs e)
         {
             player.Draw(e.Graphics);
-            box.Draw(e.Graphics);
+            FightBox.Draw(e.Graphics);
+            ActBox.Draw(e.Graphics);
+            ItemBox.Draw(e.Graphics);
+            MercyBox.Draw(e.Graphics);
         }
 
         //handles all key presses and releases
@@ -124,7 +163,7 @@ namespace undertale_iteration_1
         {
             Movement_System();
             Update_System();
-            Damage_System();
+            //Damage_System();
         }
 
         private void Movement_System()
