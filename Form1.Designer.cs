@@ -29,19 +29,19 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            pbArena = new PictureBox();
+            pbBackground = new PictureBox();
             tmrGameTimer = new System.Windows.Forms.Timer(components);
-            ((System.ComponentModel.ISupportInitialize)pbArena).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbBackground).BeginInit();
             SuspendLayout();
             // 
-            // pbArena
-            // 
-            pbArena.BackColor = Color.Transparent;
-            pbArena.Location = new Point(-1, -1);
-            pbArena.Name = "pbArena";
-            pbArena.Size = new Size(964, 543);
-            pbArena.TabIndex = 0;
-            pbArena.TabStop = false;
+            // pbBackground
+            //
+            pbBackground.BackColor = Color.Transparent;
+            pbBackground.Location = new Point(-1, -1);
+            pbBackground.Name = "pbBackground";
+            pbBackground.Size = new Size(964, 543);
+            pbBackground.TabIndex = 0;
+            pbBackground.TabStop = false;
             // 
             // tmrGameTimer
             // 
@@ -55,7 +55,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Desktop;
             ClientSize = new Size(640, 480);
-            Controls.Add(pbArena);
+            Controls.Add(pbBackground);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MinimumSize = new Size(640, 480);
             Name = "GameForm";
@@ -64,14 +64,14 @@
             Paint += Update_Sprites;
             KeyDown += GameForm_KeyDown;
             KeyUp += GameForm_KeyUp;
-            ((System.ComponentModel.ISupportInitialize)pbArena).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbBackground).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private PictureBox pbArena;
+        private PictureBox pbBackground;
         private System.Windows.Forms.Timer tmrGameTimer;
     }
 }

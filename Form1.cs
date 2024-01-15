@@ -22,6 +22,9 @@ namespace undertale_iteration_1
 
         #region Global Variables
 
+        //arena
+        Rectangle Arena_Rectangle;
+
         //objects
         Player player;
         Sprite_Handler FightBox;
@@ -98,9 +101,11 @@ namespace undertale_iteration_1
             MercyBox = new Sprite_Handler(Resource1.Battle_Menu_Sprite_Sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
             #endregion
 
-            //spawn arena box
+            //define arena box
             #region Spawn Arena
-
+            size = new PointF(200, 200);
+            loc = new PointF((flt_FORM_WIDTH - size.X)/2, (flt_FORM_HEIGHT - size.Y)/2);
+            Arena_Rectangle = new Rectangle((int)loc.X, (int)loc.Y, (int)size.X, (int)size.Y);
             #endregion
 
             //spawn all controls required
@@ -124,6 +129,10 @@ namespace undertale_iteration_1
 
         private void Update_Sprites(object sender, PaintEventArgs e)
         {
+            //Draw the arena box
+            e.Graphics.DrawRectangle(new Pen(Color.White, 4), Arena_Rectangle);
+
+            //Draw the sprites
             player.Draw(e.Graphics);
             FightBox.Draw(e.Graphics);
             ActBox.Draw(e.Graphics);
@@ -184,16 +193,10 @@ namespace undertale_iteration_1
             if (R) x += flt_PLAYER_SPEED;
 
             //checks boundaries against the arena
-            //arena position hard coded for iteration 1, will be changed later
 
-            /*
-            if (player.Center.X < (265 + (player.Size.X / 2)) && x < 0) x = 0;
-            if (player.Center.X > (715 - (player.Size.X / 2)) && x > 0) x = 0;
-
-            if (player.Center.Y < (73 + (player.Size.Y / 2)) && y < 0) y = 0;
-            if (player.Center.Y > (523 - (player.Size.Y / 2)) && y > 0) y = 0;
-            */
-
+            Rectangle player_rectangle = new Rectangle((int)player.Get_Location().X, (int)player.Get_Location().Y, (int)player.Get_Size().X, (int)player.Get_Size().Y);
+            //if (player_rectangle.IntersectsWith(Arena_Rectangle))
+            
             //moves player final x and y values
             player.Move(x, y);
         }
@@ -201,8 +204,7 @@ namespace undertale_iteration_1
         private void Update_System()
         {
             //refresh the picture box to update the sprite's position
-            pbArena.Refresh();
-
+            pbBackground.Refresh();
             //lblPlayerHealth.Text = player.GetHealth() + "/20";
         }
 
