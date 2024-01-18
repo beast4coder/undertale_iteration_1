@@ -160,13 +160,21 @@ namespace undertale_iteration_1
         //handles all key presses and releases
         #region Key Presses
 
-        //global variables tracks whether relevant keys are pressed or not
+        //global variables tracks whether relevant keys are held or not
         public static bool Down_Held = false;
         public static bool Up_Held = false;
         public static bool Left_Held = false;
         public static bool Right_Held = false;
-        public static bool Z = false;
-        public static bool X = false;
+        public static bool Z_Held = false;
+        public static bool X_Held = false;
+
+        //global variables tracks whether relevant keys are just pressed or not with help of the JustPressed_System() method
+        public static bool Z_Pressed = false;
+        public static bool X_Pressed = false;
+        public static bool Down_Pressed = false;
+        public static bool Up_Pressed = false;
+        public static bool Left_Pressed = false;
+        public static bool Right_Pressed = false;
 
         //keeps track of what buttons are held by setting a corresponding bool to true when they go down and setting it false when they go up
         private void GameForm_KeyDown(object sender, KeyEventArgs e)
@@ -175,8 +183,8 @@ namespace undertale_iteration_1
             if (e.KeyCode == Keys.Up) Up_Held = true;
             if (e.KeyCode == Keys.Left) Left_Held = true;
             if (e.KeyCode == Keys.Right) Right_Held = true;
-            if (e.KeyCode == Keys.Z) Z = true;
-            if (e.KeyCode == Keys.X) X = true;
+            if (e.KeyCode == Keys.Z) Z_Held = true;
+            if (e.KeyCode == Keys.X) X_Held = true;
         }
 
         private void GameForm_KeyUp(object sender, KeyEventArgs e)
@@ -185,24 +193,30 @@ namespace undertale_iteration_1
             if (e.KeyCode == Keys.Up) Up_Held = false;
             if (e.KeyCode == Keys.Left) Left_Held = false;
             if (e.KeyCode == Keys.Right) Right_Held = false;
-            if (e.KeyCode == Keys.Z) Z = false;
-            if (e.KeyCode == Keys.X) X = false;
+            if (e.KeyCode == Keys.Z) Z_Held = false;
+            if (e.KeyCode == Keys.X) X_Held = false;
         }
 
-        private void GameForm_KeyPress(object sender, KeyPressEventArgs e)
+        private void JustPressed_System()
         {
-            //translate the key press into an ascii value and display it in the debug label
-            debug_label.Text = ((int)e.KeyChar).ToString();
-            //easiest and most memory effiecient place to handle player turn movement
-            if (player.Get_TurnState())
-            {
-
-            }
+            if (Z_Held && !Z_Pressed) Z_Pressed = true;
+            else Z_Pressed = false;
+            if (X_Held && !X_Pressed) X_Pressed = true;
+            else X_Pressed = false;
+            if (Down_Held && !Down_Pressed) Down_Pressed = true;
+            else Down_Pressed = false;
+            if (Up_Held && !Up_Pressed) Up_Pressed = true;
+            else Up_Pressed = false;
+            if (Left_Held && !Left_Pressed) Left_Pressed = true;
+            else Left_Pressed = false;
+            if (Right_Held && !Right_Pressed) Right_Pressed = true;
+            else Right_Pressed = false;
         }
         #endregion
 
         private void tmrGameTimer_Tick(object sender, EventArgs e)
         {
+            JustPressed_System();
             player.Movement_System();
             Update_System();
             //Damage_System();
