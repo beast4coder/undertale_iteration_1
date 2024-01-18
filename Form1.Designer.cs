@@ -64,6 +64,7 @@
             Paint += Update_Sprites;
             KeyDown += GameForm_KeyDown;
             KeyUp += GameForm_KeyUp;
+            KeyPress += GameForm_KeyPress;
             ((System.ComponentModel.ISupportInitialize)pbBackground).EndInit();
             ResumeLayout(false);
             PerformLayout();

@@ -56,11 +56,11 @@ namespace undertale_iteration_1
         private void Update_SpriteArea()
         {
             //calculate total offset for x
-            //use current column which as that moves it across
+            //use current column as that moves it across
             int Ttl_Offset_X = (int)Offset.X + (int)((Padding.X+Size.X)*Crnt_Row_Col.Y);
 
             //calculate total offset for y
-            //use current row which as that moves it across
+            //use current row as that moves it down
             int Ttl_Offset_Y = (int)Offset.Y + (int)((Padding.Y+Size.Y)*Crnt_Row_Col.X);
 
             //calculate new sprite area and redefine the sprite
@@ -109,10 +109,16 @@ namespace undertale_iteration_1
             return Location;
         }
         //set location
+        public void Set_Location(PointF pLoc)
+        {
+            Location = pLoc;
+            Update_Center();
+        }
+        //move location
         public void Move(float x, float y)
         {
             Location = new PointF(Location.X + x, Location.Y + y);
-            Center = new PointF(Location.X + (Size.X / 2), Location.Y + (Size.Y / 2));
+            Update_Center();
         }
         #endregion
         #region Center
@@ -126,6 +132,11 @@ namespace undertale_iteration_1
         {
             Center = pCenter;
             Location = new PointF(Center.X - (Size.X / 2), Center.Y - (Size.Y / 2));
+        }
+        //update center
+        public void Update_Center()
+        {
+            Center = new PointF(Location.X + (Size.X / 2), Location.Y + (Size.Y / 2));
         }
         #endregion
         #endregion
@@ -193,11 +204,41 @@ namespace undertale_iteration_1
             return TurnState;
         }
         //set turn state
-        public void Set_TurnState(bool pTurnState)
+        public void Change_Turn()
         {
-            TurnState = pTurnState;
+            TurnState = !TurnState;
         }
         #endregion
+        #endregion
+
+        #region Movement
+        public void Movement_System()
+        {
+            if (TurnState)
+            {
+                
+            }
+            else
+            {
+                //x and y track final displacement of player
+                float x = 0;
+                float y = 0;
+
+                //checks which keys are helds and alters x and y accordingly
+                if (GameForm.Down_Held) y += GameForm.flt_PLAYER_SPEED;
+                if (GameForm.Up_Held) y -= GameForm.flt_PLAYER_SPEED;
+                if (GameForm.Left_Held) x -= GameForm.flt_PLAYER_SPEED;
+                if (GameForm.Right_Held) x += GameForm.flt_PLAYER_SPEED;
+
+                //checks boundaries against the arena
+                
+                
+                //moves player final x and y values
+                Location.X += x;
+                Location.Y += y;
+            }
+            Update_Center();
+        }
         #endregion
     }
 

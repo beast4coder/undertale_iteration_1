@@ -35,8 +35,10 @@ namespace undertale_iteration_1
         //controls
         Label lblPlayerHealth;
 
+        Label debug_label;
+
         //consts
-        const float flt_PLAYER_SPEED = 1f;
+        public const float flt_PLAYER_SPEED = 1f;
         const float flt_FORM_WIDTH = 640f;
         const float flt_FORM_HEIGHT = 480f;
 
@@ -125,6 +127,21 @@ namespace undertale_iteration_1
 
             #endregion
 
+            //spawn debug label
+            #region debug_label
+            debug_label = new Label
+            {
+                AutoSize = true,
+                ForeColor = Color.White,
+                Location = new Point(411, 363),
+                Name = "debug_label",
+                Size = new Size(36, 15),
+                TabIndex = 1,
+                Text = "",
+            };
+            Controls.Add(debug_label);
+            debug_label.BringToFront();
+            #endregion
         }
 
         private void Update_Sprites(object sender, PaintEventArgs e)
@@ -143,62 +160,52 @@ namespace undertale_iteration_1
         //handles all key presses and releases
         #region Key Presses
 
-        //global variables for all keys, tracks whether they are pressed wor not
-        bool D = false;
-        bool U = false;
-        bool L = false;
-        bool R = false;
-        bool Z = false;
-        bool X = false;
+        //global variables tracks whether relevant keys are pressed or not
+        public static bool Down_Held = false;
+        public static bool Up_Held = false;
+        public static bool Left_Held = false;
+        public static bool Right_Held = false;
+        public static bool Z = false;
+        public static bool X = false;
 
         //keeps track of what buttons are held by setting a corresponding bool to true when they go down and setting it false when they go up
         private void GameForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Down) D = true;
-            if (e.KeyCode == Keys.Up) U = true;
-            if (e.KeyCode == Keys.Left) L = true;
-            if (e.KeyCode == Keys.Right) R = true;
+            if (e.KeyCode == Keys.Down) Down_Held = true;
+            if (e.KeyCode == Keys.Up) Up_Held = true;
+            if (e.KeyCode == Keys.Left) Left_Held = true;
+            if (e.KeyCode == Keys.Right) Right_Held = true;
             if (e.KeyCode == Keys.Z) Z = true;
             if (e.KeyCode == Keys.X) X = true;
         }
 
         private void GameForm_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Down) D = false;
-            if (e.KeyCode == Keys.Up) U = false;
-            if (e.KeyCode == Keys.Left) L = false;
-            if (e.KeyCode == Keys.Right) R = false;
+            if (e.KeyCode == Keys.Down) Down_Held = false;
+            if (e.KeyCode == Keys.Up) Up_Held = false;
+            if (e.KeyCode == Keys.Left) Left_Held = false;
+            if (e.KeyCode == Keys.Right) Right_Held = false;
             if (e.KeyCode == Keys.Z) Z = false;
             if (e.KeyCode == Keys.X) X = false;
+        }
+
+        private void GameForm_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //translate the key press into an ascii value and display it in the debug label
+            debug_label.Text = ((int)e.KeyChar).ToString();
+            //easiest and most memory effiecient place to handle player turn movement
+            if (player.Get_TurnState())
+            {
+
+            }
         }
         #endregion
 
         private void tmrGameTimer_Tick(object sender, EventArgs e)
         {
-            Movement_System();
+            player.Movement_System();
             Update_System();
             //Damage_System();
-        }
-
-        private void Movement_System()
-        {
-            //x and y track final displacement of player
-            float x = 0;
-            float y = 0;
-
-            //checks which keys are helds and alters x and y accordingly
-            if (D) y += flt_PLAYER_SPEED;
-            if (U) y -= flt_PLAYER_SPEED;
-            if (L) x -= flt_PLAYER_SPEED;
-            if (R) x += flt_PLAYER_SPEED;
-
-            //checks boundaries against the arena
-
-            Rectangle player_rectangle = new Rectangle((int)player.Get_Location().X, (int)player.Get_Location().Y, (int)player.Get_Size().X, (int)player.Get_Size().Y);
-            //if (player_rectangle.IntersectsWith(Arena_Rectangle))
-            
-            //moves player final x and y values
-            player.Move(x, y);
         }
 
         private void Update_System()
@@ -223,5 +230,11 @@ namespace undertale_iteration_1
             }
         }
         */
+
+        private void Player_Turn_Start()
+        {
+            player.Change_Turn();
+
+        }
     }
 }
