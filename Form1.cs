@@ -47,6 +47,8 @@ namespace undertale_iteration_1
         private void GameForm_Load(object sender, EventArgs e)
         {
             Arena_Setup();
+            Thread Turn = new Thread(Intro_Turn);
+            Turn.Start();
         }
 
         private void Arena_Setup()
@@ -142,6 +144,15 @@ namespace undertale_iteration_1
             Controls.Add(debug_label);
             debug_label.BringToFront();
             #endregion
+
+            
+        }
+
+        private void Intro_Turn()
+        {
+            //wait 1s, start player turn
+            Thread.Sleep(1000);
+            Player_Turn_Start();
         }
 
         private void Update_Sprites(object sender, PaintEventArgs e)
@@ -149,16 +160,18 @@ namespace undertale_iteration_1
             //Draw the arena box
             e.Graphics.DrawRectangle(new Pen(Color.White, 4), Arena_Rectangle);
 
-            //Draw the sprites
-            player.Draw(e.Graphics);
+            //Draw the sprites 
+            //***the last one drawn will be on top***
             FightBox.Draw(e.Graphics);
             ActBox.Draw(e.Graphics);
             ItemBox.Draw(e.Graphics);
             MercyBox.Draw(e.Graphics);
+
+            player.Draw(e.Graphics);
         }
 
-        //handles all key presses and releases
-        #region Key Presses
+        //handles management of all inputs
+        #region Key Inputs
 
         //global variables tracks whether relevant keys are held or not
         public static bool Down_Held = false;
@@ -199,6 +212,8 @@ namespace undertale_iteration_1
 
         private void JustPressed_System()
         {
+            //if a key is held and it wasn't pressed last tick, it is now pressed
+            //if it was pressed last tick, sets the pressed value back to false
             if (Z_Held && !Z_Pressed) Z_Pressed = true;
             else Z_Pressed = false;
             if (X_Held && !X_Pressed) X_Pressed = true;
@@ -248,7 +263,7 @@ namespace undertale_iteration_1
         private void Player_Turn_Start()
         {
             player.Change_Turn();
-
+            player.Set_Location(FightBox.Get_Location());
         }
     }
 }
