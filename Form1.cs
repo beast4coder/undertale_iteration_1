@@ -40,8 +40,8 @@ namespace undertale_iteration_1
 
         //consts
         public const float flt_PLAYER_SPEED = 1f;
-        const float flt_FORM_WIDTH = 640f;
-        const float flt_FORM_HEIGHT = 480f;
+        public const float flt_FORM_WIDTH = 640f;
+        public const float flt_FORM_HEIGHT = 480f;
 
         #endregion
 
@@ -299,6 +299,34 @@ namespace undertale_iteration_1
             //refresh the picture box to update the sprite's position
             pbBackground.Refresh();
             //lblPlayerHealth.Text = player.GetHealth() + "/20";
+            if (player.Get_TurnState())
+            {
+                //only runs if the players turn
+                //resets all the boxes
+                PointF Box_Default = new PointF(0, 0);
+                FightBox.Set_Row_Col(Box_Default);
+                ActBox.Set_Row_Col(Box_Default);
+                ItemBox.Set_Row_Col(Box_Default);
+                MercyBox.Set_Row_Col(Box_Default);
+                //makes the box yellow if player is there
+                switch(player.Get_Turn_Position())
+                {
+                    case 0:
+                        FightBox.Next();
+                        break;
+                    case 1:
+                        ActBox.Next();
+                        break;
+                    case 2:
+                        ItemBox.Next();
+                        break;
+                    case 3:
+                        MercyBox.Next();
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
 
         /*
@@ -320,7 +348,6 @@ namespace undertale_iteration_1
         private void Player_Turn_Start()
         {
             player.Change_Turn();
-            player.Set_Location(FightBox.Get_Location());
         }
     }
 }

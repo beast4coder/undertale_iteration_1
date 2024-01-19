@@ -120,6 +120,11 @@ namespace undertale_iteration_1
             Location = new PointF(Location.X + x, Location.Y + y);
             Update_Center();
         }
+        //update location
+        public void Update_Location()
+        {
+            Location = new PointF(Center.X - (Size.X / 2), Center.Y - (Size.Y / 2));
+        }
         #endregion
         #region Center
         //get center
@@ -131,7 +136,7 @@ namespace undertale_iteration_1
         public void Set_Center(PointF pCenter)
         {
             Center = pCenter;
-            Location = new PointF(Center.X - (Size.X / 2), Center.Y - (Size.Y / 2));
+            Update_Location();
         }
         //update center
         public void Update_Center()
@@ -148,6 +153,7 @@ namespace undertale_iteration_1
         private int Health;
         private int MaxHealth;
         private bool TurnState;
+        private int Turn_Position;
 
         public Player(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, string pName, int pHealth, int pMaxHealth, bool  pTurn)
         : base(pSheet, pBackground_Colour, pSize, pRows_Cols, pOffset, pPadding, pLoc)
@@ -156,6 +162,7 @@ namespace undertale_iteration_1
             Health = pHealth;
             MaxHealth = pMaxHealth;
             TurnState = pTurn;
+            Turn_Position = 0;
         }
 
         #region Get/Set methods
@@ -209,6 +216,18 @@ namespace undertale_iteration_1
             TurnState = !TurnState;
         }
         #endregion
+        #region TurnPosition
+        //get turn position
+        public int Get_Turn_Position()
+        {
+            return Turn_Position;
+        }
+        //set turn position
+        public void Set_Turn_Position(int pTurn_Position)
+        {
+            Turn_Position = pTurn_Position;
+        }
+        #endregion
         #endregion
 
         #region Movement
@@ -216,7 +235,17 @@ namespace undertale_iteration_1
         {
             if (TurnState)
             {
-                
+                //checks if turn position is positieve
+                if (Turn_Position > -1)
+                {
+                    if (GameForm.Left_Pressed && Turn_Position > 0) Turn_Position -= 1;
+                    if (GameForm.Right_Pressed && Turn_Position < 3) Turn_Position += 1;
+
+                    Location.X = 49 + (Turn_Position * 150); //boxes are 112 wide, with 38 pixels between -- guessed 50 pxiels, seems to have nailed it
+                    Update_Center();
+                    Center.Y = GameForm.flt_FORM_HEIGHT - 23; //boxes are 1 off the floor and 44 high
+                    Update_Location();
+                }
             }
             else
             {
