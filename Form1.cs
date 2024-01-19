@@ -293,7 +293,7 @@ namespace undertale_iteration_1
             Update_System();
             //Damage_System();
         }
-
+        
         private void Update_System()
         {
             //refresh the picture box to update the sprite's position
