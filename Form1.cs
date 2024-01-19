@@ -23,8 +23,8 @@ namespace undertale_iteration_1
         #region Global Variables
 
         //arena
-        Rectangle Arena_Hitbox;
-        const int Arena_Width = 4;
+        public static Rectangle Arena_Hitbox;
+        public const int int_ARENA_WIDTH = 4;
 
         //objects
         Player player;
@@ -36,8 +36,10 @@ namespace undertale_iteration_1
         //controls
         Label lblPlayerHealth;
 
+        Label debug_label;
+
         //consts
-        const float flt_PLAYER_SPEED = 1f;
+        public const float flt_PLAYER_SPEED = 1f;
         const float flt_FORM_WIDTH = 640f;
         const float flt_FORM_HEIGHT = 480f;
 
@@ -46,6 +48,8 @@ namespace undertale_iteration_1
         private void GameForm_Load(object sender, EventArgs e)
         {
             Arena_Setup();
+            Thread Turn = new Thread(Intro_Turn);
+            Turn.Start();
         }
 
         private void Arena_Setup()
@@ -126,84 +130,170 @@ namespace undertale_iteration_1
 
             #endregion
 
+            //spawn debug label
+            #region debug_label
+            debug_label = new Label
+            {
+                AutoSize = true,
+                ForeColor = Color.White,
+                Location = new Point(411, 363),
+                Name = "debug_label",
+                Size = new Size(36, 15),
+                TabIndex = 1,
+                Text = "",
+            };
+            Controls.Add(debug_label);
+            debug_label.BringToFront();
+            #endregion
+
+            
+        }
+
+        private void Intro_Turn()
+        {
+            //wait 1s, start player turn
+            Thread.Sleep(1000);
+            Player_Turn_Start();
         }
 
         private void Update_Sprites(object sender, PaintEventArgs e)
         {
             //Draw the arena box
-            e.Graphics.DrawRectangle(new Pen(Color.White, Arena_Width), Arena_Hitbox);
+            e.Graphics.DrawRectangle(new Pen(Color.White, int_ARENA_WIDTH), Arena_Hitbox);
 
-            //Draw the sprites
-            player.Draw(e.Graphics);
+            //Draw the sprites 
+            //***the last one drawn will be on top***
             FightBox.Draw(e.Graphics);
             ActBox.Draw(e.Graphics);
             ItemBox.Draw(e.Graphics);
             MercyBox.Draw(e.Graphics);
+
+            player.Draw(e.Graphics);
         }
 
-        //handles all key presses and releases
-        #region Key Presses
+        //handles management of all inputs
+        #region Key Inputs
 
-        //global variables for all keys, tracks whether they are pressed wor not
-        bool D = false;
-        bool U = false;
-        bool L = false;
-        bool R = false;
-        bool Z = false;
-        bool X = false;
+        //global variables tracks whether relevant keys are held or not
+        public static bool Down_Held = false;
+        public static bool Up_Held = false;
+        public static bool Left_Held = false;
+        public static bool Right_Held = false;
+        public static bool Z_Held = false;
+        public static bool X_Held = false;
+
+        //global variables tracks whether relevant keys are just pressed or not with help of the JustPressed_System() method
+        public static bool Z_Pressed = false;
+        public static bool X_Pressed = false;
+        public static bool Down_Pressed = false;
+        public static bool Up_Pressed = false;
+        public static bool Left_Pressed = false;
+        public static bool Right_Pressed = false;
+
+        //global variables tracks whether relevant keys are still held or not as an intermediary step to the JustPressed_System() method
+        bool Z_Still_Held = false;
+        bool X_Still_Held = false;
+        bool Down_Still_Held = false;
+        bool Up_Still_Held = false;
+        bool Left_Still_Held = false;
+        bool Right_Still_Held = false;
 
         //keeps track of what buttons are held by setting a corresponding bool to true when they go down and setting it false when they go up
         private void GameForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Down) D = true;
-            if (e.KeyCode == Keys.Up) U = true;
-            if (e.KeyCode == Keys.Left) L = true;
-            if (e.KeyCode == Keys.Right) R = true;
-            if (e.KeyCode == Keys.Z) Z = true;
-            if (e.KeyCode == Keys.X) X = true;
+            if (e.KeyCode == Keys.Down) Down_Held = true;
+            if (e.KeyCode == Keys.Up) Up_Held = true;
+            if (e.KeyCode == Keys.Left) Left_Held = true;
+            if (e.KeyCode == Keys.Right) Right_Held = true;
+            if (e.KeyCode == Keys.Z) Z_Held = true;
+            if (e.KeyCode == Keys.X) X_Held = true;
         }
 
         private void GameForm_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Down) D = false;
-            if (e.KeyCode == Keys.Up) U = false;
-            if (e.KeyCode == Keys.Left) L = false;
-            if (e.KeyCode == Keys.Right) R = false;
-            if (e.KeyCode == Keys.Z) Z = false;
-            if (e.KeyCode == Keys.X) X = false;
+            if (e.KeyCode == Keys.Down)
+            {
+                Down_Held = false;
+                Down_Still_Held = false;
+            }
+            if (e.KeyCode == Keys.Up)
+            {
+                Up_Held = false;
+                Up_Still_Held = false;
+            }
+            if (e.KeyCode == Keys.Left)
+            {
+                Left_Held = false;
+                Left_Still_Held = false;
+            }
+            if (e.KeyCode == Keys.Right) 
+            {
+                Right_Held = false;
+                Right_Still_Held = false;
+            }
+            if (e.KeyCode == Keys.Z)
+            {
+                Z_Held = false;
+                Z_Still_Held = false;
+            }
+            if (e.KeyCode == Keys.X)
+            {
+                X_Held = false;
+                X_Still_Held = false;
+            }
+        }
+
+        private void JustPressed_System()
+        {
+            //if a key is held and it wasn't held last tick, sets the just pressed still held value to true
+            //if it was held last tick, set the just pressed value to false
+            if (Z_Held && !Z_Still_Held)
+            {
+                Z_Pressed = true;
+                Z_Still_Held = true;
+            }
+            else Z_Pressed = false;
+            if (X_Held && !X_Still_Held)
+            {
+                X_Pressed = true;
+                X_Still_Held = true;
+            }
+            else X_Pressed = false;
+            if (Down_Held && !Down_Still_Held)
+            {
+                Down_Pressed = true;
+                Down_Still_Held = true;
+            }
+            else Down_Pressed = false;
+            if (Up_Held && !Up_Still_Held)
+            {
+                Up_Pressed = true;
+                Up_Still_Held = true;
+            }
+            else Up_Pressed = false;
+            if (Left_Held && !Left_Still_Held)
+            {
+                Left_Pressed = true;
+                Left_Still_Held = true;
+            }
+            else Left_Pressed = false;
+            if (Right_Held && !Right_Still_Held)
+            {
+                Right_Pressed = true;
+                Right_Still_Held = true;
+            }
+            else Right_Pressed = false;
         }
         #endregion
 
         private void tmrGameTimer_Tick(object sender, EventArgs e)
         {
-            Movement_System();
+            JustPressed_System();
+            player.Movement_System();
             Update_System();
             //Damage_System();
         }
-
-        private void Movement_System()
-        {
-            //x and y track final displacement of player
-            float x = 0;
-            float y = 0;
-
-            //checks which keys are helds and alters x and y accordingly
-            if (D) y += flt_PLAYER_SPEED;
-            if (U) y -= flt_PLAYER_SPEED;
-            if (L) x -= flt_PLAYER_SPEED;
-            if (R) x += flt_PLAYER_SPEED;
-
-            //checks boundaries against the arena, if moving into the boundary, sets x and y to the distance to the boundary
-            //when against the boundary this will set x and y to 0
-            if (player.Get_Location().X + x < Arena_Hitbox.Left + (Arena_Width/2)) x = Arena_Hitbox.Left - player.Get_Location().X + (Arena_Width/2);
-            if (player.Get_Location().X + player.Get_Size().X + x > Arena_Hitbox.Right - (Arena_Width/2)) x = Arena_Hitbox.Right - player.Get_Location().X - player.Get_Size().X - (Arena_Width/2);
-            if (player.Get_Location().Y + y < Arena_Hitbox.Top + (Arena_Width/2)) y = Arena_Hitbox.Top - player.Get_Location().Y + (Arena_Width/2);
-            if (player.Get_Location().Y + player.Get_Size().Y + y > Arena_Hitbox.Bottom - (Arena_Width/2)) y = Arena_Hitbox.Bottom - player.Get_Location().Y - player.Get_Size().Y - (Arena_Width/2);
-
-            //moves player final x and y values
-            player.Move(x, y);
-        }
-
+        
         private void Update_System()
         {
             //refresh the picture box to update the sprite's position
@@ -226,5 +316,11 @@ namespace undertale_iteration_1
             }
         }
         */
+
+        private void Player_Turn_Start()
+        {
+            player.Change_Turn();
+            player.Set_Location(FightBox.Get_Location());
+        }
     }
 }
