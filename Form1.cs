@@ -23,7 +23,8 @@ namespace undertale_iteration_1
         #region Global Variables
 
         //arena
-        Rectangle Arena_Rectangle;
+        Rectangle Arena_Hitbox;
+        const int Arena_Width = 4;
 
         //objects
         Player player;
@@ -102,10 +103,10 @@ namespace undertale_iteration_1
             #endregion
 
             //define arena box
-            #region Spawn Arena
+            #region Define Arena
             size = new PointF(200, 200);
             loc = new PointF((flt_FORM_WIDTH - size.X)/2, (flt_FORM_HEIGHT - size.Y)/2);
-            Arena_Rectangle = new Rectangle((int)loc.X, (int)loc.Y, (int)size.X, (int)size.Y);
+            Arena_Hitbox = new Rectangle((int)loc.X, (int)loc.Y, (int)size.X, (int)size.Y);
             #endregion
 
             //spawn all controls required
@@ -130,7 +131,7 @@ namespace undertale_iteration_1
         private void Update_Sprites(object sender, PaintEventArgs e)
         {
             //Draw the arena box
-            e.Graphics.DrawRectangle(new Pen(Color.White, 4), Arena_Rectangle);
+            e.Graphics.DrawRectangle(new Pen(Color.White, Arena_Width), Arena_Hitbox);
 
             //Draw the sprites
             player.Draw(e.Graphics);
@@ -192,11 +193,13 @@ namespace undertale_iteration_1
             if (L) x -= flt_PLAYER_SPEED;
             if (R) x += flt_PLAYER_SPEED;
 
-            //checks boundaries against the arena
+            //checks boundaries against the arena, if moving into the boundary, sets x and y to the distance to the boundary
+            //when against the boundary this will set x and y to 0
+            if (player.Get_Location().X + x < Arena_Hitbox.Left + (Arena_Width/2)) x = Arena_Hitbox.Left - player.Get_Location().X + (Arena_Width/2);
+            if (player.Get_Location().X + player.Get_Size().X + x > Arena_Hitbox.Right - (Arena_Width/2)) x = Arena_Hitbox.Right - player.Get_Location().X - player.Get_Size().X - (Arena_Width/2);
+            if (player.Get_Location().Y + y < Arena_Hitbox.Top + (Arena_Width/2)) y = Arena_Hitbox.Top - player.Get_Location().Y + (Arena_Width/2);
+            if (player.Get_Location().Y + player.Get_Size().Y + y > Arena_Hitbox.Bottom - (Arena_Width/2)) y = Arena_Hitbox.Bottom - player.Get_Location().Y - player.Get_Size().Y - (Arena_Width/2);
 
-            Rectangle player_rectangle = new Rectangle((int)player.Get_Location().X, (int)player.Get_Location().Y, (int)player.Get_Size().X, (int)player.Get_Size().Y);
-            //if (player_rectangle.IntersectsWith(Arena_Rectangle))
-            
             //moves player final x and y values
             player.Move(x, y);
         }
