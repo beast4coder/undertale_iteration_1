@@ -154,6 +154,11 @@ namespace undertale_iteration_1
         private int MaxHealth;
         private bool TurnState;
         private int Turn_Position;
+        ManualResetEvent Selector_Signal = new ManualResetEvent(false);
+        Thread Fight_Thread;
+        Thread Act_Thread;
+        Thread Item_Thread;
+        Thread Mercy_Thread;
 
         public Player(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, string pName, int pHealth, int pMaxHealth, bool  pTurn)
         : base(pSheet, pBackground_Colour, pSize, pRows_Cols, pOffset, pPadding, pLoc)
@@ -163,6 +168,14 @@ namespace undertale_iteration_1
             MaxHealth = pMaxHealth;
             TurnState = pTurn;
             Turn_Position = 0;
+            
+            //setup threads for the logic systems
+            /*
+            Fight_Thread = new Thread(Fight_Logic);
+            Act_Thread = new Thread(Act_Logic);
+            Item_Thread = new Thread(Item_Logic);
+            Mercy_Thread = new Thread(Mercy_Logic);
+            */
         }
 
         #region Get/Set methods
@@ -273,6 +286,39 @@ namespace undertale_iteration_1
                 Location.Y += y;
             }
             Update_Center();
+        }
+        #endregion
+    
+        #region Turn Logic
+        public void Button_Selection_System()
+        {
+            if (TurnState && GameForm.Z_Pressed && Turn_Position > -1)
+            {
+                //if the player is in the fight position
+                if (Turn_Position == 0)
+                {
+                    //run the fight button logic
+                    Fight_Thread.Start();
+                }
+                //if the player is in the act position
+                else if (Turn_Position == 1)
+                {
+                    //run the act button logic
+                    Act_Thread.Start();
+                }
+                //if the player is in the item position
+                else if (Turn_Position == 2)
+                {
+                    //run the item button logic
+                    Item_Thread.Start();
+                }
+                //if the player is in the mercy position
+                else if (Turn_Position == 3)
+                {
+                    //run the mercy button logic
+                    Mercy_Thread.Start();
+                }
+            }
         }
         #endregion
     }
