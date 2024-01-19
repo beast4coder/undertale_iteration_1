@@ -23,7 +23,8 @@ namespace undertale_iteration_1
         #region Global Variables
 
         //arena
-        Rectangle Arena_Rectangle;
+        public static Rectangle Arena_Hitbox;
+        public const int int_ARENA_WIDTH = 4;
 
         //objects
         Player player;
@@ -106,10 +107,10 @@ namespace undertale_iteration_1
             #endregion
 
             //define arena box
-            #region Spawn Arena
+            #region Define Arena
             size = new PointF(200, 200);
             loc = new PointF((flt_FORM_WIDTH - size.X)/2, (flt_FORM_HEIGHT - size.Y)/2);
-            Arena_Rectangle = new Rectangle((int)loc.X, (int)loc.Y, (int)size.X, (int)size.Y);
+            Arena_Hitbox = new Rectangle((int)loc.X, (int)loc.Y, (int)size.X, (int)size.Y);
             #endregion
 
             //spawn all controls required
@@ -158,7 +159,7 @@ namespace undertale_iteration_1
         private void Update_Sprites(object sender, PaintEventArgs e)
         {
             //Draw the arena box
-            e.Graphics.DrawRectangle(new Pen(Color.White, 4), Arena_Rectangle);
+            e.Graphics.DrawRectangle(new Pen(Color.White, int_ARENA_WIDTH), Arena_Hitbox);
 
             //Draw the sprites 
             //***the last one drawn will be on top***

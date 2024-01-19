@@ -231,7 +231,13 @@ namespace undertale_iteration_1
                 if (GameForm.Right_Held) x += GameForm.flt_PLAYER_SPEED;
 
                 //checks boundaries against the arena
-                
+                Rectangle Arena_Hitbox = GameForm.Arena_Hitbox;
+                int Adjustment = GameForm.int_ARENA_WIDTH / 2;
+                if (Location.X + x < Arena_Hitbox.Left + Adjustment) x = Arena_Hitbox.Left - Location.X + Adjustment;
+                if (Location.X + Size.X + x > Arena_Hitbox.Right - Adjustment) x = Arena_Hitbox.Right - Location.X - Size.X - Adjustment;
+                if (Location.Y + y < Arena_Hitbox.Top + Adjustment) y = Arena_Hitbox.Top - Location.Y + Adjustment;
+                if (Location.Y + Size.Y + y > Arena_Hitbox.Bottom - Adjustment) y = Arena_Hitbox.Bottom - Location.Y - Size.Y - Adjustment;
+
                 
                 //moves player final x and y values
                 Location.X += x;
