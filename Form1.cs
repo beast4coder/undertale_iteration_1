@@ -189,6 +189,14 @@ namespace undertale_iteration_1
         public static bool Left_Pressed = false;
         public static bool Right_Pressed = false;
 
+        //global variables tracks whether relevant keys are still held or not as an intermediary step to the JustPressed_System() method
+        bool Z_Still_Held = false;
+        bool X_Still_Held = false;
+        bool Down_Still_Held = false;
+        bool Up_Still_Held = false;
+        bool Left_Still_Held = false;
+        bool Right_Still_Held = false;
+
         //keeps track of what buttons are held by setting a corresponding bool to true when they go down and setting it false when they go up
         private void GameForm_KeyDown(object sender, KeyEventArgs e)
         {
@@ -202,29 +210,77 @@ namespace undertale_iteration_1
 
         private void GameForm_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Down) Down_Held = false;
-            if (e.KeyCode == Keys.Up) Up_Held = false;
-            if (e.KeyCode == Keys.Left) Left_Held = false;
-            if (e.KeyCode == Keys.Right) Right_Held = false;
-            if (e.KeyCode == Keys.Z) Z_Held = false;
-            if (e.KeyCode == Keys.X) X_Held = false;
+            if (e.KeyCode == Keys.Down)
+            {
+                Down_Held = false;
+                Down_Still_Held = false;
+            }
+            if (e.KeyCode == Keys.Up)
+            {
+                Up_Held = false;
+                Up_Still_Held = false;
+            }
+            if (e.KeyCode == Keys.Left)
+            {
+                Left_Held = false;
+                Left_Still_Held = false;
+            }
+            if (e.KeyCode == Keys.Right) 
+            {
+                Right_Held = false;
+                Right_Still_Held = false;
+            }
+            if (e.KeyCode == Keys.Z)
+            {
+                Z_Held = false;
+                Z_Still_Held = false;
+            }
+            if (e.KeyCode == Keys.X)
+            {
+                X_Held = false;
+                X_Still_Held = false;
+            }
         }
 
         private void JustPressed_System()
         {
-            //if a key is held and it wasn't pressed last tick, it is now pressed
-            //if it was pressed last tick, sets the pressed value back to false
-            if (Z_Held && !Z_Pressed) Z_Pressed = true;
+            //if a key is held and it wasn't held last tick, sets the just pressed still held value to true
+            //if it was held last tick, set the just pressed value to false
+            if (Z_Held && !Z_Still_Held)
+            {
+                Z_Pressed = true;
+                Z_Still_Held = true;
+            }
             else Z_Pressed = false;
-            if (X_Held && !X_Pressed) X_Pressed = true;
+            if (X_Held && !X_Still_Held)
+            {
+                X_Pressed = true;
+                X_Still_Held = true;
+            }
             else X_Pressed = false;
-            if (Down_Held && !Down_Pressed) Down_Pressed = true;
+            if (Down_Held && !Down_Still_Held)
+            {
+                Down_Pressed = true;
+                Down_Still_Held = true;
+            }
             else Down_Pressed = false;
-            if (Up_Held && !Up_Pressed) Up_Pressed = true;
+            if (Up_Held && !Up_Still_Held)
+            {
+                Up_Pressed = true;
+                Up_Still_Held = true;
+            }
             else Up_Pressed = false;
-            if (Left_Held && !Left_Pressed) Left_Pressed = true;
+            if (Left_Held && !Left_Still_Held)
+            {
+                Left_Pressed = true;
+                Left_Still_Held = true;
+            }
             else Left_Pressed = false;
-            if (Right_Held && !Right_Pressed) Right_Pressed = true;
+            if (Right_Held && !Right_Still_Held)
+            {
+                Right_Pressed = true;
+                Right_Still_Held = true;
+            }
             else Right_Pressed = false;
         }
         #endregion
