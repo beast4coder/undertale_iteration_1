@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,9 +32,13 @@ namespace undertale_iteration_1
             Center = new PointF(Location.X + Size.X / 2, Location.Y + Size.Y / 2);
             Update_SpriteArea();
         }
-        public void Draw(Graphics g)
+        public void Draw(Graphics g, float scale)
         {
-            g.DrawImage(Sprite, Location);
+            //scale the sprite
+            int width = (int)(Size.X * scale);
+            int height = (int)(Size.Y * scale);
+            //draw the sprite
+            g.DrawImage(Sprite, new Rectangle((int)Location.X, (int)Location.Y, width, height));
         }
         private Bitmap Process_SpriteSheet(Bitmap pSheet, Color pTarget_Colour)
         {
@@ -337,5 +342,62 @@ namespace undertale_iteration_1
         {
             return Damage;
         }
+    }
+
+    internal class Enemy
+    {
+        protected string Name;
+        protected int Health;
+        protected int Damage;
+        protected Sprite_Handler[] Sprites;
+        protected List<Projectile> Projectiles;
+
+        #region Get/Set methods
+        #region Name
+        //get name
+        public string Get_Name()
+        {
+            return Name;
+        }
+        #endregion
+        #region Health
+        //get health
+        public int Get_Health()
+        {
+            return Health;
+        }
+        //set health
+        public void Set_Health(int pHealth)
+        {
+            Health = pHealth;
+        }
+        #endregion
+        #region Damage
+        //get damage
+        public int Get_Damage()
+        {
+            return Damage;
+        }
+        //set damage
+        public void Set_Damage(int pDamage)
+        {
+            Damage = pDamage;
+        }
+        #endregion
+        #region Sprites
+        //get sprites
+        public Sprite_Handler[] Get_Sprites()
+        {
+            return Sprites;
+        }
+        #endregion
+        #region Projectiles
+        //get projectiles
+        public List<Projectile> Get_Projectiles()
+        {
+            return Projectiles;
+        }
+        #endregion
+        #endregion
     }
 }

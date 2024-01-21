@@ -83,6 +83,16 @@ namespace undertale_iteration_1 {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Napstablook_and_Dummies_Sheet {
+            get {
+                object obj = ResourceManager.GetObject("Napstablook_and_Dummies_Sheet", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap projectile_box {
             get {
                 object obj = ResourceManager.GetObject("projectile_box", resourceCulture);

@@ -24,7 +24,7 @@ namespace undertale_iteration_1
 
         //arena
         public static Rectangle Arena_Hitbox;
-        public const int int_ARENA_WIDTH = 4;
+        public const int int_ARENA_WIDTH = 5;
 
         //objects
         Player player;
@@ -32,6 +32,9 @@ namespace undertale_iteration_1
         Sprite_Handler ActBox;
         Sprite_Handler ItemBox;
         Sprite_Handler MercyBox;
+
+        //enemies
+        Test_Enemy test_enemy;
 
         //controls
         Label lblPlayerHealth;
@@ -43,13 +46,16 @@ namespace undertale_iteration_1
         public const float flt_FORM_WIDTH = 640f;
         public const float flt_FORM_HEIGHT = 480f;
 
+        //time counter
+        int int_time_counter = 0;
+
         #endregion
 
         private void GameForm_Load(object sender, EventArgs e)
         {
             Arena_Setup();
             Thread Turn = new Thread(Intro_Turn);
-            Turn.Start();
+            //Turn.Start();
         }
 
         private void Arena_Setup()
@@ -72,7 +78,7 @@ namespace undertale_iteration_1
             rows_cols = new PointF(2, 1);
             offset = new PointF(7, 110);
             padding = new PointF(0, 3);
-            loc = new PointF(39, flt_FORM_HEIGHT - size.Y - 1);
+            loc = new PointF(39, flt_FORM_HEIGHT - size.Y - 5);
             FightBox = new Sprite_Handler(Resource1.Battle_Menu_Sprite_Sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
             #endregion
 
@@ -82,7 +88,7 @@ namespace undertale_iteration_1
             rows_cols = new PointF(2, 1);
             offset = new PointF(7, 8);
             padding = new PointF(0, 3);
-            loc = new PointF(189, flt_FORM_HEIGHT - size.Y - 1);
+            loc = new PointF(189, flt_FORM_HEIGHT - size.Y - 5);
             ActBox = new Sprite_Handler(Resource1.Battle_Menu_Sprite_Sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
             #endregion
 
@@ -92,7 +98,7 @@ namespace undertale_iteration_1
             rows_cols = new PointF(2, 1);
             offset = new PointF(7, 211);
             padding = new PointF(0, 3);
-            loc = new PointF(339, flt_FORM_HEIGHT - size.Y - 1);
+            loc = new PointF(339, flt_FORM_HEIGHT - size.Y - 5);
             ItemBox = new Sprite_Handler(Resource1.Battle_Menu_Sprite_Sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
             #endregion
 
@@ -102,15 +108,20 @@ namespace undertale_iteration_1
             rows_cols = new PointF(2, 1);
             offset = new PointF(7, 312);
             padding = new PointF(0, 3);
-            loc = new PointF(489, flt_FORM_HEIGHT - size.Y - 1);
+            loc = new PointF(489, flt_FORM_HEIGHT - size.Y - 5);
             MercyBox = new Sprite_Handler(Resource1.Battle_Menu_Sprite_Sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
             #endregion
 
             //define arena box
             #region Define Arena
-            size = new PointF(200, 200);
+            size = new PointF(180, 185);
             loc = new PointF((flt_FORM_WIDTH - size.X)/2, (flt_FORM_HEIGHT - size.Y)/2);
             Arena_Hitbox = new Rectangle((int)loc.X, (int)loc.Y, (int)size.X, (int)size.Y);
+            #endregion
+
+            //spawn enemy
+            #region Spawn Enemy
+            test_enemy = new Test_Enemy();
             #endregion
 
             //spawn all controls required
@@ -161,14 +172,20 @@ namespace undertale_iteration_1
             //Draw the arena box
             e.Graphics.DrawRectangle(new Pen(Color.White, int_ARENA_WIDTH), Arena_Hitbox);
 
-            //Draw the sprites 
-            //***the last one drawn will be on top***
-            FightBox.Draw(e.Graphics);
-            ActBox.Draw(e.Graphics);
-            ItemBox.Draw(e.Graphics);
-            MercyBox.Draw(e.Graphics);
+            //Draw enemy sprites
+            foreach (Sprite_Handler sprite in test_enemy.Get_Sprites())
+            {
+                sprite.Draw(e.Graphics, 2f);
+            }
 
-            player.Draw(e.Graphics);
+            //Draw objects
+            //***the last one drawn will be on top***
+            FightBox.Draw(e.Graphics, 1f);
+            ActBox.Draw(e.Graphics, 1f);
+            ItemBox.Draw(e.Graphics, 1f);
+            MercyBox.Draw(e.Graphics, 1f);
+
+            player.Draw(e.Graphics, 1f);
         }
 
         //handles management of all inputs
@@ -292,16 +309,20 @@ namespace undertale_iteration_1
             player.Movement_System();
             Update_System();
             //Damage_System();
+            if (int_time_counter % 2 == 0) Arena_Hitbox_Test();
+            int_time_counter++;
         }
         
         private void Update_System()
         {
             //refresh the picture box to update the sprite's position
             pbBackground.Refresh();
+
             //lblPlayerHealth.Text = player.GetHealth() + "/20";
+
+            //only runs if the players turn
             if (player.Get_TurnState())
             {
-                //only runs if the players turn
                 //resets all the boxes
                 PointF Box_Default = new PointF(0, 0);
                 FightBox.Set_Row_Col(Box_Default);
@@ -348,6 +369,13 @@ namespace undertale_iteration_1
         private void Player_Turn_Start()
         {
             player.Change_Turn();
+        }
+
+        private void Arena_Hitbox_Test()
+        {
+            //redefines the arena box
+            Arena_Hitbox.X -= 1;
+            Arena_Hitbox.Width += 2;
         }
     }
 }
