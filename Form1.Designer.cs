@@ -35,7 +35,7 @@
             SuspendLayout();
             // 
             // pbBackground
-            //
+            // 
             pbBackground.BackColor = Color.Transparent;
             pbBackground.Location = new Point(-1, -1);
             pbBackground.Name = "pbBackground";
@@ -53,7 +53,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.Desktop;
+            BackColor = Color.Black;
             ClientSize = new Size(640, 480);
             Controls.Add(pbBackground);
             FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -66,7 +66,6 @@
             KeyUp += GameForm_KeyUp;
             ((System.ComponentModel.ISupportInitialize)pbBackground).EndInit();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion

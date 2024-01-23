@@ -269,7 +269,7 @@ namespace undertale_iteration_1
 
                     Location.X = 49 + (Turn_Position * 150); //boxes are 112 wide, with 38 pixels between -- guessed 50 pxiels, seems to have nailed it
                     Update_Center();
-                    Center.Y = GameForm.flt_FORM_HEIGHT - 23; //boxes are 1 off the floor and 44 high
+                    Center.Y = GameForm.flt_FORM_HEIGHT - 27; //boxes are 1 off the floor and 44 high
                     Update_Location();
                 }
             }
@@ -297,8 +297,9 @@ namespace undertale_iteration_1
                 //moves player final x and y values
                 Location.X += x;
                 Location.Y += y;
+
+                Update_Center();
             }
-            Update_Center();
         }
         #endregion
     

@@ -11,11 +11,11 @@ namespace undertale_iteration_1
             //define dummy sprite
             #region Dummy Sprite
             Bitmap sheet = Resource1.Monsters_Ruins_Sheet;
-            Color background_col = ColorTranslator.FromHtml("#C386FF");
-            PointF size = new PointF(34, 18);
-            PointF rows_cols = new PointF(1, 4);
-            PointF offset = new PointF(142, 20);
-            PointF padding = new PointF(1, 0);
+            Color background_col = ColorTranslator.FromHtml("#FFC386FF");
+            PointF size = new PointF(98, 106);
+            PointF rows_cols = new PointF(1, 2);
+            PointF offset = new PointF(5, 21);
+            PointF padding = new PointF(5, 0);
             PointF loc = new PointF((GameForm.flt_FORM_WIDTH - size.X) / 2, 20);
             Sprites[0] = new Sprite_Handler(sheet, background_col, size, rows_cols, offset, padding, loc);
             #endregion
