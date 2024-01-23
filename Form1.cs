@@ -55,7 +55,7 @@ namespace undertale_iteration_1
         {
             Arena_Setup();
             Thread Turn = new Thread(Intro_Turn);
-            //Turn.Start();
+            Turn.Start();
         }
 
         private void Arena_Setup()
@@ -175,7 +175,7 @@ namespace undertale_iteration_1
             //Draw enemy sprites
             foreach (Sprite_Handler sprite in test_enemy.Get_Sprites())
             {
-                sprite.Draw(e.Graphics, 2f);
+                sprite.Draw(e.Graphics, 1f);
             }
 
             //Draw objects
@@ -309,7 +309,6 @@ namespace undertale_iteration_1
             player.Movement_System();
             Update_System();
             //Damage_System();
-            if (int_time_counter % 2 == 0) Arena_Hitbox_Test();
             int_time_counter++;
         }
         
@@ -369,13 +368,22 @@ namespace undertale_iteration_1
         private void Player_Turn_Start()
         {
             player.Change_Turn();
+            Update_Arena_Hitbox();
         }
 
-        private void Arena_Hitbox_Test()
+        private void Update_Arena_Hitbox()
         {
             //redefines the arena box
-            Arena_Hitbox.X -= 1;
-            Arena_Hitbox.Width += 2;
+            if (player.Get_TurnState())
+            {
+            Arena_Hitbox.X = 10;
+            Arena_Hitbox.Width = (int)flt_FORM_WIDTH - 20;
+            }
+            else
+            {
+                Arena_Hitbox.X = (int)(flt_FORM_WIDTH - player.Get_Size().X) / 2;
+                Arena_Hitbox.Width = 180;
+            }
         }
     }
 }

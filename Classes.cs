@@ -256,8 +256,16 @@ namespace undertale_iteration_1
                 //checks if turn position is positieve
                 if (Turn_Position > -1)
                 {
-                    if (GameForm.Left_Pressed && Turn_Position > 0) Turn_Position -= 1;
-                    if (GameForm.Right_Pressed && Turn_Position < 3) Turn_Position += 1;
+                    if (GameForm.Left_Pressed)
+                    {
+                        if (Turn_Position > 0) Turn_Position -= 1;
+                        else Turn_Position = 3;
+                    }
+                    if (GameForm.Right_Pressed)
+                    {
+                        if (Turn_Position < 3) Turn_Position += 1;
+                        else Turn_Position = 0;
+                    }
 
                     Location.X = 49 + (Turn_Position * 150); //boxes are 112 wide, with 38 pixels between -- guessed 50 pxiels, seems to have nailed it
                     Update_Center();
