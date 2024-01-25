@@ -1,15 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Resources;
-using System.Windows.Forms.PropertyGridInternal;
+//using statements go here
 
 namespace undertale_iteration_1
 {
@@ -25,6 +14,9 @@ namespace undertale_iteration_1
         //arena
         public static Rectangle Arena_Hitbox;
         public const int int_ARENA_WIDTH = 5;
+
+        //turn bool
+        bool Player_Turn = false;
 
         //objects
         Player player;
@@ -70,7 +62,7 @@ namespace undertale_iteration_1
             PointF offset = new PointF(7, 6);
             PointF padding = new PointF(0, 0);
             PointF loc = new PointF((flt_FORM_WIDTH - size.X) / 2, (flt_FORM_HEIGHT - size.Y) / 2);
-            player = new Player(sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc, "TEST1", 20, 20, false);
+            player = new Player(sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc, "TEST1", 20, 20);
             #endregion
 
             //spawn option boxes
@@ -324,11 +316,110 @@ namespace undertale_iteration_1
         }
         #endregion
 
+        #region Player Movement
+        public void Player_Movement_System()
+        {
+            int player_turn_pos = player.Get_Turn_Position();
+            PointF loc = player.Get_Location();
+            PointF size = player.Get_Size();
+            if (Player_Turn)
+            {
+                //checks if turn position is positieve
+                if (player_turn_pos > -1)
+                {
+                    //if left arrow key is pressed move left, if right arrow key is pressed move right
+                    //if left is pressed on the leftmost box, move to the rightmost box, vice versa
+                    if (Left_Pressed)
+                    {
+                        if (player_turn_pos > 0) player.Set_Turn_Position(player_turn_pos - 1);
+                        else player.Set_Turn_Position(3);
+                    }
+                    if (Right_Pressed)
+                    {
+                        if (player_turn_pos < 3) player.Set_Turn_Position(player_turn_pos + 1);
+                        else player.Set_Turn_Position(0);
+                    }
+                    //sets new turn position before moving player off the value
+                    player_turn_pos = player.Get_Turn_Position();
+                    player.Set_Location(new PointF(49 + (player_turn_pos * 150), loc.Y)); //boxes are 112 wide, with 38 pixels between -- guessed 50 pxiels, seems to have nailed it
+                    player.Set_Center(new PointF(player.Get_Center().X, flt_FORM_HEIGHT - 27)); //boxes are 5 off the floor and 44 high
+                }
+            }
+            else
+            {
+                //x and y track final displacement of player
+                float x = 0;
+                float y = 0;
+
+                //checks which keys are helds and alters x and y accordingly
+                if (Down_Held) y += flt_PLAYER_SPEED;
+                if (Up_Held) y -= flt_PLAYER_SPEED;
+                if (Left_Held) x -= flt_PLAYER_SPEED;
+                if (Right_Held) x += flt_PLAYER_SPEED;
+
+                //checks boundaries against the arena
+
+                //adjuments are different for different sides as the length is 5 so halfing it gives rounding errors
+                //Math.Floor/Ceiling corrects for this
+                int Adjustment_C = (int)Math.Ceiling((float)int_ARENA_WIDTH / 2);
+                int Adjustment_F = (int)Math.Floor((float)int_ARENA_WIDTH / 2);
+                if (loc.X + x < Arena_Hitbox.Left + Adjustment_C) x = Arena_Hitbox.Left - loc.X + Adjustment_C;
+                if (loc.X + size.X + x > Arena_Hitbox.Right - Adjustment_F) x = Arena_Hitbox.Right - loc.X - size.X - Adjustment_F;
+                if (loc.Y + y < Arena_Hitbox.Top + Adjustment_C) y = Arena_Hitbox.Top - loc.Y + Adjustment_C;
+                if (loc.Y + size.Y + y > Arena_Hitbox.Bottom - Adjustment_F) y = Arena_Hitbox.Bottom - loc.Y - size.Y - Adjustment_F;
+
+
+                //moves player final x and y values
+                player.Move(x, y);
+            }
+        }
+        #endregion
+
+        #region Player Turn Logic
+        public void Button_Selection_System()
+        {
+            int player_turn_pos = player.Get_Turn_Position();
+            if (Player_Turn && Z_Pressed && player_turn_pos > -1)
+            {
+                //if the player is in the fight position
+                if (player_turn_pos == 0)
+                {
+                    //run the fight button logic
+
+                }
+                //if the player is in the act position
+                else if (player_turn_pos == 1)
+                {
+                    //run the act button logic
+
+                }
+                //if the player is in the item position
+                else if (player_turn_pos == 2)
+                {
+                    //run the item button logic
+
+                }
+                //if the player is in the mercy position
+                else if (player_turn_pos == 3)
+                {
+                    //run the mercy button logic
+
+                }
+            }
+        }
+
+        private void Fight_Logic()
+        {
+            //get the player off the screen in the fight spot
+            //Turn_Position = -1;
+        }
+        #endregion
         private void tmrGameTimer_Tick(object sender, EventArgs e)
         {
             JustPressed_System();
-            player.Movement_System();
+            Player_Movement_System();
             Update_System();
+            if (Player_Turn) Player_Turn_Systems();
             //Damage_System();
             int_time_counter++;
         }
@@ -340,33 +431,10 @@ namespace undertale_iteration_1
             Arena_Text_System();
             //lblPlayerHealth.Text = player.GetHealth() + "/20";
 
-            //only runs if the players turn
-            if (player.Get_TurnState())
+            //runs all the systems for only the player's turn
+            if (Player_Turn)
             {
-                //resets all the boxes
-                PointF Box_Default = new PointF(0, 0);
-                FightBox.Set_Row_Col(Box_Default);
-                ActBox.Set_Row_Col(Box_Default);
-                ItemBox.Set_Row_Col(Box_Default);
-                MercyBox.Set_Row_Col(Box_Default);
-                //makes the box yellow if player is there
-                switch (player.Get_Turn_Position())
-                {
-                    case 0:
-                        FightBox.Next();
-                        break;
-                    case 1:
-                        ActBox.Next();
-                        break;
-                    case 2:
-                        ItemBox.Next();
-                        break;
-                    case 3:
-                        MercyBox.Next();
-                        break;
-                    default:
-                        break;
-                }
+
             }
         }
 
@@ -388,14 +456,14 @@ namespace undertale_iteration_1
 
         private void Player_Turn_Start()
         {
-            player.Change_Turn();
+            Player_Turn = true;
             Update_Arena_Hitbox();
         }
 
         private void Update_Arena_Hitbox()
         {
             //redefines the arena box
-            if (player.Get_TurnState())
+            if (Player_Turn)
             {
                 Arena_Hitbox.X = 18;
                 Arena_Hitbox.Width = (int)flt_FORM_WIDTH - 36;
@@ -409,12 +477,53 @@ namespace undertale_iteration_1
 
         private void Arena_Text_System()
         {
-            if(player.Get_TurnState())
+            if (Player_Turn)
             {
-                float pos = player.Get_Turn_Position();
-                if(pos > -1 && pos < 4) lblArenaText.Text = "*" + test_enemy.Choose_Arena_Text();
+                if (lblArenaText.Text == "")
+                {
+                    float pos = player.Get_Turn_Position();
+                    if (pos > -1 && pos < 4) lblArenaText.Text = "* " + test_enemy.Choose_Arena_Text();
+                }
             }
             else lblArenaText.Text = "";
         }
+
+        private void Player_Turn_Systems()
+        {
+            Update_Option_Boxes();
+
+        }
+
+        private void Update_Option_Boxes()
+        {
+            //resets all the boxes
+            PointF Box_Default = new PointF(0, 0);
+            FightBox.Set_Row_Col(Box_Default);
+            ActBox.Set_Row_Col(Box_Default);
+            ItemBox.Set_Row_Col(Box_Default);
+            MercyBox.Set_Row_Col(Box_Default);
+            //makes the box yellow if player is there
+            int pos = player.Get_Turn_Position();
+            if (pos > -1)
+                switch (pos)
+                {
+                    case 0:
+                        FightBox.Next();
+                        break;
+                    case 1:
+                        ActBox.Next();
+                        break;
+                    case 2:
+                        ItemBox.Next();
+                        break;
+                    case 3:
+                        MercyBox.Next();
+                        break;
+                    default:
+                        break;
+                }
+        }
+
+
     }
 }

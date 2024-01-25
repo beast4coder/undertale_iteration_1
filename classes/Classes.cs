@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace undertale_iteration_1
+﻿namespace undertale_iteration_1
 {
     internal class Sprite_Handler
     {
@@ -143,6 +136,12 @@ namespace undertale_iteration_1
             Center = pCenter;
             Update_Location();
         }
+        //move center
+        public void Move_Center(float x, float y)
+        {
+            Center = new PointF(Center.X + x, Center.Y + y);
+            Update_Location();
+        }
         //update center
         public void Update_Center()
         {
@@ -157,30 +156,15 @@ namespace undertale_iteration_1
         private string Name;
         private int Health;
         private int MaxHealth;
-        private bool TurnState;
         private int Turn_Position;
-        ManualResetEvent Selector_Signal = new ManualResetEvent(false);
-        Thread Fight_Thread;
-        Thread Act_Thread;
-        Thread Item_Thread;
-        Thread Mercy_Thread;
 
-        public Player(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, string pName, int pHealth, int pMaxHealth, bool  pTurn)
+        public Player(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, string pName, int pHealth, int pMaxHealth)
         : base(pSheet, pBackground_Colour, pSize, pRows_Cols, pOffset, pPadding, pLoc)
         {
             Name = pName;
             Health = pHealth;
             MaxHealth = pMaxHealth;
-            TurnState = pTurn;
             Turn_Position = 0;
-            
-            //setup threads for the logic systems
-            /*
-            Fight_Thread = new Thread(Fight_Logic);
-            Act_Thread = new Thread(Act_Logic);
-            Item_Thread = new Thread(Item_Logic);
-            Mercy_Thread = new Thread(Mercy_Logic);
-            */
         }
 
         #region Get/Set methods
@@ -222,18 +206,6 @@ namespace undertale_iteration_1
             MaxHealth = pMaxHealth;
         }
         #endregion
-        #region TurnState
-        //get turn state
-        public bool Get_TurnState()
-        {
-            return TurnState;
-        }
-        //set turn state
-        public void Change_Turn()
-        {
-            TurnState = !TurnState;
-        }
-        #endregion
         #region TurnPosition
         //get turn position
         public int Get_Turn_Position()
@@ -246,96 +218,6 @@ namespace undertale_iteration_1
             Turn_Position = pTurn_Position;
         }
         #endregion
-        #endregion
-
-        #region Movement
-        public void Movement_System()
-        {
-            if (TurnState)
-            {
-                //checks if turn position is positieve
-                if (Turn_Position > -1)
-                {
-                    if (GameForm.Left_Pressed)
-                    {
-                        if (Turn_Position > 0) Turn_Position -= 1;
-                        else Turn_Position = 3;
-                    }
-                    if (GameForm.Right_Pressed)
-                    {
-                        if (Turn_Position < 3) Turn_Position += 1;
-                        else Turn_Position = 0;
-                    }
-
-                    Location.X = 49 + (Turn_Position * 150); //boxes are 112 wide, with 38 pixels between -- guessed 50 pxiels, seems to have nailed it
-                    Update_Center();
-                    Center.Y = GameForm.flt_FORM_HEIGHT - 27; //boxes are 1 off the floor and 44 high
-                    Update_Location();
-                }
-            }
-            else
-            {
-                //x and y track final displacement of player
-                float x = 0;
-                float y = 0;
-
-                //checks which keys are helds and alters x and y accordingly
-                if (GameForm.Down_Held) y += GameForm.flt_PLAYER_SPEED;
-                if (GameForm.Up_Held) y -= GameForm.flt_PLAYER_SPEED;
-                if (GameForm.Left_Held) x -= GameForm.flt_PLAYER_SPEED;
-                if (GameForm.Right_Held) x += GameForm.flt_PLAYER_SPEED;
-
-                //checks boundaries against the arena
-                Rectangle Arena_Hitbox = GameForm.Arena_Hitbox;
-                int Adjustment = GameForm.int_ARENA_WIDTH / 2;
-                if (Location.X + x < Arena_Hitbox.Left + Adjustment) x = Arena_Hitbox.Left - Location.X + Adjustment;
-                if (Location.X + Size.X + x > Arena_Hitbox.Right - Adjustment) x = Arena_Hitbox.Right - Location.X - Size.X - Adjustment;
-                if (Location.Y + y < Arena_Hitbox.Top + Adjustment) y = Arena_Hitbox.Top - Location.Y + Adjustment;
-                if (Location.Y + Size.Y + y > Arena_Hitbox.Bottom - Adjustment) y = Arena_Hitbox.Bottom - Location.Y - Size.Y - Adjustment;
-
-                
-                //moves player final x and y values
-                Location.X += x;
-                Location.Y += y;
-
-                Update_Center();
-            }
-        }
-        #endregion
-    
-        #region Turn Logic
-        public void Button_Selection_System()
-        {
-            if (TurnState && GameForm.Z_Pressed && Turn_Position > -1)
-            {
-                //if the player is in the fight position
-                if (Turn_Position == 0)
-                {
-                    //run the fight button logic
-                    Fight_Thread.Start();
-                }
-                //if the player is in the act position
-                else if (Turn_Position == 1)
-                {
-                    //run the act button logic
-                    Act_Thread.Start();
-                }
-                //if the player is in the item position
-                else if (Turn_Position == 2)
-                {
-                    //run the item button logic
-                    Item_Thread.Start();
-                }
-                //if the player is in the mercy position
-                else if (Turn_Position == 3)
-                {
-                    //run the mercy button logic
-                    Mercy_Thread.Start();
-                }
-            }
-        }
-
-
         #endregion
     }
 
