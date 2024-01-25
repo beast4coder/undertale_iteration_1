@@ -38,6 +38,7 @@ namespace undertale_iteration_1
 
         //controls
         Label lblPlayerHealth;
+        Label lblArenaText;
 
         Label debug_label;
 
@@ -116,6 +117,27 @@ namespace undertale_iteration_1
             size = new PointF(180, 185);
             loc = new PointF((flt_FORM_WIDTH - size.X) / 2, (flt_FORM_HEIGHT - size.Y) / 2);
             Arena_Hitbox = new Rectangle((int)loc.X, (int)loc.Y, (int)size.X, (int)size.Y);
+            #endregion
+
+            //spawn arena text box
+            #region Spawn Arena Text Box
+            //make text appear in the top left corner of the arena when the arena is largest
+            loc = new PointF(23, loc.Y + 23);
+            Size font_size = new Size(20, 20);
+            lblArenaText = new Label
+            {
+                AutoSize = true,
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                Location = new Point((int)loc.X + 5, (int)loc.Y),
+                Name = "lblArenaText",
+                Size = font_size,
+                TabIndex = 1,
+                Text = "",
+                Font = new Font("Pixelated MS Sans Serif", 15, FontStyle.Regular)
+            };
+            Controls.Add(lblArenaText);
+            lblArenaText.BringToFront();
             #endregion
 
             //spawn enemy
@@ -315,7 +337,7 @@ namespace undertale_iteration_1
         {
             //refresh the picture box to update the sprite's position
             pbBackground.Refresh();
-
+            Arena_Text_System();
             //lblPlayerHealth.Text = player.GetHealth() + "/20";
 
             //only runs if the players turn
@@ -375,14 +397,24 @@ namespace undertale_iteration_1
             //redefines the arena box
             if (player.Get_TurnState())
             {
-                Arena_Hitbox.X = 10;
-                Arena_Hitbox.Width = (int)flt_FORM_WIDTH - 20;
+                Arena_Hitbox.X = 18;
+                Arena_Hitbox.Width = (int)flt_FORM_WIDTH - 36;
             }
             else
             {
                 Arena_Hitbox.X = (int)(flt_FORM_WIDTH - player.Get_Size().X) / 2;
                 Arena_Hitbox.Width = 180;
             }
+        }
+
+        private void Arena_Text_System()
+        {
+            if(player.Get_TurnState())
+            {
+                float pos = player.Get_Turn_Position();
+                if(pos > -1 && pos < 4) lblArenaText.Text = "*" + test_enemy.Choose_Arena_Text();
+            }
+            else lblArenaText.Text = "";
         }
     }
 }

@@ -334,6 +334,8 @@ namespace undertale_iteration_1
                 }
             }
         }
+
+
         #endregion
     }
 
@@ -360,6 +362,8 @@ namespace undertale_iteration_1
         protected int Damage;
         protected Sprite_Handler[] Sprites;
         protected List<Projectile> Projectiles;
+        protected Thread Arena_Text_Thread;
+        protected string[] Arena_Text;
 
         #region Get/Set methods
         #region Name

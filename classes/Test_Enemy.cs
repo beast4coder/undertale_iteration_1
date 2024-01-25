@@ -19,6 +19,24 @@ namespace undertale_iteration_1
             PointF loc = new PointF((GameForm.flt_FORM_WIDTH - size.X) / 2, 20);
             Sprites[0] = new Sprite_Handler(sheet, background_col, size, rows_cols, offset, padding, loc);
             #endregion
+            //define arena text messages
+            #region Arena Text Messages
+            Arena_Text = new string[] {
+                "THIS IS FILLER TEXT",
+                "EVEN MORE FILLER TEXT",
+                "Regular case filler text.",
+                "Your mum",
+            };
+            #endregion
+        }
+
+        public string Choose_Arena_Text()
+        {
+            //selects arena text
+            //this enemy just chooses randomly from predefined options
+            Random rand = new Random();
+            int msg_num = rand.Next(Arena_Text.Length);
+            return Arena_Text[msg_num];
         }
     }
 }

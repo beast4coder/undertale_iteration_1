@@ -124,6 +124,9 @@
   <data name="Battle_Menu_Sprite_Sheet" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\Battle_Menu_Sprite_Sheet.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Napstablook_and_Dummies_Sheet" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Napstablook_and_Dummies_Sheet.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Monsters_Ruins_Sheet" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\Monsters_Ruins_Sheet.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
