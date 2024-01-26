@@ -69,8 +69,10 @@ namespace undertale_iteration_1
 
             #region Define Player Projectile Sprite
             sheet = Resource1.Attack_Effects_Sprite_Sheet;
-            size = new PointF(16, 16);
-            offset = new PointF(0, 0);
+            size = new PointF(14, 128);
+            rows_cols = new PointF(1, 2);
+            offset = new PointF(1139, 23);
+            padding = new PointF(5, 0);
             loc = new PointF(0, 0);
             Player_Projectile_Sprite = new Sprite_Handler(sheet, size, offset, loc);
             #endregion
@@ -142,8 +144,8 @@ namespace undertale_iteration_1
 
             #region Spawn Target Sprite
             sheet = Resource1.Attack_Effects_Sprite_Sheet;
-            size = new PointF(16, 16);
-            offset = new PointF(0, 0);
+            size = new PointF(562, 128);
+            offset = new PointF(5, 23);
             loc = new PointF(0, 0);
             Target_Sprite = new Sprite_Handler(sheet, size, offset, loc);
             #endregion
