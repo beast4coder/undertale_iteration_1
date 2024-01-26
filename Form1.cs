@@ -20,8 +20,9 @@ namespace undertale_iteration_1
         Sprite_Handler MercyBox;
         Sprite_Handler Target_Sprite;
 
-        //turn bool
-        bool Player_Turn = false;
+        //turn variables
+        public static bool Player_Turn = false;
+        public static bool Turn_Ended = true;
 
         //player
         Player player;
@@ -42,15 +43,13 @@ namespace undertale_iteration_1
         public const float flt_FORM_HEIGHT = 480f;
 
         //time counter
-        int int_time_counter = 0;
+        //int int_time_counter = 0;
 
         #endregion
 
         private void GameForm_Load(object sender, EventArgs e)
         {
             Arena_Setup();
-            Thread Turn = new Thread(Intro_Turn);
-            Turn.Start();
         }
 
         private void Arena_Setup()
@@ -191,13 +190,6 @@ namespace undertale_iteration_1
 
         }
 
-        private void Intro_Turn()
-        {
-            //wait 1s, start player turn
-            Thread.Sleep(1000);
-            Player_Turn_Start();
-        }
-
         private void Update_Sprites(object sender, PaintEventArgs e)
         {
             //Draw the arena box
@@ -206,17 +198,17 @@ namespace undertale_iteration_1
             //Draw enemy sprites
             foreach (Sprite_Handler sprite in test_enemy.Get_Sprites())
             {
-                sprite.Draw(e.Graphics, 1f);
+                sprite.Draw(e.Graphics);
             }
 
             //Draw objects
             //***the last one drawn will be on top***
-            FightBox.Draw(e.Graphics, 1f);
-            ActBox.Draw(e.Graphics, 1f);
-            ItemBox.Draw(e.Graphics, 1f);
-            MercyBox.Draw(e.Graphics, 1f);
+            FightBox.Draw(e.Graphics);
+            ActBox.Draw(e.Graphics);
+            ItemBox.Draw(e.Graphics);
+            MercyBox.Draw(e.Graphics);
 
-            player.Draw(e.Graphics, 1f);
+            player.Draw(e.Graphics);
         }
 
         //handles management of all inputs
@@ -334,8 +326,6 @@ namespace undertale_iteration_1
         }
         #endregion
 
-        
-
         #region Player Turn Logic
         public void Player_Turn_Option_System()
         {
@@ -356,14 +346,17 @@ namespace undertale_iteration_1
                         {
                             case -4:
                                 player.Set_Box_Position(player_box_pos - 4);
+                                Update_Arena_Text();
                                 Fight_Logic();
                                 break;
                             case -3:
                                 player.Set_Box_Position(player_box_pos - 4);
+                                Update_Arena_Text();
                                 Act_Logic();
                                 break;
                             case -1:
                                 player.Set_Box_Position(player_box_pos - 4);
+                                Update_Arena_Text();
                                 Mercy_Logic();
                                 break;
                             default:
@@ -381,6 +374,9 @@ namespace undertale_iteration_1
         private void Fight_Logic()
         {
             //get the player off the screen in the fight spot
+            player.Set_Box_Position(0);
+            Player_Turn = false;
+            Turn_Ended = true;
         }
 
         private void Act_Logic()
@@ -404,19 +400,23 @@ namespace undertale_iteration_1
 
         private void tmrGameTimer_Tick(object sender, EventArgs e)
         {
-            //refresh the picture box to update the sprite's position
+            //refresh the controls
             pbBackground.Refresh();
+            lblArenaText.Refresh();
 
             //lblPlayerHealth.Text = player.GetHealth() + "/20";
 
-            //run the systems
-            JustPressed_System();
-            Player_Movement_System();
-
             //player turn exclusives ;)
             if (Player_Turn) Player_Turn_Systems();
+
+            //run the systems
+            JustPressed_System();
+            Turn_System();
+            Player_Movement_System();
             /*Damage_System();*/
-            int_time_counter++;
+
+            //increment the timer
+            //int_time_counter++;
         }
 
         /*
@@ -447,18 +447,18 @@ namespace undertale_iteration_1
             }
             else
             {
-                Arena_Hitbox.X = (int)(flt_FORM_WIDTH - player.Get_Size().X) / 2;
+                Arena_Hitbox.X = (int)(flt_FORM_WIDTH - 180)/2;
                 Arena_Hitbox.Width = 180;
             }
         }
-        private void Update_Arena_Text()
+        public void Update_Arena_Text()
         {
             if (Player_Turn)
             {
                 float pos = player.Get_Box_Position();
                 if (pos > -1 && pos < 4) lblArenaText.Text = "* " + test_enemy.Choose_Arena_Text();
-                else if (pos == -1 || pos == -2 || pos == -4) lblArenaText.Text = "* " + test_enemy.Get_Name();
-                else if (pos == -3) ;//implemented later
+                else if (pos == -4 || pos == -3 || pos == -1) lblArenaText.Text = "* " + test_enemy.Get_Name();
+                else if (pos == -2) ;//implemented later
             }
             else lblArenaText.Text = "";
         }
@@ -500,11 +500,9 @@ namespace undertale_iteration_1
             //update option boxes shouldn't be here for efficiency reasons but itll do for now
             Update_Option_Boxes();
             Player_Turn_Option_System();
-
         }
 
-        #region Player Movement
-        public void Player_Movement_System()
+        private void Player_Movement_System()
         {
             int player_box_pos = player.Get_Box_Position();
             PointF loc = player.Get_Location();
@@ -615,15 +613,34 @@ namespace undertale_iteration_1
                 //moves player final x and y values
                 player.Move(x, y);
             }
+        }        
+
+        private void Turn_System()
+        {
+            //handles calling new turns so there are no issues with threads
+            if (Turn_Ended)
+            {
+                if(Player_Turn)
+                {
+                    Player_Turn_Start();
+                }
+                else
+                {
+                    Update_Arena_Text();
+                    Update_Arena_Hitbox();
+                    player.Set_Center(new PointF(Arena_Hitbox.X + Arena_Hitbox.Width / 2, Arena_Hitbox.Y + Arena_Hitbox.Height / 2));
+                    Thread turn_thread = new Thread(test_enemy.Select_Turn);
+                    turn_thread.Start();
+                }
+                Turn_Ended = false;
+            }
         }
-        #endregion
         #endregion
 
         private void Player_Turn_Start()
         {
-            Player_Turn = true;
             Update_Arena_Hitbox();
-            //Update_Arena_Text();
+            Update_Arena_Text();
         }
     }
 }

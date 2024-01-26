@@ -12,6 +12,7 @@
         protected PointF Center;
         protected PointF Crnt_Row_Col;
         protected Rectangle SpriteArea;
+        protected float Scale = 1f;
 
         //constructor for sprite handles with more than one sprite
         public Sprite_Handler(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc)
@@ -65,11 +66,11 @@
             Center = new PointF(Location.X + Size.X / 2, Location.Y + Size.Y / 2);
             Update_SpriteArea();
         }
-        public void Draw(Graphics g, float scale)
+        public void Draw(Graphics g)
         {
             //scale the sprite
-            int width = (int)(Size.X * scale);
-            int height = (int)(Size.Y * scale);
+            int width = (int)(Size.X * Scale);
+            int height = (int)(Size.Y * Scale);
             //draw the sprite
             g.DrawImage(Sprite, new Rectangle((int)Location.X, (int)Location.Y, width, height));
         }
@@ -188,6 +189,18 @@
             Center = new PointF(Location.X + (Size.X / 2), Location.Y + (Size.Y / 2));
         }
         #endregion
+        #region Scale
+        //get scale
+        public float Get_Scale()
+        {
+            return Scale;
+        }
+        //set scale
+        public void Set_Scale(float pScale)
+        {
+            Scale = pScale;
+        }
+        #endregion
         #endregion
     }
 
@@ -300,6 +313,7 @@
         protected List<Projectile> Projectiles;
         protected Thread Arena_Text_Thread;
         protected string[] Arena_Text;
+        protected int Turn_Selector;
 
         #region Get/Set methods
         #region Name
