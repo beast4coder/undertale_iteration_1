@@ -13,6 +13,7 @@
         protected PointF Crnt_Row_Col;
         protected Rectangle SpriteArea;
 
+        //constructor for sprite handles with more than one sprite
         public Sprite_Handler(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc)
         {
             Sheet = Process_SpriteSheet(pSheet, pBackground_Colour);
@@ -20,6 +21,45 @@
             Ttl_Rows_Cols = pRows_Cols;
             Offset = pOffset;
             Padding = pPadding;
+            Location = pLoc;
+            Crnt_Row_Col = new PointF(0, 0);
+            Center = new PointF(Location.X + Size.X / 2, Location.Y + Size.Y / 2);
+            Update_SpriteArea();
+        }
+        //constructor for sprite handles with more than one sprite and a transparent background
+        public Sprite_Handler(Bitmap pSheet, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc)
+        {
+            Sheet = pSheet;
+            Size = pSize;
+            Ttl_Rows_Cols = pRows_Cols;
+            Offset = pOffset;
+            Padding = pPadding;
+            Location = pLoc;
+            Crnt_Row_Col = new PointF(0, 0);
+            Center = new PointF(Location.X + Size.X / 2, Location.Y + Size.Y / 2);
+            Update_SpriteArea();
+        }
+        //constructor for sprite handles with only one sprite
+        public Sprite_Handler(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pOffset, PointF pLoc)
+        {
+            Sheet = Process_SpriteSheet(pSheet, pBackground_Colour);
+            Size = pSize;
+            Ttl_Rows_Cols = new PointF(1, 1);
+            Offset = pOffset;
+            Padding = new PointF(0, 0);
+            Location = pLoc;
+            Crnt_Row_Col = new PointF(0, 0);
+            Center = new PointF(Location.X + Size.X / 2, Location.Y + Size.Y / 2);
+            Update_SpriteArea();
+        }
+        //constructor for sprite handles with only one sprite and a transparent background
+        public Sprite_Handler(Bitmap pSheet, PointF pSize, PointF pOffset, PointF pLoc)
+        {
+            Sheet = pSheet;
+            Size = pSize;
+            Ttl_Rows_Cols = new PointF(1, 1);
+            Offset = pOffset;
+            Padding = new PointF(0, 0);
             Location = pLoc;
             Crnt_Row_Col = new PointF(0, 0);
             Center = new PointF(Location.X + Size.X / 2, Location.Y + Size.Y / 2);
@@ -156,7 +196,8 @@
         private string Name;
         private int Health;
         private int MaxHealth;
-        private int Turn_Position;
+        private int Box_Position;
+        private int Option_Position;
 
         public Player(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, string pName, int pHealth, int pMaxHealth)
         : base(pSheet, pBackground_Colour, pSize, pRows_Cols, pOffset, pPadding, pLoc)
@@ -164,7 +205,8 @@
             Name = pName;
             Health = pHealth;
             MaxHealth = pMaxHealth;
-            Turn_Position = 0;
+            Box_Position = 0;
+            Option_Position = 1;
         }
 
         #region Get/Set methods
@@ -206,16 +248,28 @@
             MaxHealth = pMaxHealth;
         }
         #endregion
-        #region TurnPosition
-        //get turn position
-        public int Get_Turn_Position()
+        #region Box Position
+        //get box position
+        public int Get_Box_Position()
         {
-            return Turn_Position;
+            return Box_Position;
         }
-        //set turn position
-        public void Set_Turn_Position(int pTurn_Position)
+        //set box position
+        public void Set_Box_Position(int pBox_Position)
         {
-            Turn_Position = pTurn_Position;
+            Box_Position = pBox_Position;
+        }
+        #endregion
+        #region OptionPosition
+        //get option position
+        public int Get_Option_Position()
+        {
+            return Option_Position;
+        }
+        //set option position
+        public void Set_Option_Position(int pOption_Position)
+        {
+            Option_Position = pOption_Position;
         }
         #endregion
         #endregion

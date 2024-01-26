@@ -12,18 +12,20 @@ namespace undertale_iteration_1
         #region Global Variables
 
         //arena
-        public static Rectangle Arena_Hitbox;
-        public const int int_ARENA_WIDTH = 5;
-
-        //turn bool
-        bool Player_Turn = false;
-
-        //objects
-        Player player;
+        Rectangle Arena_Hitbox;
+        const int int_ARENA_WALL_SIZE = 5;
         Sprite_Handler FightBox;
         Sprite_Handler ActBox;
         Sprite_Handler ItemBox;
         Sprite_Handler MercyBox;
+        Sprite_Handler Target_Sprite;
+
+        //turn bool
+        bool Player_Turn = false;
+
+        //player
+        Player player;
+        Sprite_Handler Player_Projectile_Sprite;
 
         //enemies
         Test_Enemy test_enemy;
@@ -53,7 +55,7 @@ namespace undertale_iteration_1
 
         private void Arena_Setup()
         {
-            //spawn player
+            //define player objects
             #region Spawn Player
             Bitmap sheet = Resource1.Souls_Sprite_Sheet;
             string background_colour = "#FFFF66FF";
@@ -65,7 +67,41 @@ namespace undertale_iteration_1
             player = new Player(sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc, "TEST1", 20, 20);
             #endregion
 
-            //spawn option boxes
+            #region Define Player Projectile Sprite
+            sheet = Resource1.Attack_Effects_Sprite_Sheet;
+            size = new PointF(16, 16);
+            offset = new PointF(0, 0);
+            loc = new PointF(0, 0);
+            Player_Projectile_Sprite = new Sprite_Handler(sheet, size, offset, loc);
+            #endregion
+
+            //define arena size, objects and controls
+            #region Set Arena Size
+            size = new PointF(180, 185);
+            loc = new PointF((flt_FORM_WIDTH - size.X) / 2, (flt_FORM_HEIGHT - size.Y) / 2);
+            Arena_Hitbox = new Rectangle((int)loc.X, (int)loc.Y, (int)size.X, (int)size.Y);
+            #endregion
+
+            #region Spawn Arena Text Box
+            //make text appear in the top left corner of the arena when the arena is largest
+            loc = new PointF(23, loc.Y + 23);
+            Size font_size = new Size(20, 20);
+            lblArenaText = new Label
+            {
+                AutoSize = true,
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                Location = new Point((int)loc.X + 5, (int)loc.Y),
+                Name = "lblArenaText",
+                Size = font_size,
+                TabIndex = 1,
+                Text = "",
+                Font = new Font("Pixelated MS Sans Serif", 15, FontStyle.Regular)
+            };
+            Controls.Add(lblArenaText);
+            lblArenaText.BringToFront();
+            #endregion
+
             #region Spawn FightBox
             sheet = Resource1.Battle_Menu_Sprite_Sheet;
             background_colour = "#FFC386FF";
@@ -104,32 +140,12 @@ namespace undertale_iteration_1
             MercyBox = new Sprite_Handler(sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
             #endregion
 
-            //define arena box
-            #region Define Arena
-            size = new PointF(180, 185);
-            loc = new PointF((flt_FORM_WIDTH - size.X) / 2, (flt_FORM_HEIGHT - size.Y) / 2);
-            Arena_Hitbox = new Rectangle((int)loc.X, (int)loc.Y, (int)size.X, (int)size.Y);
-            #endregion
-
-            //spawn arena text box
-            #region Spawn Arena Text Box
-            //make text appear in the top left corner of the arena when the arena is largest
-            loc = new PointF(23, loc.Y + 23);
-            Size font_size = new Size(20, 20);
-            lblArenaText = new Label
-            {
-                AutoSize = true,
-                ForeColor = Color.White,
-                BackColor = Color.Transparent,
-                Location = new Point((int)loc.X + 5, (int)loc.Y),
-                Name = "lblArenaText",
-                Size = font_size,
-                TabIndex = 1,
-                Text = "",
-                Font = new Font("Pixelated MS Sans Serif", 15, FontStyle.Regular)
-            };
-            Controls.Add(lblArenaText);
-            lblArenaText.BringToFront();
+            #region Spawn Target Sprite
+            sheet = Resource1.Attack_Effects_Sprite_Sheet;
+            size = new PointF(16, 16);
+            offset = new PointF(0, 0);
+            loc = new PointF(0, 0);
+            Target_Sprite = new Sprite_Handler(sheet, size, offset, loc);
             #endregion
 
             //spawn enemy
@@ -183,7 +199,7 @@ namespace undertale_iteration_1
         private void Update_Sprites(object sender, PaintEventArgs e)
         {
             //Draw the arena box
-            e.Graphics.DrawRectangle(new Pen(Color.White, int_ARENA_WIDTH), Arena_Hitbox);
+            e.Graphics.DrawRectangle(new Pen(Color.White, int_ARENA_WALL_SIZE), Arena_Hitbox);
 
             //Draw enemy sprites
             foreach (Sprite_Handler sprite in test_enemy.Get_Sprites())
@@ -205,20 +221,20 @@ namespace undertale_iteration_1
         #region Key Inputs
 
         //global variables tracks whether relevant keys are held or not
-        public static bool Down_Held = false;
-        public static bool Up_Held = false;
-        public static bool Left_Held = false;
-        public static bool Right_Held = false;
-        public static bool Z_Held = false;
-        public static bool X_Held = false;
+        bool Down_Held = false;
+        bool Up_Held = false;
+        bool Left_Held = false;
+        bool Right_Held = false;
+        bool Z_Held = false;
+        bool X_Held = false;
 
         //global variables tracks whether relevant keys are just pressed or not with help of the JustPressed_System() method
-        public static bool Z_Pressed = false;
-        public static bool X_Pressed = false;
-        public static bool Down_Pressed = false;
-        public static bool Up_Pressed = false;
-        public static bool Left_Pressed = false;
-        public static bool Right_Pressed = false;
+        bool Z_Pressed = false;
+        bool X_Pressed = false;
+        bool Down_Pressed = false;
+        bool Up_Pressed = false;
+        bool Left_Pressed = false;
+        bool Right_Pressed = false;
 
         //global variables tracks whether relevant keys are still held or not as an intermediary step to the JustPressed_System() method
         bool Z_Still_Held = false;
@@ -316,94 +332,46 @@ namespace undertale_iteration_1
         }
         #endregion
 
-        #region Player Movement
-        public void Player_Movement_System()
-        {
-            int player_turn_pos = player.Get_Turn_Position();
-            PointF loc = player.Get_Location();
-            PointF size = player.Get_Size();
-            if (Player_Turn)
-            {
-                //checks if turn position is positieve
-                if (player_turn_pos > -1)
-                {
-                    //if left arrow key is pressed move left, if right arrow key is pressed move right
-                    //if left is pressed on the leftmost box, move to the rightmost box, vice versa
-                    if (Left_Pressed)
-                    {
-                        if (player_turn_pos > 0) player.Set_Turn_Position(player_turn_pos - 1);
-                        else player.Set_Turn_Position(3);
-                    }
-                    if (Right_Pressed)
-                    {
-                        if (player_turn_pos < 3) player.Set_Turn_Position(player_turn_pos + 1);
-                        else player.Set_Turn_Position(0);
-                    }
-                    //sets new turn position before moving player off the value
-                    player_turn_pos = player.Get_Turn_Position();
-                    player.Set_Location(new PointF(49 + (player_turn_pos * 150), loc.Y)); //boxes are 112 wide, with 38 pixels between -- guessed 50 pxiels, seems to have nailed it
-                    player.Set_Center(new PointF(player.Get_Center().X, flt_FORM_HEIGHT - 27)); //boxes are 5 off the floor and 44 high
-                }
-            }
-            else
-            {
-                //x and y track final displacement of player
-                float x = 0;
-                float y = 0;
-
-                //checks which keys are helds and alters x and y accordingly
-                if (Down_Held) y += flt_PLAYER_SPEED;
-                if (Up_Held) y -= flt_PLAYER_SPEED;
-                if (Left_Held) x -= flt_PLAYER_SPEED;
-                if (Right_Held) x += flt_PLAYER_SPEED;
-
-                //checks boundaries against the arena
-
-                //adjuments are different for different sides as the length is 5 so halfing it gives rounding errors
-                //Math.Floor/Ceiling corrects for this
-                int Adjustment_C = (int)Math.Ceiling((float)int_ARENA_WIDTH / 2);
-                int Adjustment_F = (int)Math.Floor((float)int_ARENA_WIDTH / 2);
-                if (loc.X + x < Arena_Hitbox.Left + Adjustment_C) x = Arena_Hitbox.Left - loc.X + Adjustment_C;
-                if (loc.X + size.X + x > Arena_Hitbox.Right - Adjustment_F) x = Arena_Hitbox.Right - loc.X - size.X - Adjustment_F;
-                if (loc.Y + y < Arena_Hitbox.Top + Adjustment_C) y = Arena_Hitbox.Top - loc.Y + Adjustment_C;
-                if (loc.Y + size.Y + y > Arena_Hitbox.Bottom - Adjustment_F) y = Arena_Hitbox.Bottom - loc.Y - size.Y - Adjustment_F;
-
-
-                //moves player final x and y values
-                player.Move(x, y);
-            }
-        }
-        #endregion
+        
 
         #region Player Turn Logic
-        public void Button_Selection_System()
+        public void Player_Turn_Option_System()
         {
-            int player_turn_pos = player.Get_Turn_Position();
-            if (Player_Turn && Z_Pressed && player_turn_pos > -1)
+            int player_box_pos = player.Get_Box_Position();
+            if (player_box_pos > -1 && Z_Pressed)
             {
-                //if the player is in the fight position
-                if (player_turn_pos == 0)
+                player.Set_Box_Position(player_box_pos - 4);
+            }
+            else if (player_box_pos > -5)
+            {
+                //at -4, -3, -1 the player must select an enemy to fight/act/mercy respectively
+                if (player_box_pos == -4 || player_box_pos == -3 || player_box_pos == -1)
                 {
-                    //run the fight button logic
-
-                }
-                //if the player is in the act position
-                else if (player_turn_pos == 1)
-                {
-                    //run the act button logic
-
-                }
-                //if the player is in the item position
-                else if (player_turn_pos == 2)
-                {
-                    //run the item button logic
-
-                }
-                //if the player is in the mercy position
-                else if (player_turn_pos == 3)
-                {
-                    //run the mercy button logic
-
+                    //if z is pressed then select the box
+                    if (Z_Pressed)
+                    {
+                        switch (player_box_pos)
+                        {
+                            case -4:
+                                player.Set_Box_Position(player_box_pos - 4);
+                                Fight_Logic();
+                                break;
+                            case -3:
+                                player.Set_Box_Position(player_box_pos - 4);
+                                Act_Logic();
+                                break;
+                            case -1:
+                                player.Set_Box_Position(player_box_pos - 4);
+                                Mercy_Logic();
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    else if (X_Pressed)
+                    {
+                        player.Set_Box_Position(player_box_pos + 4);
+                    }
                 }
             }
         }
@@ -411,31 +379,42 @@ namespace undertale_iteration_1
         private void Fight_Logic()
         {
             //get the player off the screen in the fight spot
-            //Turn_Position = -1;
-        }
-        #endregion
-        private void tmrGameTimer_Tick(object sender, EventArgs e)
-        {
-            JustPressed_System();
-            Player_Movement_System();
-            Update_System();
-            if (Player_Turn) Player_Turn_Systems();
-            //Damage_System();
-            int_time_counter++;
         }
 
-        private void Update_System()
+        private void Act_Logic()
+        {
+            //get the player off the screen in the act spot
+            player.Set_Box_Position(-2);
+        }
+
+        private void Item_Logic()
+        {
+            //get the player off the screen in the item spot
+            player.Set_Box_Position(-3);
+        }
+
+        private void Mercy_Logic()
+        {
+            //get the player off the screen in the mercy spot
+            player.Set_Box_Position(-4);
+        }
+        #endregion
+
+        private void tmrGameTimer_Tick(object sender, EventArgs e)
         {
             //refresh the picture box to update the sprite's position
             pbBackground.Refresh();
-            Arena_Text_System();
+
             //lblPlayerHealth.Text = player.GetHealth() + "/20";
 
-            //runs all the systems for only the player's turn
-            if (Player_Turn)
-            {
+            //run the systems
+            JustPressed_System();
+            Player_Movement_System();
 
-            }
+            //player turn exclusives ;)
+            if (Player_Turn) Player_Turn_Systems();
+            /*Damage_System();*/
+            int_time_counter++;
         }
 
         /*
@@ -454,12 +433,8 @@ namespace undertale_iteration_1
         }
         */
 
-        private void Player_Turn_Start()
-        {
-            Player_Turn = true;
-            Update_Arena_Hitbox();
-        }
-
+        //all funcitons that update something on the form
+        #region Updating Functions
         private void Update_Arena_Hitbox()
         {
             //redefines the arena box
@@ -474,26 +449,17 @@ namespace undertale_iteration_1
                 Arena_Hitbox.Width = 180;
             }
         }
-
-        private void Arena_Text_System()
+        private void Update_Arena_Text()
         {
             if (Player_Turn)
             {
-                if (lblArenaText.Text == "")
-                {
-                    float pos = player.Get_Turn_Position();
-                    if (pos > -1 && pos < 4) lblArenaText.Text = "* " + test_enemy.Choose_Arena_Text();
-                }
+                float pos = player.Get_Box_Position();
+                if (pos > -1 && pos < 4) lblArenaText.Text = "* " + test_enemy.Choose_Arena_Text();
+                else if (pos == -1 || pos == -2 || pos == -4) lblArenaText.Text = "* " + test_enemy.Get_Name();
+                else if (pos == -3) ;//implemented later
             }
             else lblArenaText.Text = "";
         }
-
-        private void Player_Turn_Systems()
-        {
-            Update_Option_Boxes();
-
-        }
-
         private void Update_Option_Boxes()
         {
             //resets all the boxes
@@ -503,7 +469,7 @@ namespace undertale_iteration_1
             ItemBox.Set_Row_Col(Box_Default);
             MercyBox.Set_Row_Col(Box_Default);
             //makes the box yellow if player is there
-            int pos = player.Get_Turn_Position();
+            int pos = player.Get_Box_Position();
             if (pos > -1)
                 switch (pos)
                 {
@@ -523,7 +489,139 @@ namespace undertale_iteration_1
                         break;
                 }
         }
+        #endregion
+
+        //all systems that run per tick
+        #region Systems
+        private void Player_Turn_Systems()
+        {
+            //update option boxes shouldn't be here for efficiency reasons but itll do for now
+            Update_Option_Boxes();
+            Player_Turn_Option_System();
+
+        }
+
+        #region Player Movement
+        public void Player_Movement_System()
+        {
+            int player_box_pos = player.Get_Box_Position();
+            PointF loc = player.Get_Location();
+            PointF size = player.Get_Size();
+            if (Player_Turn)
+            {
+                //checks if player box position is positieve
+                if (player_box_pos > -1)
+                {
+                    //if left arrow key is pressed move left, if right arrow key is pressed move right
+                    //if left is pressed on the leftmost box, move to the rightmost box, vice versa
+                    if (Left_Pressed)
+                    {
+                        if (player_box_pos > 0) player.Set_Box_Position(player_box_pos - 1);
+                        else player.Set_Box_Position(3);
+                    }
+                    if (Right_Pressed)
+                    {
+                        if (player_box_pos < 3) player.Set_Box_Position(player_box_pos + 1);
+                        else player.Set_Box_Position(0);
+                    }
+                    //sets new player box position before moving player off the value
+                    player_box_pos = player.Get_Box_Position();
+                    player.Set_Location(new PointF(49 + (player_box_pos * 150), loc.Y)); //boxes are 112 wide, with 38 pixels between -- guessed 50 pxiels, seems to have nailed it
+                    player.Set_Center(new PointF(player.Get_Center().X, flt_FORM_HEIGHT - 27)); //boxes are 5 off the floor and 44 high
+                }
+                else if (player_box_pos > -5)
+                {
+                    //if the box pos is negative but above -5, the player has selected a box
+                    int player_option_pos = player.Get_Option_Position();
+                    //check how many options the player has
+                    //for current iteration, only one enemy is implemented and no items for now, a foreach will be implemented later
+                    int num_options = 1;
+                    if (Left_Pressed)
+                    {
+                        if (player_option_pos == 3 && 1 <= num_options) player.Set_Option_Position(1);
+                        else if (player_option_pos == 4 && 2 <= num_options) player.Set_Option_Position(2);
+                    }
+                    if (Right_Pressed)
+                    {
+                        if (player_option_pos == 1 && 3 <= num_options) player.Set_Option_Position(3);
+                        else if (player_option_pos == 2 && 4 <= num_options) player.Set_Option_Position(4);
+                    }
+                    if (Up_Pressed)
+                    {
+                        if (player_option_pos == 2 && 1 <= num_options) player.Set_Option_Position(1);
+                        else if (player_option_pos == 4 && 3 <= num_options) player.Set_Option_Position(3);
+                    }
+                    if (Down_Pressed)
+                    {
+                        if (player_option_pos == 1 && 2 <= num_options) player.Set_Option_Position(2);
+                        else if (player_option_pos == 3 && 4 <= num_options) player.Set_Option_Position(4);
+                    }
+
+                    //update the player's option position
+                    player_option_pos = player.Get_Option_Position();
+
+                    //move player to the selected option
+                    switch (player_option_pos)
+                    {
+                        case 1:
+                            player.Set_Location(new PointF(Arena_Hitbox.X + 7, Arena_Hitbox.Y + 7));
+                            break;
+                        case 2:
+                            player.Set_Location(new PointF(Arena_Hitbox.X + 7, Arena_Hitbox.Y + Arena_Hitbox.Height / 2 + 7));
+                            break;
+                        case 3:
+                            player.Set_Location(new PointF(Arena_Hitbox.X + Arena_Hitbox.Width / 2 + 7, Arena_Hitbox.Y + 7));
+                            break;
+                        case 4:
+                            player.Set_Location(new PointF(Arena_Hitbox.X + Arena_Hitbox.Width / 2 + 7, Arena_Hitbox.Y + Arena_Hitbox.Height / 2 + 7));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    //if the player's box pos is this negative, the player has selected an option
+                    //move them off the screen
+                    player.Set_Location(new PointF(-100, -100));
+                }
+            }
+            else
+            {
+                //x and y track final displacement of player
+                float x = 0;
+                float y = 0;
+
+                //checks which keys are helds and alters x and y accordingly
+                if (Down_Held) y += flt_PLAYER_SPEED;
+                if (Up_Held) y -= flt_PLAYER_SPEED;
+                if (Left_Held) x -= flt_PLAYER_SPEED;
+                if (Right_Held) x += flt_PLAYER_SPEED;
+
+                //checks boundaries against the arena
+
+                //adjuments are different for different sides as the length is 5 so halfing it gives rounding errors
+                //Math.Floor/Ceiling corrects for this
+                int Adjustment_C = (int)Math.Ceiling((float)int_ARENA_WALL_SIZE / 2);
+                int Adjustment_F = (int)Math.Floor((float)int_ARENA_WALL_SIZE / 2);
+                if (loc.X + x < Arena_Hitbox.Left + Adjustment_C) x = Arena_Hitbox.Left - loc.X + Adjustment_C;
+                if (loc.X + size.X + x > Arena_Hitbox.Right - Adjustment_F) x = Arena_Hitbox.Right - loc.X - size.X - Adjustment_F;
+                if (loc.Y + y < Arena_Hitbox.Top + Adjustment_C) y = Arena_Hitbox.Top - loc.Y + Adjustment_C;
+                if (loc.Y + size.Y + y > Arena_Hitbox.Bottom - Adjustment_F) y = Arena_Hitbox.Bottom - loc.Y - size.Y - Adjustment_F;
 
 
+                //moves player final x and y values
+                player.Move(x, y);
+            }
+        }
+        #endregion
+        #endregion
+
+        private void Player_Turn_Start()
+        {
+            Player_Turn = true;
+            Update_Arena_Hitbox();
+            //Update_Arena_Text();
+        }
     }
 }
