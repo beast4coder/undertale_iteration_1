@@ -1,5 +1,7 @@
 //using statements go here
 
+using System.Drawing.Text;
+
 namespace undertale_iteration_1
 {
     public partial class GameForm : Form
@@ -79,25 +81,32 @@ namespace undertale_iteration_1
             //define arena size, objects and controls
             #region Set Arena Size
             size = new PointF(180, 185);
-            loc = new PointF((flt_FORM_WIDTH - size.X) / 2, (flt_FORM_HEIGHT - size.Y) / 2);
+            loc = new PointF(38, 254);
             Arena_Hitbox = new Rectangle((int)loc.X, (int)loc.Y, (int)size.X, (int)size.Y);
             #endregion
 
             #region Spawn Arena Text Box
-            //make text appear in the top left corner of the arena when the arena is largest
-            loc = new PointF(23, loc.Y + 23);
+            //make text appear in the top left corner of the arena
             Size font_size = new Size(20, 20);
+
+            //c# doesn;t let you do fonts nicely, cannot add file straight to font family
+            //font file added to a 'private font collection', font pulled from that as a font family type
+            //only then usable
+            PrivateFontCollection my_fonts = new PrivateFontCollection();
+            my_fonts.AddFontFile("Resources/8bitoperator_jve.ttf");
+            FontFamily pixel_font = my_fonts.Families[0];
+
             lblArenaText = new Label
             {
                 AutoSize = true,
                 ForeColor = Color.White,
                 BackColor = Color.Transparent,
-                Location = new Point((int)loc.X + 5, (int)loc.Y),
+                Location = new Point(65, 270),
                 Name = "lblArenaText",
                 Size = font_size,
                 TabIndex = 1,
                 Text = "",
-                Font = new Font("Resources/8bitoperator_jve.ttf", 15, FontStyle.Regular)
+                Font = new Font(pixel_font, 18, FontStyle.Regular)
             };
             Controls.Add(lblArenaText);
             lblArenaText.BringToFront();
@@ -193,7 +202,13 @@ namespace undertale_iteration_1
         private void Update_Sprites(object sender, PaintEventArgs e)
         {
             //Draw the arena box
-            e.Graphics.DrawRectangle(new Pen(Color.White, int_ARENA_WALL_SIZE), Arena_Hitbox);
+            Rectangle arena_wall = new Rectangle(
+                Arena_Hitbox.X - (int)Math.Ceiling((float)int_ARENA_WALL_SIZE/2),
+                Arena_Hitbox.Y - (int)Math.Ceiling((float)int_ARENA_WALL_SIZE/2),
+                Arena_Hitbox.Width + int_ARENA_WALL_SIZE,
+                Arena_Hitbox.Height + int_ARENA_WALL_SIZE
+            );
+            e.Graphics.DrawRectangle(new Pen(Color.White, int_ARENA_WALL_SIZE), arena_wall);
 
             //Draw enemy sprites
             foreach (Sprite_Handler sprite in test_enemy.Get_Sprites())
@@ -444,13 +459,17 @@ namespace undertale_iteration_1
             //redefines the arena box
             if (Player_Turn)
             {
-                Arena_Hitbox.X = 18;
-                Arena_Hitbox.Width = (int)flt_FORM_WIDTH - 36;
+                Arena_Hitbox.X = 38;
+                Arena_Hitbox.Width = 565;
+                Arena_Hitbox.Y = 254;
+                Arena_Hitbox.Height = 130;
             }
             else
             {
                 Arena_Hitbox.X = (int)(flt_FORM_WIDTH - 180)/2;
                 Arena_Hitbox.Width = 180;
+                Arena_Hitbox.Y = 199;
+                Arena_Hitbox.Height = 185;
             }
         }
         public void Update_Arena_Text()
@@ -458,9 +477,17 @@ namespace undertale_iteration_1
             if (Player_Turn)
             {
                 float pos = player.Get_Box_Position();
-                if (pos > -1 && pos < 4) lblArenaText.Text = "* " + test_enemy.Choose_Arena_Text();
-                else if (pos == -4 || pos == -3 || pos == -1) lblArenaText.Text = "* " + test_enemy.Get_Name();
-                else if (pos == -2) ;//implemented later
+                if (pos > -1 && pos < 4) 
+                {
+                    lblArenaText.Location = new Point(65, 270);
+                    lblArenaText.Text = "* " + test_enemy.Choose_Arena_Text();
+                }
+                else if (pos == -4 || pos == -3 || pos == -1)
+                {
+                    lblArenaText.Location = new Point(101, 270);
+                    lblArenaText.Text = "* " + test_enemy.Get_Name();
+                }
+                else if (pos == -2) ;//implement later
             }
             else lblArenaText.Text = "";
         }
@@ -514,6 +541,7 @@ namespace undertale_iteration_1
                 //checks if player box position is positieve
                 if (player_box_pos > -1)
                 {
+                    //if positive, the player is navigating the option boxes
                     //if left arrow key is pressed move left, if right arrow key is pressed move right
                     //if left is pressed on the leftmost box, move to the rightmost box, vice versa
                     if (Left_Pressed)
@@ -566,7 +594,8 @@ namespace undertale_iteration_1
                     switch (player_option_pos)
                     {
                         case 1:
-                            player.Set_Location(new PointF(Arena_Hitbox.X + 7, Arena_Hitbox.Y + 7));
+                            //the real location of this has been mined, the rest will be updated later, just old text for now that wont actually get used until items at least
+                            player.Set_Location(new PointF(65, 277));
                             break;
                         case 2:
                             player.Set_Location(new PointF(Arena_Hitbox.X + 7, Arena_Hitbox.Y + Arena_Hitbox.Height / 2 + 7));
@@ -601,15 +630,10 @@ namespace undertale_iteration_1
                 if (Right_Held) x += flt_PLAYER_SPEED;
 
                 //checks boundaries against the arena
-
-                //adjuments are different for different sides as the length is 5 so halfing it gives rounding errors
-                //Math.Floor/Ceiling corrects for this
-                int Adjustment_C = (int)Math.Ceiling((float)int_ARENA_WALL_SIZE / 2);
-                int Adjustment_F = (int)Math.Floor((float)int_ARENA_WALL_SIZE / 2);
-                if (loc.X + x < Arena_Hitbox.Left + Adjustment_C) x = Arena_Hitbox.Left - loc.X + Adjustment_C;
-                if (loc.X + size.X + x > Arena_Hitbox.Right - Adjustment_F) x = Arena_Hitbox.Right - loc.X - size.X - Adjustment_F;
-                if (loc.Y + y < Arena_Hitbox.Top + Adjustment_C) y = Arena_Hitbox.Top - loc.Y + Adjustment_C;
-                if (loc.Y + size.Y + y > Arena_Hitbox.Bottom - Adjustment_F) y = Arena_Hitbox.Bottom - loc.Y - size.Y - Adjustment_F;
+                if (loc.X + x < Arena_Hitbox.Left ) x = Arena_Hitbox.Left - loc.X;
+                if (loc.X + size.X + x > Arena_Hitbox.Right ) x = Arena_Hitbox.Right - loc.X - size.X;
+                if (loc.Y + y < Arena_Hitbox.Top) y = Arena_Hitbox.Top - loc.Y;
+                if (loc.Y + size.Y + y > Arena_Hitbox.Bottom) y = Arena_Hitbox.Bottom - loc.Y - size.Y;
 
 
                 //moves player final x and y values
