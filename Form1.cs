@@ -97,7 +97,7 @@ namespace undertale_iteration_1
                 Size = font_size,
                 TabIndex = 1,
                 Text = "",
-                Font = new Font("Pixelated MS Sans Serif", 15, FontStyle.Regular)
+                Font = new Font("Resources/8bitoperator_jve.ttf", 15, FontStyle.Regular)
             };
             Controls.Add(lblArenaText);
             lblArenaText.BringToFront();
@@ -333,6 +333,7 @@ namespace undertale_iteration_1
             if (player_box_pos > -1 && Z_Pressed)
             {
                 player.Set_Box_Position(player_box_pos - 4);
+                Update_Arena_Text();
             }
             else if (player_box_pos > -5)
             {
@@ -366,6 +367,7 @@ namespace undertale_iteration_1
                     else if (X_Pressed)
                     {
                         player.Set_Box_Position(player_box_pos + 4);
+                        Update_Arena_Text();
                     }
                 }
             }
