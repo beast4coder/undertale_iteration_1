@@ -1,6 +1,7 @@
 //using statements go here
 
 using System.Drawing.Text;
+using System.Threading;
 
 namespace undertale_iteration_1
 {
@@ -16,11 +17,20 @@ namespace undertale_iteration_1
         //arena
         Rectangle Arena_Hitbox;
         const int int_ARENA_WALL_SIZE = 5;
+        const int int_PLAYER_TURN_ARENA_X = 38;
+        const int int_PLAYER_TURN_ARENA_Y = 254;
+        const int int_PLAYER_TURN_ARENA_WIDTH = 565;
+        const int int_PLAYER_TURN_ARENA_HEIGHT = 130;
+        const int int_DEFAULT_ARENA_X = 230;
+        const int int_DEFAULT_ARENA_Y = 199;
+        const int int_DEFAULT_ARENA_WIDTH = 180;
+        const int int_DEFAULT_ARENA_HEIGHT = 185;
         Sprite_Handler FightBox;
         Sprite_Handler ActBox;
         Sprite_Handler ItemBox;
         Sprite_Handler MercyBox;
         Sprite_Handler Target_Sprite;
+        
 
         //turn variables
         public static bool Player_Turn = false;
@@ -43,6 +53,12 @@ namespace undertale_iteration_1
         public const float flt_PLAYER_SPEED = 1f;
         public const float flt_FORM_WIDTH = 640f;
         public const float flt_FORM_HEIGHT = 480f;
+
+        //threads
+        Thread Fight_Logic_Thread;
+        Thread Act_Logic_Thread;
+        Thread Item_Logic_Thread;
+        Thread Mercy_Logic_Thread;
 
         //time counter
         //int int_time_counter = 0;
@@ -80,8 +96,8 @@ namespace undertale_iteration_1
 
             //define arena size, objects and controls
             #region Set Arena Size
-            size = new PointF(180, 185);
-            loc = new PointF(38, 254);
+            size = new PointF(int_DEFAULT_ARENA_WIDTH, int_DEFAULT_ARENA_HEIGHT);
+            loc = new PointF(int_DEFAULT_ARENA_X, int_DEFAULT_ARENA_Y);
             Arena_Hitbox = new Rectangle((int)loc.X, (int)loc.Y, (int)size.X, (int)size.Y);
             #endregion
 
@@ -154,7 +170,7 @@ namespace undertale_iteration_1
             sheet = Resource1.Attack_Effects_Sprite_Sheet;
             size = new PointF(562, 128);
             offset = new PointF(5, 23);
-            loc = new PointF(0, 0);
+            loc = new PointF(int_PLAYER_TURN_ARENA_X + 1, int_PLAYER_TURN_ARENA_Y + 1);
             Target_Sprite = new Sprite_Handler(sheet, size, offset, loc);
             #endregion
 
@@ -179,6 +195,11 @@ namespace undertale_iteration_1
             //lblPlayerHealth.BringToFront();
 
             #endregion
+
+
+
+
+
 
             //spawn debug label
             #region debug_label
@@ -209,7 +230,7 @@ namespace undertale_iteration_1
                 Arena_Hitbox.Height + int_ARENA_WALL_SIZE
             );
             e.Graphics.DrawRectangle(new Pen(Color.White, int_ARENA_WALL_SIZE), arena_wall);
-
+            if (player.Get_Box_Position() == -8) Target_Sprite.Draw(e.Graphics);
             //Draw enemy sprites
             foreach (Sprite_Handler sprite in test_enemy.Get_Sprites())
             {
@@ -363,17 +384,26 @@ namespace undertale_iteration_1
                             case -4:
                                 player.Set_Box_Position(player_box_pos - 4);
                                 Update_Arena_Text();
-                                Fight_Logic();
+                                Fight_Logic_Thread = new Thread (Fight_Logic);
+                                Fight_Logic_Thread.Start();
                                 break;
                             case -3:
                                 player.Set_Box_Position(player_box_pos - 4);
                                 Update_Arena_Text();
-                                Act_Logic();
+                                Act_Logic_Thread = new Thread(Act_Logic);
+                                Act_Logic_Thread.Start();
+                                break;
+                            case -2:
+                                player.Set_Box_Position(player_box_pos - 4);
+                                Update_Arena_Text();
+                                Item_Logic_Thread = new Thread(Item_Logic);
+                                Item_Logic_Thread.Start();
                                 break;
                             case -1:
                                 player.Set_Box_Position(player_box_pos - 4);
                                 Update_Arena_Text();
-                                Mercy_Logic();
+                                Mercy_Logic_Thread = new Thread(Mercy_Logic);
+                                Mercy_Logic_Thread.Start();
                                 break;
                             default:
                                 break;
@@ -388,9 +418,10 @@ namespace undertale_iteration_1
             }
         }
 
-        private void Fight_Logic()
+        internal void Fight_Logic()
         {
-            //get the player off the screen in the fight spot
+            Player_Projectile_Sprite.Set_Location(new PointF(Arena_Hitbox.X, Arena_Hitbox.Y));
+            Thread.Sleep(1000);
             player.Set_Box_Position(0);
             Player_Turn = false;
             Turn_Ended = true;
@@ -398,20 +429,23 @@ namespace undertale_iteration_1
 
         private void Act_Logic()
         {
-            //get the player off the screen in the act spot
             player.Set_Box_Position(-2);
+            Player_Turn = false;
+            Turn_Ended = true;
         }
 
         private void Item_Logic()
         {
-            //get the player off the screen in the item spot
             player.Set_Box_Position(-3);
+            Player_Turn = false;
+            Turn_Ended = true;
         }
 
         private void Mercy_Logic()
         {
-            //get the player off the screen in the mercy spot
             player.Set_Box_Position(-4);
+            Player_Turn = false;
+            Turn_Ended = true;
         }
         #endregion
 
@@ -459,17 +493,17 @@ namespace undertale_iteration_1
             //redefines the arena box
             if (Player_Turn)
             {
-                Arena_Hitbox.X = 38;
-                Arena_Hitbox.Width = 565;
-                Arena_Hitbox.Y = 254;
-                Arena_Hitbox.Height = 130;
+                Arena_Hitbox.X = int_PLAYER_TURN_ARENA_X;
+                Arena_Hitbox.Width = int_PLAYER_TURN_ARENA_WIDTH;
+                Arena_Hitbox.Y = int_PLAYER_TURN_ARENA_Y;
+                Arena_Hitbox.Height = int_PLAYER_TURN_ARENA_HEIGHT;
             }
             else
             {
-                Arena_Hitbox.X = (int)(flt_FORM_WIDTH - 180)/2;
-                Arena_Hitbox.Width = 180;
-                Arena_Hitbox.Y = 199;
-                Arena_Hitbox.Height = 185;
+                Arena_Hitbox.X = int_DEFAULT_ARENA_X;
+                Arena_Hitbox.Width = int_DEFAULT_ARENA_WIDTH;
+                Arena_Hitbox.Y = int_DEFAULT_ARENA_Y;
+                Arena_Hitbox.Height = int_DEFAULT_ARENA_HEIGHT;
             }
         }
         public void Update_Arena_Text()
@@ -488,6 +522,7 @@ namespace undertale_iteration_1
                     lblArenaText.Text = "* " + test_enemy.Get_Name();
                 }
                 else if (pos == -2) ;//implement later
+                else if (pos == -8) lblArenaText.Text = "";
             }
             else lblArenaText.Text = "";
         }
