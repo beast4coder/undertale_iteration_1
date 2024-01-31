@@ -4,7 +4,7 @@ namespace undertale_iteration_1
     {
         public Test_Enemy()
         {
-            Name = "Test Enemy";
+            Name = "Test_Enemy";
             Health = 100;
             Damage = 5;
             Sprites = new Sprite_Handler[1];
@@ -33,7 +33,7 @@ namespace undertale_iteration_1
             #endregion
         }
 
-        public string Choose_Arena_Text()
+        public override string Choose_Arena_Text()
         {
             //selects arena text
             //this enemy just chooses randomly from predefined options
@@ -43,7 +43,7 @@ namespace undertale_iteration_1
         }
     
         #region Turns
-        public void Select_Turn()
+        public override void Select_Turn()
         {
             switch(Turn_Selector)
             {

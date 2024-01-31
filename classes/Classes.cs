@@ -74,6 +74,7 @@
             //draw the sprite
             g.DrawImage(Sprite, new Rectangle((int)Location.X, (int)Location.Y, width, height));
         }
+        #region Sprite Sheet Manipulation
         private Bitmap Process_SpriteSheet(Bitmap pSheet, Color pTarget_Colour)
         {
             //checks for pixels in the sheet that are supposed to be transparent and makes them transparent
@@ -91,7 +92,7 @@
             }
             return pSheet;
         }
-        #region Sprite Sheet Manipulation 
+
         private void Update_SpriteArea()
         {
             //calculate total offset for x
@@ -124,6 +125,8 @@
             Crnt_Row_Col = new_Row_Col;
             Update_SpriteArea();
         }
+
+
         #endregion
 
         #region Get/Set methods
@@ -362,5 +365,10 @@
         }
         #endregion
         #endregion
+
+        //empty methods that will be overloaded by child classes
+        //virtual lets them be overloaded
+        public virtual void Select_Turn() { }
+        public virtual string Choose_Arena_Text() { return ""; }
     }
 }

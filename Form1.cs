@@ -41,7 +41,7 @@ namespace undertale_iteration_1
         Sprite_Handler Player_Projectile_Sprite;
 
         //enemies
-        Test_Enemy test_enemy;
+        List<Enemy> Enemies = new List<Enemy>();
 
         //controls
         Label lblPlayerHealth;
@@ -176,7 +176,7 @@ namespace undertale_iteration_1
 
             //spawn enemy
             #region Spawn Enemy
-            test_enemy = new Test_Enemy();
+            Enemies.Add(new Test_Enemy());
             #endregion
 
             //spawn all controls required
@@ -230,11 +230,21 @@ namespace undertale_iteration_1
                 Arena_Hitbox.Height + int_ARENA_WALL_SIZE
             );
             e.Graphics.DrawRectangle(new Pen(Color.White, int_ARENA_WALL_SIZE), arena_wall);
-            if (player.Get_Box_Position() == -8) Target_Sprite.Draw(e.Graphics);
-            //Draw enemy sprites
-            foreach (Sprite_Handler sprite in test_enemy.Get_Sprites())
+
+            //draws the target and player projectile sprites if player is attacking
+            if (player.Get_Box_Position() == -8)
             {
-                sprite.Draw(e.Graphics);
+                Target_Sprite.Draw(e.Graphics);
+                Player_Projectile_Sprite.Draw(e.Graphics);
+            }
+
+            //Draw enemy sprites
+            foreach (Enemy enemy in Enemies)
+            {
+                foreach (Sprite_Handler sprite in enemy.Get_Sprites())
+                {
+                    sprite.Draw(e.Graphics);
+                }
             }
 
             //Draw objects
@@ -513,13 +523,15 @@ namespace undertale_iteration_1
                 float pos = player.Get_Box_Position();
                 if (pos > -1 && pos < 4) 
                 {
+                    //implement foreach later
                     lblArenaText.Location = new Point(65, 270);
-                    lblArenaText.Text = "* " + test_enemy.Choose_Arena_Text();
+                    lblArenaText.Text = "* " + Enemies[0].Choose_Arena_Text();
                 }
                 else if (pos == -4 || pos == -3 || pos == -1)
                 {
+                    //implement foreach later
                     lblArenaText.Location = new Point(101, 270);
-                    lblArenaText.Text = "* " + test_enemy.Get_Name();
+                    lblArenaText.Text = "* " + Enemies[0].Get_Name();
                 }
                 else if (pos == -2) ;//implement later
                 else if (pos == -8) lblArenaText.Text = "";
@@ -555,7 +567,7 @@ namespace undertale_iteration_1
                         break;
                 }
         }
-        #endregion
+        #endregion  
 
         //all systems that run per tick
         #region Systems
@@ -690,7 +702,8 @@ namespace undertale_iteration_1
                     Update_Arena_Text();
                     Update_Arena_Hitbox();
                     player.Set_Center(new PointF(Arena_Hitbox.X + Arena_Hitbox.Width / 2, Arena_Hitbox.Y + Arena_Hitbox.Height / 2));
-                    Thread turn_thread = new Thread(test_enemy.Select_Turn);
+                    //foreach later
+                    Thread turn_thread = new Thread(Enemies[0].Select_Turn);
                     turn_thread.Start();
                 }
                 Turn_Ended = false;
