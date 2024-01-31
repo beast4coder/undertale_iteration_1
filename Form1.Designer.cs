@@ -46,7 +46,7 @@
             // tmrGameTimer
             // 
             tmrGameTimer.Enabled = true;
-            tmrGameTimer.Interval = 10;
+            tmrGameTimer.Interval = 20;
             tmrGameTimer.Tick += tmrGameTimer_Tick;
             // 
             // GameForm

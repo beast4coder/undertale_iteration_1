@@ -3,6 +3,7 @@
 using System.Drawing.Text;
 using System.Threading;
 using System.Diagnostics;
+using System.Media;
 
 namespace undertale_iteration_1
 {
@@ -50,7 +51,7 @@ namespace undertale_iteration_1
         Label debug_label;
 
         //consts
-        public const float flt_PLAYER_SPEED = 1f;
+        public const float flt_PLAYER_SPEED = 3f;
         public const float flt_FORM_WIDTH = 640f;
         public const float flt_FORM_HEIGHT = 480f;
 
@@ -378,6 +379,7 @@ namespace undertale_iteration_1
             int player_box_pos = player.Get_Box_Position();
             if (player_box_pos > -1 && Z_Pressed)
             {
+                Play_Sound_Effect("snd_select");
                 player.Set_Box_Position(player_box_pos - 4);
                 Update_Arena_Text();
             }
@@ -392,24 +394,28 @@ namespace undertale_iteration_1
                         switch (player_box_pos)
                         {
                             case -4:
+                                Play_Sound_Effect("snd_select");
                                 player.Set_Box_Position(player_box_pos - 4);
                                 Update_Arena_Text();
                                 Fight_Logic_Thread = new Thread (Fight_Logic);
                                 Fight_Logic_Thread.Start();
                                 break;
                             case -3:
+                                Play_Sound_Effect("snd_select");
                                 player.Set_Box_Position(player_box_pos - 4);
                                 Update_Arena_Text();
                                 Act_Logic_Thread = new Thread(Act_Logic);
                                 Act_Logic_Thread.Start();
                                 break;
                             case -2:
+                                Play_Sound_Effect("snd_select");
                                 player.Set_Box_Position(player_box_pos - 4);
                                 Update_Arena_Text();
                                 Item_Logic_Thread = new Thread(Item_Logic);
                                 Item_Logic_Thread.Start();
                                 break;
                             case -1:
+                                Play_Sound_Effect("snd_select");
                                 player.Set_Box_Position(player_box_pos - 4);
                                 Update_Arena_Text();
                                 Mercy_Logic_Thread = new Thread(Mercy_Logic);
@@ -476,21 +482,21 @@ namespace undertale_iteration_1
 
         private void Act_Logic()
         {
-            player.Set_Box_Position(-2);
+            player.Set_Box_Position(1);
             Player_Turn = false;
             Turn_Ended = true;
         }
 
         private void Item_Logic()
         {
-            player.Set_Box_Position(-3);
+            player.Set_Box_Position(2);
             Player_Turn = false;
             Turn_Ended = true;
         }
 
         private void Mercy_Logic()
         {
-            player.Set_Box_Position(-4);
+            player.Set_Box_Position(3);
             Player_Turn = false;
             Turn_Ended = true;
         }
@@ -631,11 +637,13 @@ namespace undertale_iteration_1
                     //if left is pressed on the leftmost box, move to the rightmost box, vice versa
                     if (Left_Pressed)
                     {
+                        Play_Sound_Effect("snd_movemenu");
                         if (player_box_pos > 0) player.Set_Box_Position(player_box_pos - 1);
                         else player.Set_Box_Position(3);
                     }
                     if (Right_Pressed)
                     {
+                        Play_Sound_Effect("snd_movemenu");
                         if (player_box_pos < 3) player.Set_Box_Position(player_box_pos + 1);
                         else player.Set_Box_Position(0);
                     }
@@ -653,23 +661,23 @@ namespace undertale_iteration_1
                     int num_options = 1;
                     if (Left_Pressed)
                     {
-                        if (player_option_pos == 3 && 1 <= num_options) player.Set_Option_Position(1);
-                        else if (player_option_pos == 4 && 2 <= num_options) player.Set_Option_Position(2);
+                        if (player_option_pos == 3 && 1 <= num_options) {player.Set_Option_Position(1); Play_Sound_Effect("snd_movemenu");}
+                        else if (player_option_pos == 4 && 2 <= num_options) {player.Set_Option_Position(2); Play_Sound_Effect("snd_movemenu");}
                     }
                     if (Right_Pressed)
                     {
-                        if (player_option_pos == 1 && 3 <= num_options) player.Set_Option_Position(3);
-                        else if (player_option_pos == 2 && 4 <= num_options) player.Set_Option_Position(4);
+                        if (player_option_pos == 1 && 3 <= num_options) {player.Set_Option_Position(3); Play_Sound_Effect("snd_movemenu");}
+                        else if (player_option_pos == 2 && 4 <= num_options) {player.Set_Option_Position(4); Play_Sound_Effect("snd_movemenu");}
                     }
                     if (Up_Pressed)
                     {
-                        if (player_option_pos == 2 && 1 <= num_options) player.Set_Option_Position(1);
-                        else if (player_option_pos == 4 && 3 <= num_options) player.Set_Option_Position(3);
+                        if (player_option_pos == 2 && 1 <= num_options) {player.Set_Option_Position(1); Play_Sound_Effect("snd_movemenu");}
+                        else if (player_option_pos == 4 && 3 <= num_options) {player.Set_Option_Position(3); Play_Sound_Effect("snd_movemenu");}
                     }
                     if (Down_Pressed)
                     {
-                        if (player_option_pos == 1 && 2 <= num_options) player.Set_Option_Position(2);
-                        else if (player_option_pos == 3 && 4 <= num_options) player.Set_Option_Position(4);
+                        if (player_option_pos == 1 && 2 <= num_options) { player.Set_Option_Position(2); Play_Sound_Effect("snd_movemenu"); }
+                        else if (player_option_pos == 3 && 4 <= num_options) { player.Set_Option_Position(4); Play_Sound_Effect("snd_movemenu"); }
                     }
 
                     //update the player's option position
@@ -772,6 +780,14 @@ namespace undertale_iteration_1
             }
             stopwatch_break.Stop();
             Player_Projectile_Sprite.Set_Row_Col(new PointF(0, 0));
+        }
+        #endregion
+
+        #region Sound
+        private void Play_Sound_Effect(string sound_name)
+        {
+            SoundPlayer sound = new SoundPlayer("Resources/Sound_Effects/" + sound_name + ".wav");
+            sound.Play();
         }
         #endregion
     }
