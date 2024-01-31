@@ -2,6 +2,7 @@
 
 using System.Drawing.Text;
 using System.Threading;
+using System.Diagnostics;
 
 namespace undertale_iteration_1
 {
@@ -30,7 +31,6 @@ namespace undertale_iteration_1
         Sprite_Handler ItemBox;
         Sprite_Handler MercyBox;
         Sprite_Handler Target_Sprite;
-        
 
         //turn variables
         public static bool Player_Turn = false;
@@ -81,7 +81,7 @@ namespace undertale_iteration_1
             PointF offset = new PointF(7, 6);
             PointF padding = new PointF(0, 0);
             PointF loc = new PointF((flt_FORM_WIDTH - size.X) / 2, (flt_FORM_HEIGHT - size.Y) / 2);
-            player = new Player(sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc, "TEST1", 20, 20);
+            player = new Player(sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc, "TEST1");
             #endregion
 
             #region Define Player Projectile Sprite
@@ -91,7 +91,7 @@ namespace undertale_iteration_1
             offset = new PointF(1139, 23);
             padding = new PointF(5, 0);
             loc = new PointF(0, 0);
-            Player_Projectile_Sprite = new Sprite_Handler(sheet, size, offset, loc);
+            Player_Projectile_Sprite = new Sprite_Handler(sheet, size, rows_cols, offset, padding, loc);
             #endregion
 
             //define arena size, objects and controls
@@ -428,10 +428,47 @@ namespace undertale_iteration_1
             }
         }
 
-        internal void Fight_Logic()
+        #region Thread Logic
+        private void Fight_Logic()
         {
             Player_Projectile_Sprite.Set_Location(new PointF(Arena_Hitbox.X, Arena_Hitbox.Y));
-            Thread.Sleep(1000);
+            //if statement is needed for the actual logic, however there are multiple break conditions
+            bool break_condition = false;
+            Stopwatch stopwatch = new Stopwatch();
+            while(!break_condition)
+            {
+                stopwatch.Restart();
+                if(!Z_Pressed && Player_Projectile_Sprite.Get_Location().X < Arena_Hitbox.X + Arena_Hitbox.Width - Player_Projectile_Sprite.Get_Size().X)
+                {
+                    Player_Projectile_Sprite.Move(1, 0);
+                    while (stopwatch.ElapsedMilliseconds < 1.5) ;
+                }
+                else
+                {
+                    Thread animate_projectile = new Thread(Animate_Player_Projectile);
+                    animate_projectile.Start();
+                    //apply undertale damage algorithm
+                    //borrowed from u/spiceytomato at https://www.reddit.com/r/Underminers/comments/56xm7x/damage_calculation/
+                    int projectile_center = (int)Player_Projectile_Sprite.Get_Location().X + (int)(Player_Projectile_Sprite.Get_Size().X / 2);
+                    int distance = Math.Abs(projectile_center - (int)(Target_Sprite.Get_Size().X /2) + (int)Target_Sprite.Get_Location().X);
+                    int damage;
+                    Random rand = new Random();
+                    if(distance <= 12)
+                    {
+                        damage = (int)Math.Round((player.Get_Attack() - Enemies[0].Get_Defense() + rand.Next(3)) * 2.2);
+                    }
+                    else
+                    {
+                        damage = (int)Math.Round((player.Get_Attack() - Enemies[0].Get_Defense() + rand.Next(3)) * (1 - distance/Target_Sprite.Get_Size().X) * 2);
+                    }
+                    if (damage > 0) Enemies[0].Set_Health(Enemies[0].Get_Health() - damage);
+                    debug_label.Text = Enemies[0].Get_Health().ToString();
+                    
+                    Thread.Sleep(1500);
+                    break_condition = true;
+                }
+            }
+
             player.Set_Box_Position(0);
             Player_Turn = false;
             Turn_Ended = true;
@@ -457,6 +494,7 @@ namespace undertale_iteration_1
             Player_Turn = false;
             Turn_Ended = true;
         }
+        #endregion
         #endregion
 
         private void tmrGameTimer_Tick(object sender, EventArgs e)
@@ -716,5 +754,25 @@ namespace undertale_iteration_1
             Update_Arena_Hitbox();
             Update_Arena_Text();
         }
+
+        #region Animations
+        private void Animate_Player_Projectile()
+        {
+            bool break_condition = false;
+            Stopwatch stopwatch_break = new Stopwatch();
+            stopwatch_break.Start();
+            while(!break_condition)
+            {
+                Thread.Sleep(100);
+                Player_Projectile_Sprite.Next();
+                if(stopwatch_break.ElapsedMilliseconds >= 1000)
+                {
+                    break_condition = true;
+                }
+            }
+            stopwatch_break.Stop();
+            Player_Projectile_Sprite.Set_Row_Col(new PointF(0, 0));
+        }
+        #endregion
     }
 }

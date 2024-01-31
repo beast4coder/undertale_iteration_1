@@ -214,15 +214,19 @@
         private int MaxHealth;
         private int Box_Position;
         private int Option_Position;
+        private int Attack;
+        private int Defense;
 
-        public Player(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, string pName, int pHealth, int pMaxHealth)
+        public Player(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, string pName)
         : base(pSheet, pBackground_Colour, pSize, pRows_Cols, pOffset, pPadding, pLoc)
         {
             Name = pName;
-            Health = pHealth;
-            MaxHealth = pMaxHealth;
+            Health = 20;
+            MaxHealth = 20;
             Box_Position = 0;
             Option_Position = 1;
+            Attack = 10;
+            Defense = 5;
         }
 
         #region Get/Set methods
@@ -288,6 +292,30 @@
             Option_Position = pOption_Position;
         }
         #endregion
+        #region Attack
+        //get attack
+        public int Get_Attack()
+        {
+            return Attack;
+        }
+        //set attack
+        public void Set_Attack(int pAttack)
+        {
+            Attack = pAttack;
+        }
+        #endregion
+        #region Defense
+        //get defense
+        public int Get_Defense()
+        {
+            return Defense;
+        }
+        //set defense
+        public void Set_Defense(int pDefense)
+        {
+            Defense = pDefense;
+        }
+        #endregion
         #endregion
     }
 
@@ -312,6 +340,7 @@
         protected string Name;
         protected int Health;
         protected int Damage;
+        protected int Defense;
         protected Sprite_Handler[] Sprites;
         protected List<Projectile> Projectiles;
         protected Thread Arena_Text_Thread;
@@ -335,7 +364,8 @@
         //set health
         public void Set_Health(int pHealth)
         {
-            Health = pHealth;
+            if(pHealth > 0) Health = pHealth;
+            else Health = 0;
         }
         #endregion
         #region Damage
@@ -348,6 +378,18 @@
         public void Set_Damage(int pDamage)
         {
             Damage = pDamage;
+        }
+        #endregion
+        #region Defense
+        //get defense
+        public int Get_Defense()
+        {
+            return Defense;
+        }
+        //set defense
+        public void Set_Defense(int pDefense)
+        {
+            Defense = pDefense;
         }
         #endregion
         #region Sprites
@@ -368,7 +410,7 @@
 
         //empty methods that will be overloaded by child classes
         //virtual lets them be overloaded
-        public virtual void Select_Turn() { }
-        public virtual string Choose_Arena_Text() { return ""; }
+        public virtual void Select_Turn() {}
+        public virtual string Choose_Arena_Text() {return "";}
     }
 }

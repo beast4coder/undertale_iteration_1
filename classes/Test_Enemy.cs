@@ -7,6 +7,7 @@ namespace undertale_iteration_1
             Name = "Test_Enemy";
             Health = 100;
             Damage = 5;
+            Defense = 5;
             Sprites = new Sprite_Handler[1];
             Turn_Selector = 0;
             
