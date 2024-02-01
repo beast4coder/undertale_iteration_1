@@ -52,11 +52,13 @@
             // GameForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
+            AutoScaleMode = AutoScaleMode.None;
+            AutoSize = false;
             BackColor = Color.Black;
             ClientSize = new Size(640, 480);
             Controls.Add(pbBackground);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
             MinimumSize = new Size(640, 480);
             Name = "GameForm";
             Text = "undertale";

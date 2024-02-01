@@ -32,6 +32,11 @@ namespace undertale_iteration_1
         Sprite_Handler ItemBox;
         Sprite_Handler MercyBox;
         Sprite_Handler Target_Sprite;
+        Label lblArenaText;
+        Label lblArenaOpt1;
+        Label lblArenaOpt2;
+        Label lblArenaOpt3;
+        Label lblArenaOpt4;
 
         //turn variables
         public static bool Player_Turn = false;
@@ -51,7 +56,7 @@ namespace undertale_iteration_1
 
         //controls
         Label lblPlayerHealth;
-        Label lblArenaText;
+        
 
         Label debug_label;
 
@@ -59,12 +64,6 @@ namespace undertale_iteration_1
         public const float flt_PLAYER_SPEED = 3f;
         public const float flt_FORM_WIDTH = 640f;
         public const float flt_FORM_HEIGHT = 480f;
-
-        //threads
-        Thread Fight_Logic_Thread;
-        Thread Act_Logic_Thread;
-        Thread Item_Logic_Thread;
-        Thread Mercy_Logic_Thread;
 
         //time counter
         //int int_time_counter = 0;
@@ -120,7 +119,6 @@ namespace undertale_iteration_1
 
             #region Spawn Arena Text Box
             //make text appear in the top left corner of the arena
-            Size font_size = new Size(20, 20);
 
             //c# doesn;t let you do fonts nicely, cannot add file straight to font family
             //font file added to a 'private font collection', font pulled from that as a font family type
@@ -136,13 +134,75 @@ namespace undertale_iteration_1
                 BackColor = Color.Transparent,
                 Location = new Point(65, 270),
                 Name = "lblArenaText",
-                Size = font_size,
                 TabIndex = 1,
                 Text = "",
                 Font = new Font(pixel_font, 18, FontStyle.Regular)
             };
             Controls.Add(lblArenaText);
             lblArenaText.BringToFront();
+            #endregion
+
+            #region Spawn Option Text Boxes
+
+            //option box 1, top left
+            lblArenaOpt1 = new Label
+            {
+                AutoSize = true,
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                Location = new Point(101, 270),
+                Name = "lblArenaOpt1",
+                TabIndex = 1,
+                Text = "",
+                Font = new Font(pixel_font, 18, FontStyle.Regular)
+            };
+            Controls.Add(lblArenaOpt1);
+            lblArenaOpt1.BringToFront();
+
+            //option box 2, bottom left
+            lblArenaOpt2 = new Label
+            {
+                AutoSize = true,
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                Location = new Point(101, 325), //345, 332
+                Name = "lblArenaOpt2",
+                TabIndex = 1,
+                Text = "",
+                Font = new Font(pixel_font, 18, FontStyle.Regular)
+            };
+            Controls.Add(lblArenaOpt2);
+            lblArenaOpt2.BringToFront();
+
+            //option box 3, top right
+            lblArenaOpt3 = new Label
+            {
+                AutoSize = true,
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                Location = new Point(381, 270),
+                Name = "lblArenaOpt3",
+                TabIndex = 1,
+                Text = "",
+                Font = new Font(pixel_font, 18, FontStyle.Regular)
+            };
+            Controls.Add(lblArenaOpt3);
+            lblArenaOpt3.BringToFront();
+
+            //option box 4, bottom right
+            lblArenaOpt4 = new Label
+            {
+                AutoSize = true,
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                Location = new Point(381, 325),
+                Name = "lblArenaOpt4",
+                TabIndex = 1,
+                Text = "",
+                Font = new Font(pixel_font, 18, FontStyle.Regular)
+            };
+            Controls.Add(lblArenaOpt4);
+            lblArenaOpt4.BringToFront();
             #endregion
 
             #region Spawn FightBox
@@ -420,28 +480,28 @@ namespace undertale_iteration_1
                             Play_Sound_Effect("snd_select");
                             player.Set_Box_Position(player_box_pos - 4);
                             Update_Arena_Text();
-                            Fight_Logic_Thread = new Thread (Fight_Logic);
+                            Thread Fight_Logic_Thread = new Thread (Fight_Logic);
                             Fight_Logic_Thread.Start();
                             break;
                         case -3:
                             Play_Sound_Effect("snd_select");
                             player.Set_Box_Position(player_box_pos - 4);
                             Update_Arena_Text();
-                            Act_Logic_Thread = new Thread(Act_Logic);
+                            Thread Act_Logic_Thread = new Thread(Act_Logic);
                             Act_Logic_Thread.Start();
                             break;
                         case -2:
                             Play_Sound_Effect("snd_select");
                             player.Set_Box_Position(player_box_pos - 4);
                             Update_Arena_Text();
-                            Item_Logic_Thread = new Thread(Item_Logic);
+                            Thread Item_Logic_Thread = new Thread(Item_Logic);
                             Item_Logic_Thread.Start();
                             break;
                         case -1:
                             Play_Sound_Effect("snd_select");
                             player.Set_Box_Position(player_box_pos - 4);
                             Update_Arena_Text();
-                            Mercy_Logic_Thread = new Thread(Mercy_Logic);
+                            Thread Mercy_Logic_Thread = new Thread(Mercy_Logic);
                             Mercy_Logic_Thread.Start();
                             break;
                         default:
@@ -479,6 +539,9 @@ namespace undertale_iteration_1
                     //if player attacked, calculate damage
                     if(Z_Pressed)
                     {
+                        //slower pcs sometimes attack immediately, this should fix it
+                        Z_Pressed = false;
+
                         //apply undertale damage algorithm
                         //borrowed from u/spiceytomato at https://www.reddit.com/r/Underminers/comments/56xm7x/damage_calculation/
                         int projectile_center = (int)Player_Attack_Sprite.Get_Location().X + (int)(Player_Attack_Sprite.Get_Size().X / 2);
@@ -500,7 +563,6 @@ namespace undertale_iteration_1
                     }
                     //apply damage
                     if (damage > 0) Enemies[0].Set_Health(Enemies[0].Get_Health() - damage);
-                    debug_label.Text = Enemies[0].Get_Health().ToString();
 
                     //animate the slash and damage numbers
                     Animate_Slash_Damage(damage);
@@ -610,10 +672,21 @@ namespace undertale_iteration_1
                 else if (pos == -4 || pos == -3 || pos == -1)
                 {
                     //implement foreach later
-                    lblArenaText.Location = new Point(101, 270);
+                    lblArenaText.Location = new Point(100, 270);
                     lblArenaText.Text = "* " + Enemies[0].Get_Name();
                 }
-                else if (pos == -2) lblArenaText.Text = "* CONGRATULATIONS!!! \n* YOU'VE FOUND A BUG!!!";//implement later
+                else if (pos == -2)
+                {
+                    //implement real code later
+                    lblArenaText.Location = new Point(100, 270);
+                    lblArenaText.Text = "* Hidden Secret???";
+                }
+                else if (pos == -6)
+                {
+                    //implement real code later
+                    lblArenaText.Location = new Point(65, 270);
+                    lblArenaText.Text = "* CONGRATULATIONS!!! \n* YOU'VE FOUND A BUG!!!";
+                }
                 else if (pos == -8) lblArenaText.Text = "";
             }
             else lblArenaText.Text = "";
@@ -727,13 +800,14 @@ namespace undertale_iteration_1
                             player.Set_Location(new PointF(65, 277));
                             break;
                         case 2:
-                            player.Set_Location(new PointF(Arena_Hitbox.X + 7, Arena_Hitbox.Y + Arena_Hitbox.Height / 2 + 7));
+                            //other values haven't been mined but are rough guesses and suitable for the project
+                            player.Set_Location(new PointF(65, 332));
                             break;
                         case 3:
-                            player.Set_Location(new PointF(Arena_Hitbox.X + Arena_Hitbox.Width / 2 + 7, Arena_Hitbox.Y + 7));
+                            player.Set_Location(new PointF(345, 277));
                             break;
                         case 4:
-                            player.Set_Location(new PointF(Arena_Hitbox.X + Arena_Hitbox.Width / 2 + 7, Arena_Hitbox.Y + Arena_Hitbox.Height / 2 + 7));
+                            player.Set_Location(new PointF(345, 332));
                             break;
                         default:
                             break;
@@ -862,7 +936,8 @@ namespace undertale_iteration_1
                     sprite.Set_Location(new PointF(Enemies[0].Get_Sprites()[0].Get_Location().X + num_offset_x + Enemies[0].Get_Sprites()[0].Get_Size().X / 2, sprite.Get_Location().Y));
                     num_offset_x += (int)sprite.Get_Size().X;
                 }
-
+                //play the sound
+                Play_Sound_Effect("snd_damage");
             }
             else
             {
@@ -876,8 +951,6 @@ namespace undertale_iteration_1
                 PointF loc = new PointF(Enemies[0].Get_Sprites()[0].Get_Location().X + num_offset_x, Enemies[0].Get_Sprites()[0].Get_Location().Y - size.Y - 10);
                 Attack_Numbers.Add(new Sprite_Handler(sheet, ColorTranslator.FromHtml(background_colour), size, offset, loc));
             }
-            //play the sound
-            Play_Sound_Effect("snd_damage");
             //draw the sprites
             Draw_Attack_Numbers = true;
             //busy loop until the player is done attacking
