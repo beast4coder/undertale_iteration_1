@@ -411,51 +411,47 @@ namespace undertale_iteration_1
             }
             else if (player_box_pos > -5)
             {
-                //at -4, -3, -1 the player must select an enemy to fight/act/mercy respectively
-                if (player_box_pos == -4 || player_box_pos == -3 || player_box_pos == -1)
+                //if z is pressed then select the box
+                if (Z_Pressed)
                 {
-                    //if z is pressed then select the box
-                    if (Z_Pressed)
+                    switch (player_box_pos)
                     {
-                        switch (player_box_pos)
-                        {
-                            case -4:
-                                Play_Sound_Effect("snd_select");
-                                player.Set_Box_Position(player_box_pos - 4);
-                                Update_Arena_Text();
-                                Fight_Logic_Thread = new Thread (Fight_Logic);
-                                Fight_Logic_Thread.Start();
-                                break;
-                            case -3:
-                                Play_Sound_Effect("snd_select");
-                                player.Set_Box_Position(player_box_pos - 4);
-                                Update_Arena_Text();
-                                Act_Logic_Thread = new Thread(Act_Logic);
-                                Act_Logic_Thread.Start();
-                                break;
-                            case -2:
-                                Play_Sound_Effect("snd_select");
-                                player.Set_Box_Position(player_box_pos - 4);
-                                Update_Arena_Text();
-                                Item_Logic_Thread = new Thread(Item_Logic);
-                                Item_Logic_Thread.Start();
-                                break;
-                            case -1:
-                                Play_Sound_Effect("snd_select");
-                                player.Set_Box_Position(player_box_pos - 4);
-                                Update_Arena_Text();
-                                Mercy_Logic_Thread = new Thread(Mercy_Logic);
-                                Mercy_Logic_Thread.Start();
-                                break;
-                            default:
-                                break;
-                        }
+                        case -4:
+                            Play_Sound_Effect("snd_select");
+                            player.Set_Box_Position(player_box_pos - 4);
+                            Update_Arena_Text();
+                            Fight_Logic_Thread = new Thread (Fight_Logic);
+                            Fight_Logic_Thread.Start();
+                            break;
+                        case -3:
+                            Play_Sound_Effect("snd_select");
+                            player.Set_Box_Position(player_box_pos - 4);
+                            Update_Arena_Text();
+                            Act_Logic_Thread = new Thread(Act_Logic);
+                            Act_Logic_Thread.Start();
+                            break;
+                        case -2:
+                            Play_Sound_Effect("snd_select");
+                            player.Set_Box_Position(player_box_pos - 4);
+                            Update_Arena_Text();
+                            Item_Logic_Thread = new Thread(Item_Logic);
+                            Item_Logic_Thread.Start();
+                            break;
+                        case -1:
+                            Play_Sound_Effect("snd_select");
+                            player.Set_Box_Position(player_box_pos - 4);
+                            Update_Arena_Text();
+                            Mercy_Logic_Thread = new Thread(Mercy_Logic);
+                            Mercy_Logic_Thread.Start();
+                            break;
+                        default:
+                            break;
                     }
-                    else if (X_Pressed)
-                    {
-                        player.Set_Box_Position(player_box_pos + 4);
-                        Update_Arena_Text();
-                    }
+                }
+                else if (X_Pressed)
+                {
+                    player.Set_Box_Position(player_box_pos + 4);
+                    Update_Arena_Text();
                 }
             }
         }
@@ -527,8 +523,10 @@ namespace undertale_iteration_1
 
         private void Item_Logic()
         {
+            //not implemented yet, probs not this iteration, display text in the meantime
+            Thread.Sleep(800);
             player.Set_Box_Position(2);
-            Player_Turn = false;
+            Player_Turn = true;
             Turn_Ended = true;
         }
 
@@ -615,7 +613,7 @@ namespace undertale_iteration_1
                     lblArenaText.Location = new Point(101, 270);
                     lblArenaText.Text = "* " + Enemies[0].Get_Name();
                 }
-                else if (pos == -2) ;//implement later
+                else if (pos == -2) lblArenaText.Text = "* CONGRATULATIONS!!! \n* YOU'VE FOUND A BUG!!!";//implement later
                 else if (pos == -8) lblArenaText.Text = "";
             }
             else lblArenaText.Text = "";
