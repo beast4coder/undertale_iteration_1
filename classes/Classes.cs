@@ -214,8 +214,10 @@
         private int MaxHealth;
         private int Box_Position;
         private int Option_Position;
+        private int Selected_Option;
         private int Attack;
         private int Defense;
+        public bool Wait_For_Input = false;
 
         public Player(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, string pName)
         : base(pSheet, pBackground_Colour, pSize, pRows_Cols, pOffset, pPadding, pLoc)
@@ -292,6 +294,23 @@
             Option_Position = pOption_Position;
         }
         #endregion
+        #region SelectedOption
+        //get selected option
+        public int Get_Selected_Option()
+        {
+            return Selected_Option;
+        }
+        //set selected option
+        public void Set_Selected_Option()
+        {
+            Selected_Option = Option_Position;
+        }
+        //reset selected option
+        public void Reset_Selected_Option()
+        {
+            Selected_Option = 0;
+        }
+        #endregion
         #region Attack
         //get attack
         public int Get_Attack()
@@ -346,6 +365,8 @@
         protected Thread Arena_Text_Thread;
         protected string[] Arena_Text;
         protected int Turn_Selector;
+        protected string[] Actions;
+        protected string Flavour_Text;
 
         #region Get/Set methods
         #region Name
@@ -416,8 +437,19 @@
         }
         #endregion
         //empty methods that will be overloaded by child classes
-        //virtual lets them be overloaded
+        //virtual methods return nothing and will always be overloaded by child classes
         public virtual void Select_Turn() {}
         public virtual string Choose_Arena_Text() {return "";}
+        //just returns Actions[] attribute
+        public string[] Get_Actions() 
+        {
+            return Actions;
+        }
+        public virtual string Select_Action(int pAction) {return "";}
+        //all enemies will have the check act
+        public string Check_Action()
+        {
+            return Name + "\nATK: " + Damage + "      DEF: " + Defense + "\n" + Flavour_Text;
+        }
     }
 }

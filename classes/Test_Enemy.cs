@@ -23,7 +23,7 @@ namespace undertale_iteration_1
             Sprites[0] = new Sprite_Handler(sheet, background_col, size, rows_cols, offset, padding, loc);
             Sprites[0].Set_Scale(1.5f);
             #endregion
-            //define arena text messages
+            //define arena text messages           
             #region Arena Text Messages
             Arena_Text = new string[] {
                 "THIS IS FILLER TEXT",
@@ -32,6 +32,17 @@ namespace undertale_iteration_1
                 "Your mum",
             };
             #endregion
+        
+            //define actions
+            #region Actions
+            Actions = new string[] {
+                "Check",
+                "Filler",
+            };
+            #endregion
+        
+            //f l a v o u r
+            Flavour_Text = "This is the test enemy. \nTHE test enemy. Yep. That's right.";
         }
 
         public override string Choose_Arena_Text()
@@ -49,7 +60,7 @@ namespace undertale_iteration_1
             switch(Turn_Selector)
             {
                 case 0:
-                    Intro_Turn();
+                    Filler_Turn();
                     break;
                 default:
                     break;
@@ -57,9 +68,32 @@ namespace undertale_iteration_1
             GameForm.Turn_Ended = true;
             GameForm.Player_Turn = true;
         }
-        public void Intro_Turn()
+        public void Filler_Turn()
         {
             Thread.Sleep(1000);
+        }
+        #endregion
+    
+        #region Actions
+        public override string Select_Action(int pAction)
+        {
+            string output_text = "";
+            switch(pAction)
+            {
+                case 1:
+                    output_text = Check_Action();
+                    break;
+                case 2:
+                    output_text = Filler_Action();
+                    break;
+                default:
+                    break;
+            }
+            return output_text;
+        }
+        public string Filler_Action()
+        {
+            return "Filler text goes here";
         }
         #endregion
     }

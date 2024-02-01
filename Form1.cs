@@ -32,14 +32,14 @@ namespace undertale_iteration_1
         Sprite_Handler ItemBox;
         Sprite_Handler MercyBox;
         Sprite_Handler Target_Sprite;
-        Label lblArenaText;
+        Label lblArenaGeneral;
         Label lblArenaOpt1;
         Label lblArenaOpt2;
         Label lblArenaOpt3;
         Label lblArenaOpt4;
 
         //turn variables
-        public static bool Player_Turn = false;
+        public static bool Player_Turn = true;
         public static bool Turn_Ended = true;
 
         //player
@@ -127,7 +127,7 @@ namespace undertale_iteration_1
             my_fonts.AddFontFile("Resources/8bitoperator_jve.ttf");
             FontFamily pixel_font = my_fonts.Families[0];
 
-            lblArenaText = new Label
+            lblArenaGeneral = new Label
             {
                 AutoSize = true,
                 ForeColor = Color.White,
@@ -138,8 +138,8 @@ namespace undertale_iteration_1
                 Text = "",
                 Font = new Font(pixel_font, 18, FontStyle.Regular)
             };
-            Controls.Add(lblArenaText);
-            lblArenaText.BringToFront();
+            Controls.Add(lblArenaGeneral);
+            lblArenaGeneral.BringToFront();
             #endregion
 
             #region Spawn Option Text Boxes
@@ -150,7 +150,7 @@ namespace undertale_iteration_1
                 AutoSize = true,
                 ForeColor = Color.White,
                 BackColor = Color.Transparent,
-                Location = new Point(101, 270),
+                Location = new Point(100, 270),
                 Name = "lblArenaOpt1",
                 TabIndex = 1,
                 Text = "",
@@ -165,7 +165,7 @@ namespace undertale_iteration_1
                 AutoSize = true,
                 ForeColor = Color.White,
                 BackColor = Color.Transparent,
-                Location = new Point(101, 325), //345, 332
+                Location = new Point(100, 325), //345, 332
                 Name = "lblArenaOpt2",
                 TabIndex = 1,
                 Text = "",
@@ -180,7 +180,7 @@ namespace undertale_iteration_1
                 AutoSize = true,
                 ForeColor = Color.White,
                 BackColor = Color.Transparent,
-                Location = new Point(381, 270),
+                Location = new Point(380, 270),
                 Name = "lblArenaOpt3",
                 TabIndex = 1,
                 Text = "",
@@ -195,7 +195,7 @@ namespace undertale_iteration_1
                 AutoSize = true,
                 ForeColor = Color.White,
                 BackColor = Color.Transparent,
-                Location = new Point(381, 325),
+                Location = new Point(380, 325),
                 Name = "lblArenaOpt4",
                 TabIndex = 1,
                 Text = "",
@@ -474,38 +474,28 @@ namespace undertale_iteration_1
                 //if z is pressed then select the box
                 if (Z_Pressed)
                 {
-                    switch (player_box_pos)
+                    player.Set_Selected_Option();
+                    if (player_box_pos == -4)
                     {
-                        case -4:
-                            Play_Sound_Effect("snd_select");
-                            player.Set_Box_Position(player_box_pos - 4);
-                            Update_Arena_Text();
-                            Thread Fight_Logic_Thread = new Thread (Fight_Logic);
-                            Fight_Logic_Thread.Start();
-                            break;
-                        case -3:
-                            Play_Sound_Effect("snd_select");
-                            player.Set_Box_Position(player_box_pos - 4);
-                            Update_Arena_Text();
-                            Thread Act_Logic_Thread = new Thread(Act_Logic);
-                            Act_Logic_Thread.Start();
-                            break;
-                        case -2:
-                            Play_Sound_Effect("snd_select");
-                            player.Set_Box_Position(player_box_pos - 4);
-                            Update_Arena_Text();
-                            Thread Item_Logic_Thread = new Thread(Item_Logic);
-                            Item_Logic_Thread.Start();
-                            break;
-                        case -1:
-                            Play_Sound_Effect("snd_select");
-                            player.Set_Box_Position(player_box_pos - 4);
-                            Update_Arena_Text();
-                            Thread Mercy_Logic_Thread = new Thread(Mercy_Logic);
-                            Mercy_Logic_Thread.Start();
-                            break;
-                        default:
-                            break;
+                        Play_Sound_Effect("snd_select");
+                        player.Set_Box_Position(player_box_pos - 4);
+                        Update_Arena_Text();
+                        Thread Fight_Logic_Thread = new Thread (Fight_Logic);
+                        Fight_Logic_Thread.Start();
+                    }
+                    if (player_box_pos == -2)
+                    {
+                        Play_Sound_Effect("snd_select");
+                        player.Set_Box_Position(player_box_pos - 4);
+                        Update_Arena_Text();
+                        Thread Item_Logic_Thread = new Thread(Item_Logic);
+                        Item_Logic_Thread.Start();
+                    }
+                    else
+                    {
+                        Play_Sound_Effect("snd_select");
+                        player.Set_Box_Position(player_box_pos - 4);
+                        Update_Arena_Text();
                     }
                 }
                 else if (X_Pressed)
@@ -513,6 +503,27 @@ namespace undertale_iteration_1
                     player.Set_Box_Position(player_box_pos + 4);
                     Update_Arena_Text();
                 }
+            }
+            else if (player_box_pos == -7)
+            {
+                if (Z_Pressed)
+                {
+                    //run act logic
+                    Act_Logic();
+                }
+                else if (X_Pressed && !player.Wait_For_Input)
+                {
+                    player.Set_Option_Position(1);
+                    player.Set_Box_Position(player_box_pos + 4);
+                    player.Reset_Selected_Option();
+                    Update_Arena_Text();
+                }
+            }
+            else if(player_box_pos == -5)
+            {
+                //run mercy logic
+                //Thread Mercy_Logic_Thread = new Thread(Mercy_Logic);
+                //Mercy_Logic_Thread.Start();
             }
         }
 
@@ -523,6 +534,7 @@ namespace undertale_iteration_1
             //if statement is needed for the actual logic, however there are multiple break conditions
             bool break_condition = false;
             Stopwatch stopwatch = new Stopwatch();
+            Thread.Sleep(100);            
             while(!break_condition)
             {
                 stopwatch.Restart();
@@ -578,9 +590,19 @@ namespace undertale_iteration_1
 
         private void Act_Logic()
         {
-            player.Set_Box_Position(1);
-            Player_Turn = false;
-            Turn_Ended = true;
+            if(!player.Wait_For_Input)
+            {
+                Play_Sound_Effect("snd_select");
+                player.Wait_For_Input = true;
+                Update_Arena_Text();
+            }
+            else
+            {
+                player.Wait_For_Input = false;
+                player.Set_Box_Position(1);
+                Player_Turn = false;
+                Turn_Ended = true;
+            }
         }
 
         private void Item_Logic()
@@ -605,7 +627,7 @@ namespace undertale_iteration_1
         {
             //refresh the controls
             pbBackground.Refresh();
-            lblArenaText.Refresh();
+            lblArenaGeneral.Refresh();
 
             //lblPlayerHealth.Text = player.GetHealth() + "/20";
 
@@ -620,107 +642,9 @@ namespace undertale_iteration_1
 
             //increment the timer
             //int_time_counter++;
-        }
 
-        /*
-        private void Damage_System()
-        {
-            //checks if the player is touching the box in x-axis
-            if (player.Location.X + player.Size.X > box.Location.X && player.Location.X < box.Location.X + box.Size.X)
-            {
-                //checks if the player is touching the box in y-axis
-                if (player.Location.Y + player.Size.Y > box.Location.Y && player.Location.Y < box.Location.Y + box.Size.Y)
-                {
-                    //if the player is touching the box, the player takes damage
-                    player.Set_Health(player.GetHealth() - box.Get_Damage());
-                }
-            }
+            debug_label.Text = "box pos: " + player.Get_Box_Position() + "\noption pos: " + player.Get_Option_Position() + "\nselected option: " + player.Get_Selected_Option() + "\nwait for input: " + player.Wait_For_Input;
         }
-        */
-
-        //all funcitons that update something on the form
-        #region Updating Functions
-        private void Update_Arena_Hitbox()
-        {
-            //redefines the arena box
-            if (Player_Turn)
-            {
-                Arena_Hitbox.X = int_PLAYER_TURN_ARENA_X;
-                Arena_Hitbox.Width = int_PLAYER_TURN_ARENA_WIDTH;
-                Arena_Hitbox.Y = int_PLAYER_TURN_ARENA_Y;
-                Arena_Hitbox.Height = int_PLAYER_TURN_ARENA_HEIGHT;
-            }
-            else
-            {
-                Arena_Hitbox.X = int_DEFAULT_ARENA_X;
-                Arena_Hitbox.Width = int_DEFAULT_ARENA_WIDTH;
-                Arena_Hitbox.Y = int_DEFAULT_ARENA_Y;
-                Arena_Hitbox.Height = int_DEFAULT_ARENA_HEIGHT;
-            }
-        }
-        public void Update_Arena_Text()
-        {
-            if (Player_Turn)
-            {
-                float pos = player.Get_Box_Position();
-                if (pos > -1 && pos < 4) 
-                {
-                    //implement foreach later
-                    lblArenaText.Location = new Point(65, 270);
-                    lblArenaText.Text = "* " + Enemies[0].Choose_Arena_Text();
-                }
-                else if (pos == -4 || pos == -3 || pos == -1)
-                {
-                    //implement foreach later
-                    lblArenaText.Location = new Point(100, 270);
-                    lblArenaText.Text = "* " + Enemies[0].Get_Name();
-                }
-                else if (pos == -2)
-                {
-                    //implement real code later
-                    lblArenaText.Location = new Point(100, 270);
-                    lblArenaText.Text = "* Hidden Secret???";
-                }
-                else if (pos == -6)
-                {
-                    //implement real code later
-                    lblArenaText.Location = new Point(65, 270);
-                    lblArenaText.Text = "* CONGRATULATIONS!!! \n* YOU'VE FOUND A BUG!!!";
-                }
-                else if (pos == -8) lblArenaText.Text = "";
-            }
-            else lblArenaText.Text = "";
-        }
-        private void Update_Option_Boxes()
-        {
-            //resets all the boxes
-            PointF Box_Default = new PointF(0, 0);
-            FightBox.Set_Row_Col(Box_Default);
-            ActBox.Set_Row_Col(Box_Default);
-            ItemBox.Set_Row_Col(Box_Default);
-            MercyBox.Set_Row_Col(Box_Default);
-            //makes the box yellow if player is there
-            int pos = player.Get_Box_Position();
-            if (pos > -1)
-                switch (pos)
-                {
-                    case 0:
-                        FightBox.Next();
-                        break;
-                    case 1:
-                        ActBox.Next();
-                        break;
-                    case 2:
-                        ItemBox.Next();
-                        break;
-                    case 3:
-                        MercyBox.Next();
-                        break;
-                    default:
-                        break;
-                }
-        }
-        #endregion  
 
         //all systems that run per tick
         #region Systems
@@ -761,13 +685,42 @@ namespace undertale_iteration_1
                     player.Set_Location(new PointF(49 + (player_box_pos * 150), loc.Y)); //boxes are 112 wide, with 38 pixels between -- guessed 50 pxiels, seems to have nailed it
                     player.Set_Center(new PointF(player.Get_Center().X, flt_FORM_HEIGHT - 27)); //boxes are 5 off the floor and 44 high
                 }
-                else if (player_box_pos > -5)
+                //attack occuring/item consumed, leave the screen
+                else if (player_box_pos == -6 || player_box_pos == -8)
+                {
+                    //move them off the screen
+                    player.Set_Location(new PointF(-100, -100));
+                }
+                else if (player_box_pos > -8 && !player.Wait_For_Input)
                 {
                     //if the box pos is negative but above -5, the player has selected a box
                     int player_option_pos = player.Get_Option_Position();
                     //check how many options the player has
-                    //for current iteration, only one enemy is implemented and no items for now, a foreach will be implemented later
                     int num_options = 1;
+                    if (player_box_pos > -5 && player_box_pos != -2)
+                    {
+                        num_options = Enemies.Count;
+                    }
+                    else if (player_box_pos < -4)
+                    {
+                        switch (player_box_pos)
+                        {
+                            case -7:
+                                //enemy selected to act on
+                                num_options = Enemies[player.Get_Selected_Option() - 1].Get_Actions().Length;
+                                break;
+                            case -6:
+                                //item selected to consume (probably)
+                                break;
+                            case -5:
+                                //spare or flee
+                                num_options = 2;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    
                     if (Left_Pressed)
                     {
                         if (player_option_pos == 3 && 1 <= num_options) {player.Set_Option_Position(1); Play_Sound_Effect("snd_movemenu");}
@@ -815,7 +768,7 @@ namespace undertale_iteration_1
                 }
                 else
                 {
-                    //if the player's box pos is this negative, the player has selected an option
+                    //no idea what happened if it gets this bad, but leave to screen to tell me
                     //move them off the screen
                     player.Set_Location(new PointF(-100, -100));
                 }
@@ -865,20 +818,146 @@ namespace undertale_iteration_1
                 Turn_Ended = false;
             }
         }
+        
+        /*
+        private void Damage_System()
+        {
+            //checks if the player is touching the box in x-axis
+            if (player.Location.X + player.Size.X > box.Location.X && player.Location.X < box.Location.X + box.Size.X)
+            {
+                //checks if the player is touching the box in y-axis
+                if (player.Location.Y + player.Size.Y > box.Location.Y && player.Location.Y < box.Location.Y + box.Size.Y)
+                {
+                    //if the player is touching the box, the player takes damage
+                    player.Set_Health(player.GetHealth() - box.Get_Damage());
+                }
+            }
+        }
+        */
+
         #endregion
+
+        //all funcitons that update something on the form
+        #region Updating Functions
+        private void Update_Arena_Hitbox()
+        {
+            //redefines the arena box
+            if (Player_Turn)
+            {
+                Arena_Hitbox.X = int_PLAYER_TURN_ARENA_X;
+                Arena_Hitbox.Width = int_PLAYER_TURN_ARENA_WIDTH;
+                Arena_Hitbox.Y = int_PLAYER_TURN_ARENA_Y;
+                Arena_Hitbox.Height = int_PLAYER_TURN_ARENA_HEIGHT;
+            }
+            else
+            {
+                Arena_Hitbox.X = int_DEFAULT_ARENA_X;
+                Arena_Hitbox.Width = int_DEFAULT_ARENA_WIDTH;
+                Arena_Hitbox.Y = int_DEFAULT_ARENA_Y;
+                Arena_Hitbox.Height = int_DEFAULT_ARENA_HEIGHT;
+            }
+        }
+        public void Update_Arena_Text()
+        {
+            //clear all
+            lblArenaGeneral.Text = "";
+            lblArenaOpt1.Text = "";
+            lblArenaOpt2.Text = "";
+            lblArenaOpt3.Text = "";
+            lblArenaOpt4.Text = "";
+            if (Player_Turn)
+            {
+                float box_pos = player.Get_Box_Position();
+                if (box_pos > -1) 
+                {
+                    //implement foreach later
+                    lblArenaGeneral.Location = new Point(65, 270);
+                    lblArenaGeneral.Text = "* " + Enemies[0].Choose_Arena_Text();
+                }
+                else if (box_pos == -4 || box_pos == -3 || box_pos == -1)
+                {
+                    lblArenaGeneral.Text = "";
+                    //implement foreach later
+                    lblArenaOpt1.Text = "* " + Enemies[0].Get_Name();
+                }
+                else if (box_pos == -2)
+                {
+                    //implement real code later
+                    lblArenaGeneral.Text = "";
+                    lblArenaOpt1.Text = "* Hidden Secret???";
+                }
+                //enemy selected to fight
+                else if (box_pos == -8) lblArenaGeneral.Text = "";
+                //enemy selected to act
+                else if (box_pos == -7)
+                {
+                    if (!player.Wait_For_Input)
+                    {
+                        string[] actions = Enemies[player.Get_Selected_Option() - 1].Get_Actions();
+                        lblArenaOpt1.Text = "* " + actions[0];
+                        if (actions.Length > 1) lblArenaOpt2.Text = "* " + actions[1];
+                        if (actions.Length > 2) lblArenaOpt3.Text = "* " + actions[2];
+                        if (actions.Length > 3) lblArenaOpt4.Text = "* " + actions[3];
+                    }
+                    else
+                    {
+                        lblArenaGeneral.Text = Enemies[player.Get_Selected_Option() - 1].Select_Action(player.Get_Option_Position());
+                    }
+                }
+                //item selected to consume
+                else if (box_pos == -6)
+                {
+                    //implement real code later
+                    lblArenaGeneral.Text = "* CONGRATULATIONS!!! \n* YOU'VE FOUND A BUG!!!";
+                }
+            }
+        }
+        private void Update_Option_Boxes()
+        {
+            //resets all the boxes
+            PointF Box_Default = new PointF(0, 0);
+            FightBox.Set_Row_Col(Box_Default);
+            ActBox.Set_Row_Col(Box_Default);
+            ItemBox.Set_Row_Col(Box_Default);
+            MercyBox.Set_Row_Col(Box_Default);
+            //makes the box yellow if player is there
+            int pos = player.Get_Box_Position();
+            if (pos > -1)
+                switch (pos)
+                {
+                    case 0:
+                        FightBox.Next();
+                        break;
+                    case 1:
+                        ActBox.Next();
+                        break;
+                    case 2:
+                        ItemBox.Next();
+                        break;
+                    case 3:
+                        MercyBox.Next();
+                        break;
+                    default:
+                        break;
+                }
+        }
 
         private void Player_Turn_Start()
         {
             Update_Arena_Hitbox();
             Update_Arena_Text();
+            player.Reset_Selected_Option();
+            player.Set_Option_Position(1);
         }
+        
+        #endregion
 
         #region Animations
         private void Animate_Player_Projectile()
         {
             //fight thread waits 1500ms before continuing
             //increments sprite map 15 times with 100ms intervals and then defaults the value
-            for(int i = 0; i < 15; i++)
+            for(int i = 0; i < 20; i++)
             {
                 Thread.Sleep(100);
                 Player_Attack_Sprite.Next();
@@ -921,6 +1000,7 @@ namespace undertale_iteration_1
                 PointF padding = new PointF(5, 0);
                 int offest_y = (int)(Enemies[0].Get_Height() - size.Y) / 2;
                 PointF loc = new PointF(0,Enemies[0].Get_Sprites()[0].Get_Location().Y + offest_y);
+
                 //adds each digit of the damage number to the list and set the Row_Col to the correct digit
                 int List_Index = 0;
                 foreach(char c in damage.ToString())
@@ -929,6 +1009,7 @@ namespace undertale_iteration_1
                     Attack_Numbers[List_Index].Set_Row_Col(new PointF(0, (int)Char.GetNumericValue(c)));
                     List_Index += 1;
                 }
+
                 //set x location of each digit
                 int num_offset_x = (int)(Enemies[0].Get_Sprites()[0].Get_Size().X - Attack_Numbers[0].Get_Size().X * Attack_Numbers.Count);
                 foreach (Sprite_Handler sprite in Attack_Numbers)
@@ -936,6 +1017,7 @@ namespace undertale_iteration_1
                     sprite.Set_Location(new PointF(Enemies[0].Get_Sprites()[0].Get_Location().X + num_offset_x + Enemies[0].Get_Sprites()[0].Get_Size().X / 2, sprite.Get_Location().Y));
                     num_offset_x += (int)sprite.Get_Size().X;
                 }
+
                 //play the sound
                 Play_Sound_Effect("snd_damage");
             }
@@ -946,15 +1028,19 @@ namespace undertale_iteration_1
                 string background_colour = "#FFC386FF";
                 PointF size = new PointF(124, 38);
                 PointF offset = new PointF(825, 174);
+
                 //center the miss sprite above the enemy
                 int num_offset_x = (int)(Enemies[0].Get_Sprites()[0].Get_Size().X - (int)size.X )/ 2;
                 PointF loc = new PointF(Enemies[0].Get_Sprites()[0].Get_Location().X + num_offset_x, Enemies[0].Get_Sprites()[0].Get_Location().Y - size.Y - 10);
                 Attack_Numbers.Add(new Sprite_Handler(sheet, ColorTranslator.FromHtml(background_colour), size, offset, loc));
             }
+
             //draw the sprites
             Draw_Attack_Numbers = true;
+
             //busy loop until the player is done attacking
             Thread.Sleep(800);
+
             Draw_Attack_Numbers = false;
 
             //default values
