@@ -19,7 +19,7 @@ namespace undertale_iteration_1
             PointF rows_cols = new PointF(1, 2);
             PointF offset = new PointF(305, 21);
             PointF padding = new PointF(1, 0);
-            PointF loc = new PointF((GameForm.flt_FORM_WIDTH - size.X - 16) / 2, 50);
+            PointF loc = new PointF((GameForm.flt_FORM_WIDTH - size.X - 16) / 2, 90);
             Sprites[0] = new Sprite_Handler(sheet, background_col, size, rows_cols, offset, padding, loc);
             Sprites[0].Set_Scale(1.5f);
             #endregion

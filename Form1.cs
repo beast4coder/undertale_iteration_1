@@ -39,7 +39,12 @@ namespace undertale_iteration_1
 
         //player
         Player player;
-        Sprite_Handler Player_Projectile_Sprite;
+        Sprite_Handler Player_Attack_Sprite;
+        Sprite_Handler Slash_Sprite;
+        bool Draw_Slash_Sprite = false;
+        List<Sprite_Handler> Attack_Numbers = new List<Sprite_Handler>();
+        bool Draw_Attack_Numbers = false;
+        
 
         //enemies
         List<Enemy> Enemies = new List<Enemy>();
@@ -92,7 +97,18 @@ namespace undertale_iteration_1
             offset = new PointF(1139, 23);
             padding = new PointF(5, 0);
             loc = new PointF(0, 0);
-            Player_Projectile_Sprite = new Sprite_Handler(sheet, size, rows_cols, offset, padding, loc);
+            Player_Attack_Sprite = new Sprite_Handler(sheet, size, rows_cols, offset, padding, loc);
+            #endregion
+
+            #region Define Slash Sprite
+            sheet = Resource1.Attack_Effects_Sprite_Sheet;
+            background_colour = "#FFC386FF";
+            size = new PointF(26, 110);
+            rows_cols = new PointF(1, 6);
+            offset = new PointF(910, 235);
+            padding = new PointF(5, 0);
+            loc = new PointF(0, 0);
+            Slash_Sprite = new Sprite_Handler(sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
             #endregion
 
             //define arena size, objects and controls
@@ -232,12 +248,11 @@ namespace undertale_iteration_1
             );
             e.Graphics.DrawRectangle(new Pen(Color.White, int_ARENA_WALL_SIZE), arena_wall);
 
-            //draws the target and player projectile sprites if player is attacking
-            if (player.Get_Box_Position() == -8)
-            {
-                Target_Sprite.Draw(e.Graphics);
-                Player_Projectile_Sprite.Draw(e.Graphics);
-            }
+            //Draw the option boxes
+            FightBox.Draw(e.Graphics);
+            ActBox.Draw(e.Graphics);
+            ItemBox.Draw(e.Graphics);
+            MercyBox.Draw(e.Graphics);
 
             //Draw enemy sprites
             foreach (Enemy enemy in Enemies)
@@ -248,13 +263,24 @@ namespace undertale_iteration_1
                 }
             }
 
-            //Draw objects
-            //***the last one drawn will be on top***
-            FightBox.Draw(e.Graphics);
-            ActBox.Draw(e.Graphics);
-            ItemBox.Draw(e.Graphics);
-            MercyBox.Draw(e.Graphics);
+            //Ony draws if the player is attacking
+            if (player.Get_Box_Position() == -8)
+            {
+                //Draws the target and player attack sprites while player is attacking
+                Target_Sprite.Draw(e.Graphics);
+                Player_Attack_Sprite.Draw(e.Graphics);
+                //Draws the slash sprite once player has attacked
+                if (Draw_Slash_Sprite) Slash_Sprite.Draw(e.Graphics);
+                if (Draw_Attack_Numbers)
+                {
+                    foreach (Sprite_Handler sprite in Attack_Numbers)
+                    {
+                        sprite.Draw(e.Graphics);
+                    }
+                }
+            }
 
+            //Draw player sprite last so it is on top
             player.Draw(e.Graphics);
         }
 
@@ -437,44 +463,56 @@ namespace undertale_iteration_1
         #region Thread Logic
         private void Fight_Logic()
         {
-            Player_Projectile_Sprite.Set_Location(new PointF(Arena_Hitbox.X, Arena_Hitbox.Y));
+            Player_Attack_Sprite.Set_Location(new PointF(Arena_Hitbox.X, Arena_Hitbox.Y));
             //if statement is needed for the actual logic, however there are multiple break conditions
             bool break_condition = false;
             Stopwatch stopwatch = new Stopwatch();
             while(!break_condition)
             {
                 stopwatch.Restart();
-                if(!Z_Pressed && Player_Projectile_Sprite.Get_Location().X < Arena_Hitbox.X + Arena_Hitbox.Width - Player_Projectile_Sprite.Get_Size().X)
+                if(!Z_Pressed && Player_Attack_Sprite.Get_Location().X < Arena_Hitbox.X + Arena_Hitbox.Width - Player_Attack_Sprite.Get_Size().X)
                 {
-                    Player_Projectile_Sprite.Move(1, 0);
+                    Player_Attack_Sprite.Move(1, 0);
                     while (stopwatch.ElapsedMilliseconds < 1.5) ;
                 }
                 else
                 {
+                    int damage;
                     Thread animate_projectile = new Thread(Animate_Player_Projectile);
                     animate_projectile.Start();
-                    //apply undertale damage algorithm
-                    //borrowed from u/spiceytomato at https://www.reddit.com/r/Underminers/comments/56xm7x/damage_calculation/
-                    int projectile_center = (int)Player_Projectile_Sprite.Get_Location().X + (int)(Player_Projectile_Sprite.Get_Size().X / 2);
-                    int distance = Math.Abs(projectile_center - (int)(Target_Sprite.Get_Size().X /2) + (int)Target_Sprite.Get_Location().X);
-                    int damage;
-                    Random rand = new Random();
-                    if(distance <= 12)
+                    //if player attacked, calculate damage
+                    if(Z_Pressed)
                     {
-                        damage = (int)Math.Round((player.Get_Attack() - Enemies[0].Get_Defense() + rand.Next(3)) * 2.2);
+                        //apply undertale damage algorithm
+                        //borrowed from u/spiceytomato at https://www.reddit.com/r/Underminers/comments/56xm7x/damage_calculation/
+                        int projectile_center = (int)Player_Attack_Sprite.Get_Location().X + (int)(Player_Attack_Sprite.Get_Size().X / 2);
+                        int distance = Math.Abs(projectile_center - (int)(Target_Sprite.Get_Size().X /2) + (int)Target_Sprite.Get_Location().X);
+                        Random rand = new Random();
+                        if(distance <= 12)
+                        {
+                            damage = (int)Math.Round((player.Get_Attack() - Enemies[0].Get_Defense() + rand.Next(3)) * 2.2);
+                        }
+                        else
+                        {
+                            damage = (int)Math.Round((player.Get_Attack() - Enemies[0].Get_Defense() + rand.Next(3)) * (1 - distance/Target_Sprite.Get_Size().X) * 2);
+                        }
                     }
+                    //if player didn't attack, set damage to -1 as an indicator that player didn't attack
                     else
                     {
-                        damage = (int)Math.Round((player.Get_Attack() - Enemies[0].Get_Defense() + rand.Next(3)) * (1 - distance/Target_Sprite.Get_Size().X) * 2);
+                        damage = -1;
                     }
+                    //apply damage
                     if (damage > 0) Enemies[0].Set_Health(Enemies[0].Get_Health() - damage);
                     debug_label.Text = Enemies[0].Get_Health().ToString();
+
+                    //animate the slash and damage numbers
+                    Animate_Slash_Damage(damage);
                     
-                    Thread.Sleep(1500);
                     break_condition = true;
                 }
             }
-
+            stopwatch.Stop();
             player.Set_Box_Position(0);
             Player_Turn = false;
             Turn_Ended = true;
@@ -766,20 +804,92 @@ namespace undertale_iteration_1
         #region Animations
         private void Animate_Player_Projectile()
         {
-            bool break_condition = false;
-            Stopwatch stopwatch_break = new Stopwatch();
-            stopwatch_break.Start();
-            while(!break_condition)
+            //fight thread waits 1500ms before continuing
+            //increments sprite map 15 times with 100ms intervals and then defaults the value
+            for(int i = 0; i < 15; i++)
             {
                 Thread.Sleep(100);
-                Player_Projectile_Sprite.Next();
-                if(stopwatch_break.ElapsedMilliseconds >= 1000)
-                {
-                    break_condition = true;
-                }
+                Player_Attack_Sprite.Next();
             }
-            stopwatch_break.Stop();
-            Player_Projectile_Sprite.Set_Row_Col(new PointF(0, 0));
+            Player_Attack_Sprite.Set_Row_Col(new PointF(0, 0));
+        }
+
+        private void Animate_Slash_Damage(int damage)
+        {
+            if(damage > -1)
+            {
+                //play the slash noise
+                Play_Sound_Effect("snd_laz");
+                //use offset to center the slash on the enemy
+                int offest_x = (int)(Enemies[0].Get_Sprites()[0].Get_Size().X - Slash_Sprite.Get_Size().X) / 2;
+                int offest_y = (int)(Enemies[0].Get_Height() - Slash_Sprite.Get_Size().Y) / 2;
+                float loc_x = Enemies[0].Get_Sprites()[0].Get_Location().X + offest_x;
+                float loc_y = Enemies[0].Get_Sprites()[0].Get_Location().Y + offest_y;
+                Slash_Sprite.Set_Location(new PointF(loc_x, loc_y));
+
+                //draw sprite, increment sprite map every 150ms to complete animation
+                Draw_Slash_Sprite = true;
+                for (int i = 0; i < 6; i++)
+                {
+                    Thread.Sleep(150);
+                    Slash_Sprite.Next();
+                }
+                Draw_Slash_Sprite = false;
+            }
+
+            //define the damage number sprites
+            if(damage > 0)
+            {
+                //define the damage number sprites
+                Bitmap sheet = Resource1.Attack_Effects_Sprite_Sheet;
+                string background_colour = "#FFC386FF";
+                PointF size = new PointF(36, 38);
+                PointF rows_cols = new PointF(1, 10);
+                PointF offset = new PointF(415, 174);
+                PointF padding = new PointF(5, 0);
+                int offest_y = (int)(Enemies[0].Get_Height() - size.Y) / 2;
+                PointF loc = new PointF(0,Enemies[0].Get_Sprites()[0].Get_Location().Y + offest_y);
+                //adds each digit of the damage number to the list and set the Row_Col to the correct digit
+                int List_Index = 0;
+                foreach(char c in damage.ToString())
+                {
+                    Attack_Numbers.Add(new Sprite_Handler(sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc));
+                    Attack_Numbers[List_Index].Set_Row_Col(new PointF(0, (int)Char.GetNumericValue(c)));
+                    List_Index += 1;
+                }
+                //set x location of each digit
+                int num_offset_x = (int)(Enemies[0].Get_Sprites()[0].Get_Size().X - Attack_Numbers[0].Get_Size().X * Attack_Numbers.Count);
+                foreach (Sprite_Handler sprite in Attack_Numbers)
+                {
+                    sprite.Set_Location(new PointF(Enemies[0].Get_Sprites()[0].Get_Location().X + num_offset_x + Enemies[0].Get_Sprites()[0].Get_Size().X / 2, sprite.Get_Location().Y));
+                    num_offset_x += (int)sprite.Get_Size().X;
+                }
+
+            }
+            else
+            {
+                //define the miss sprite
+                Bitmap sheet = Resource1.Attack_Effects_Sprite_Sheet;
+                string background_colour = "#FFC386FF";
+                PointF size = new PointF(124, 38);
+                PointF offset = new PointF(825, 174);
+                //center the miss sprite above the enemy
+                int num_offset_x = (int)(Enemies[0].Get_Sprites()[0].Get_Size().X - (int)size.X )/ 2;
+                PointF loc = new PointF(Enemies[0].Get_Sprites()[0].Get_Location().X + num_offset_x, Enemies[0].Get_Sprites()[0].Get_Location().Y - size.Y - 10);
+                Attack_Numbers.Add(new Sprite_Handler(sheet, ColorTranslator.FromHtml(background_colour), size, offset, loc));
+            }
+            //play the sound
+            Play_Sound_Effect("snd_damage");
+            //draw the sprites
+            Draw_Attack_Numbers = true;
+            //busy loop until the player is done attacking
+            Thread.Sleep(800);
+            Draw_Attack_Numbers = false;
+
+            //default values
+            Slash_Sprite.Set_Row_Col(new PointF(0, 0));
+            //check if null first, if not it shits itself
+            if (Attack_Numbers != null) Attack_Numbers.Clear();
         }
         #endregion
 

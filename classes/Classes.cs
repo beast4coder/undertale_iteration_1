@@ -408,6 +408,13 @@
         #endregion
         #endregion
 
+        #region Misc Methods
+        public virtual int Get_Height()
+        {
+            if(Sprites.Length > 0) return (int)Sprites[Sprites.Length - 1].Get_Location().Y + (int)Sprites[Sprites.Length - 1].Get_Size().Y - (int)Sprites[0].Get_Location().Y;
+            else return (int)Sprites[0].Get_Size().Y;
+        }
+        #endregion
         //empty methods that will be overloaded by child classes
         //virtual lets them be overloaded
         public virtual void Select_Turn() {}
