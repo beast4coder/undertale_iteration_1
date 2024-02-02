@@ -221,6 +221,13 @@
             Scale = pScale;
         }
         #endregion
+        #region Hitbox
+        //get hitbox
+        public Rectangle Get_Hitbox()
+        {
+            return new Rectangle((int)Location.X, (int)Location.Y, (int)(Size.X*Scale), (int)(Size.Y*Scale));
+        }
+        #endregion
         #endregion
     }
 

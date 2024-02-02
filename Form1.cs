@@ -500,8 +500,8 @@ namespace undertale_iteration_1
             JustPressed_System();
             Player_Movement_System();
             debug_label.Text = "box_pos : " + player.Get_Box_Position();
+            Damage_System();
             Turn_System();
-            /*Damage_System();*/
 
             //increment the timer
             //int_time_counter++;
@@ -916,21 +916,24 @@ namespace undertale_iteration_1
             }
         }
         
-        /*
         private void Damage_System()
         {
-            //checks if the player is touching the box in x-axis
-            if (player.Location.X + player.Size.X > box.Location.X && player.Location.X < box.Location.X + box.Size.X)
+            Rectangle player_hitbox = player.Get_Hitbox();
+            foreach (Enemy enemy in Enemies)
             {
-                //checks if the player is touching the box in y-axis
-                if (player.Location.Y + player.Size.Y > box.Location.Y && player.Location.Y < box.Location.Y + box.Size.Y)
+                if(enemy.Get_Projectiles != null)
                 {
-                    //if the player is touching the box, the player takes damage
-                    player.Set_Health(player.GetHealth() - box.Get_Damage());
+                    foreach (Projectile projectile in enemy.Get_Projectiles())
+                    {
+                        if(player_hitbox.IntersectsWith(projectile.Get_Hitbox()))
+                        {
+                            player.Set_Health(player.Get_Health() - projectile.Get_Damage());
+                            enemy.Get_Projectiles().Remove(projectile);
+                        }
+                    }
                 }
             }
         }
-        */
 
         #endregion
 
