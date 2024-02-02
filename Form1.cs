@@ -495,7 +495,7 @@ namespace undertale_iteration_1
             //increment the timer
             //int_time_counter++;
 
-            debug_label.Text = "box pos: " + player.Get_Box_Position() + "\noption pos: " + player.Get_Option_Position() + "\nselected option: " + player.Get_Selected_Option() + "\nwait for input: " + player.Wait_For_Input;
+            debug_label.Text = "box pos: " + player.Get_Box_Position() + "\noption pos: " + player.Get_Option_Position() + "\nselected option: " + player.Get_Selected_Option() + "\nwait for input: " + player.Wait_For_Input + "\nZ_Pressed: " + Z_Pressed;
         }
 
         #region Player Turn Logic
@@ -527,7 +527,7 @@ namespace undertale_iteration_1
                         Thread Fight_Logic_Thread = new Thread (Fight_Logic);
                         Fight_Logic_Thread.Start();
                     }
-                    else if (player_box_pos == -2)
+                    else if (player_box_pos == -2 && !player.Wait_For_Input)
                     {
                         Play_Sound_Effect("snd_select");
                         player.Set_Box_Position(player_box_pos - 4);
@@ -563,12 +563,12 @@ namespace undertale_iteration_1
                     Update_Arena_Text();
                 }
             }
-            else if (player_box_pos == -6)
+            else if (player_box_pos == -6 && Z_Pressed && player.Wait_For_Input)
             {
                 //more item logic
                 Item_Logic();
             }
-            else if(player_box_pos == -5)
+            else if(player_box_pos == -5 && Z_Pressed)
             {
                 //run mercy logic
                 //Thread Mercy_Logic_Thread = new Thread(Mercy_Logic);
@@ -639,7 +639,6 @@ namespace undertale_iteration_1
         {
             if(!player.Wait_For_Input)
             {
-                Z_Pressed = false;
                 Play_Sound_Effect("snd_select");
                 player.Wait_For_Input = true;
                 Update_Arena_Text();
@@ -657,7 +656,7 @@ namespace undertale_iteration_1
         {
             if(!player.Wait_For_Input)
             {
-                Thread.Sleep(20);
+                Z_Pressed = false;
                 Update_Arena_Text();
                 player.Use_Item(player.Get_Option_Position() - 1);
                 Play_Sound_Effect("snd_select");
