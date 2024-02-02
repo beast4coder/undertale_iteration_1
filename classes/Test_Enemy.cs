@@ -13,6 +13,7 @@ namespace undertale_iteration_1
             Defense = 5;
             Sprites = new Sprite_Handler[1];
             Turn_Selector = 0;
+            Projectiles = new List<Projectile>();
             
             //define dummy sprite
             #region Dummy Sprite
@@ -64,17 +65,32 @@ namespace undertale_iteration_1
             switch(Turn_Selector)
             {
                 case 0:
-                    Filler_Turn();
+                    Random rand = new Random();
+                    Projectiles.Add(new Test_Projectile(Damage, new PointF(0, GameForm.int_DEFAULT_ARENA_Y + rand.Next(GameForm.int_DEFAULT_ARENA_HEIGHT -30))));
+                    Thread turn_thread = new Thread(Test_Turn);
+                    turn_thread.Start();
                     break;
                 default:
                     break;
             }
+        }
+        public void End_Turn()
+        {
             GameForm.Turn_Ended = true;
             GameForm.Player_Turn = true;
         }
-        public void Filler_Turn()
+        public void Test_Turn()
         {
-            Thread.Sleep(1000);
+            while(Projectiles.Count > 0 && Projectiles[0].Get_Location().X < GameForm.int_DEFAULT_ARENA_X + GameForm.int_DEFAULT_ARENA_WIDTH)
+            {
+                Projectiles[0].Move();
+                Thread.Sleep(50);
+            }
+            if(Projectiles.Count > 0)
+            {
+                Projectiles.RemoveAt(0);
+            }
+            End_Turn();
         }
         #endregion
     
@@ -113,5 +129,29 @@ namespace undertale_iteration_1
         }
         #endregion
     }
+
+    #region Projectiles
+    internal class Test_Projectile : Projectile
+    {
+        private int Speed = 5;
+        public Test_Projectile(int pDamage, PointF pLoc)
+        : base(
+            //define the projectile
+            Resource1.Napstablook_and_Dummies_Sheet,
+            ColorTranslator.FromHtml("#FFC386FF"),
+            new PointF(30, 30),
+            new PointF(1, 1),
+            new PointF(142, 292),
+            new PointF(0, 0),
+            pLoc,
+            pDamage
+        ) {}
+        public override void Move()
+        {
+            Location.X += Speed;
+        }
+    }
+
+    #endregion
 }
 

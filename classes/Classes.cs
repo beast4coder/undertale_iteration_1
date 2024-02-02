@@ -75,7 +75,7 @@
             g.DrawImage(Sprite, new Rectangle((int)Location.X, (int)Location.Y, width, height));
         }
         #region Sprite Sheet Manipulation
-        private Bitmap Process_SpriteSheet(Bitmap pSheet, Color pTarget_Colour)
+        protected Bitmap Process_SpriteSheet(Bitmap pSheet, Color pTarget_Colour)
         {
             //checks for pixels in the sheet that are supposed to be transparent and makes them transparent
             //loops through every pixel in the sheet
@@ -93,7 +93,7 @@
             return pSheet;
         }
 
-        private void Update_SpriteArea()
+        protected void Update_SpriteArea()
         {
             //calculate total offset for x
             //use current column as that moves it across
@@ -174,7 +174,7 @@
             Update_Center();
         }
         //move location
-        public void Move(float x, float y)
+        public virtual void Move(float x, float y)
         {
             Location = new PointF(Location.X + x, Location.Y + y);
             Update_Center();
@@ -411,7 +411,7 @@
 
     internal class Projectile : Sprite_Handler
     {
-        private int Damage;
+        protected int Damage;
 
         public Projectile(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, int pDamage)
         : base(pSheet, pBackground_Colour, pSize, pRows_Cols, pOffset, pPadding, pLoc)
@@ -423,6 +423,7 @@
         {
             return Damage;
         }
+        public virtual void Move() {}
     }
 
     internal class Enemy

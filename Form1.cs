@@ -24,10 +24,10 @@ namespace undertale_iteration_1
         const int int_PLAYER_TURN_ARENA_Y = 254;
         const int int_PLAYER_TURN_ARENA_WIDTH = 565;
         const int int_PLAYER_TURN_ARENA_HEIGHT = 130;
-        const int int_DEFAULT_ARENA_X = 230;
-        const int int_DEFAULT_ARENA_Y = 199;
-        const int int_DEFAULT_ARENA_WIDTH = 180;
-        const int int_DEFAULT_ARENA_HEIGHT = 185;
+        public const int int_DEFAULT_ARENA_X = 230;
+        public const int int_DEFAULT_ARENA_Y = 199;
+        public const int int_DEFAULT_ARENA_WIDTH = 180;
+        public const int int_DEFAULT_ARENA_HEIGHT = 185;
         Sprite_Handler FightBox;
         Sprite_Handler ActBox;
         Sprite_Handler ItemBox;
@@ -332,12 +332,21 @@ namespace undertale_iteration_1
             ItemBox.Draw(e.Graphics);
             MercyBox.Draw(e.Graphics);
 
-            //Draw enemy sprites
+            //Draw enemy sprites and projectiles
             foreach (Enemy enemy in Enemies)
             {
                 foreach (Sprite_Handler sprite in enemy.Get_Sprites())
                 {
                     sprite.Draw(e.Graphics);
+                }
+
+                List<Projectile> projectiles = enemy.Get_Projectiles();
+                if(projectiles != null)
+                {
+                    foreach (Projectile projectile in projectiles)
+                    {
+                        projectile.Draw(e.Graphics);
+                    }
                 }
             }
 
@@ -489,14 +498,15 @@ namespace undertale_iteration_1
 
             //run the systems
             JustPressed_System();
-            Turn_System();
             Player_Movement_System();
+            debug_label.Text = "box_pos : " + player.Get_Box_Position();
+            Turn_System();
             /*Damage_System();*/
 
             //increment the timer
             //int_time_counter++;
 
-            //debug_label.Text = " mercy: " + Enemies[0].Get_Mercy();
+            
         }
 
         #region Player Turn Logic
@@ -690,7 +700,7 @@ namespace undertale_iteration_1
             if(Enemies[player.Get_Option_Position() - 1].Get_Mercy())
             {
                 Play_Sound_Effect("snd_dumbvictory");
-                //Enemies.RemoveAt(player.Get_Box_Position() - 1);
+                Enemies.RemoveAt(player.Get_Option_Position() - 1);
             }
             else
             {
@@ -764,12 +774,16 @@ namespace undertale_iteration_1
                     int player_option_pos = player.Get_Option_Position();
                     //check how many options the player has
                     int num_options = 1;
-                    if (player_box_pos > -6 && player_box_pos < -2)
+                    if (Enemies.Count == 0)
+                    {
+                        num_options = 1;
+                    }
+                    else if (player_box_pos > -6 && player_box_pos < -2)
                     {
                         //display enemy list for fight, act or spare
                         num_options = Enemies.Count;
                     }
-                    if (player_box_pos == -2)
+                    else if (player_box_pos == -2)
                     {
                         //pick an item
                         num_options = player.Get_Inventory().Count;
@@ -868,20 +882,37 @@ namespace undertale_iteration_1
             //handles calling new turns so there are no issues with threads
             if (Turn_Ended)
             {
-                if(Player_Turn)
+                Check_Enemies();
+                if(Enemies.Count == 0)
                 {
-                    Player_Turn_Start();
+                    if(player.Get_Box_Position() == 3)
+                    {
+                        Thread box_thread = new Thread(() => MessageBox.Show("You won! \nYou spared the dummy!"));
+                        box_thread.Start();
+                    }
+                    else if(player.Get_Box_Position() == 0)
+                    {
+                        Thread box_thread = new Thread(() => MessageBox.Show("You won! \nYou killed the dummy!"));
+                        box_thread.Start();
+                    }
+                    Close();
                 }
                 else
                 {
-                    Update_Arena_Text();
-                    Update_Arena_Hitbox();
-                    player.Set_Center(new PointF(Arena_Hitbox.X + Arena_Hitbox.Width / 2, Arena_Hitbox.Y + Arena_Hitbox.Height / 2));
-                    //foreach later
-                    Thread turn_thread = new Thread(Enemies[0].Select_Turn);
-                    turn_thread.Start();
+                    if(Player_Turn)
+                    {
+                        Player_Turn_Start();
+                    }
+                    else
+                    {
+                        Update_Arena_Text();
+                        Update_Arena_Hitbox();
+                        player.Set_Center(new PointF(Arena_Hitbox.X + Arena_Hitbox.Width / 2, Arena_Hitbox.Y + Arena_Hitbox.Height / 2));
+                        //foreach later
+                        Enemies[0].Select_Turn();
+                    }
+                    Turn_Ended = false;
                 }
-                Turn_Ended = false;
             }
         }
         
@@ -936,7 +967,7 @@ namespace undertale_iteration_1
             lblArenaOpt3.ForeColor = Color.White;
             lblArenaOpt4.ForeColor = Color.White;
             //then update
-            if (Player_Turn)
+            if (Player_Turn && Enemies.Count != 0)
             {
                 float box_pos = player.Get_Box_Position();
                 if (box_pos > -1) 
@@ -947,11 +978,8 @@ namespace undertale_iteration_1
                 }
                 else if (box_pos == -4 || box_pos == -3 || box_pos == -5)
                 {
-                    if (Enemies.Count > 0)
-                    {
-                        lblArenaOpt1.Text = "* " + Enemies[0].Get_Name();
-                        if (Enemies[0].Get_Mercy()) lblArenaOpt1.ForeColor = Color.Yellow;
-                    }
+                    lblArenaOpt1.Text = "* " + Enemies[0].Get_Name();
+                    if (Enemies[0].Get_Mercy()) lblArenaOpt1.ForeColor = Color.Yellow;
                     if (Enemies.Count > 1)
                     {
                         lblArenaOpt2.Text = "* " + Enemies[1].Get_Name();
@@ -1057,6 +1085,29 @@ namespace undertale_iteration_1
             Update_Arena_Text();
             player.Reset_Selected_Option();
             player.Set_Option_Position(1);
+        }
+
+        private void Check_Enemies()
+        {
+            foreach (Enemy enemy in Enemies)
+            {
+                if (enemy.Get_Health() == 0)
+                {
+                    Play_Sound_Effect("snd_vaporized");
+                    Enemies.Remove(enemy);
+                }
+            }
+        }
+
+        private void Check_Player()
+        {
+            if (player.Get_Health() == 0)
+            {
+                Animate_Player_Death();
+                Thread box_thread = new Thread(() => MessageBox.Show("You died!"));
+                box_thread.Start();
+                Close();
+            }
         }
         
         #endregion
@@ -1174,6 +1225,16 @@ namespace undertale_iteration_1
             }
             //close the form
             Close();
+        }
+
+        private void Animate_Player_Death()
+        {
+            //break it
+            player.Set_Size(new PointF(20, 16));
+            player.New_Offset(new PointF(7, 114));
+            Play_Sound_Effect("snd_break1");
+            Thread.Sleep(300);
+            Play_Sound_Effect("snd_break2");
         }
         #endregion
 
