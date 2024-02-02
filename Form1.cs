@@ -496,7 +496,7 @@ namespace undertale_iteration_1
             //increment the timer
             //int_time_counter++;
 
-            debug_label.Text = " mercy: " + Enemies[0].Get_Mercy();
+            //debug_label.Text = " mercy: " + Enemies[0].Get_Mercy();
         }
 
         #region Player Turn Logic
