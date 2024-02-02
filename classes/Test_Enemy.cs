@@ -62,35 +62,51 @@ namespace undertale_iteration_1
         #region Turns
         public override void Select_Turn()
         {
-            switch(Turn_Selector)
+            //implement code here to select between multiple turns
+            //only one turn in current iteration, defined in constructor
+            Turn_Running = Turn_Selector;
+        }
+
+        public override void Run_Turn(int turn_clock)
+        {
+            switch(Turn_Running)
             {
                 case 0:
-                    Random rand = new Random();
-                    Projectiles.Add(new Test_Projectile(Damage, new PointF(0, GameForm.int_DEFAULT_ARENA_Y + rand.Next(GameForm.int_DEFAULT_ARENA_HEIGHT -30))));
-                    Thread turn_thread = new Thread(Test_Turn);
-                    turn_thread.Start();
+                    Test_Turn(turn_clock);
                     break;
                 default:
                     break;
             }
         }
+
         public void End_Turn()
         {
+            Turn_Running = -1;
             GameForm.Turn_Ended = true;
             GameForm.Player_Turn = true;
         }
-        public void Test_Turn()
+        public void Test_Turn(int turn_clock)
         {
-            while(Projectiles.Count > 0 && Projectiles[0].Get_Location().X < GameForm.int_DEFAULT_ARENA_X + GameForm.int_DEFAULT_ARENA_WIDTH)
+            //spawn projectile at start of turn
+            if(turn_clock == 0)
+            {
+                Random rand = new Random();
+                Projectiles.Add(new Test_Projectile(Damage, new PointF(GameForm.int_DEFAULT_ARENA_X - 33, GameForm.int_DEFAULT_ARENA_Y + rand.Next(GameForm.int_DEFAULT_ARENA_HEIGHT -30))));
+            }
+            //tick every 20ms, move the projectile every tick once 500ms has passed
+            if(Projectiles.Count > 0 && turn_clock > 25)
             {
                 Projectiles[0].Move();
-                Thread.Sleep(50);
             }
-            if(Projectiles.Count > 0)
+            //if projectile is offscreen, remove it and end turn
+            if(Projectiles.Count > 0 && Projectiles[0].Get_Location().X - Projectiles[0].Get_Size().X > GameForm.int_DEFAULT_ARENA_X + GameForm.int_DEFAULT_ARENA_WIDTH)
             {
                 Projectiles.RemoveAt(0);
             }
-            End_Turn();
+            if(Projectiles.Count == 0)
+            {
+                End_Turn();
+            }
         }
         #endregion
     
@@ -139,9 +155,9 @@ namespace undertale_iteration_1
             //define the projectile
             Resource1.Napstablook_and_Dummies_Sheet,
             ColorTranslator.FromHtml("#FFC386FF"),
-            new PointF(30, 30),
+            new PointF(30, 10),
             new PointF(1, 1),
-            new PointF(142, 292),
+            new PointF(142, 302),
             new PointF(0, 0),
             pLoc,
             pDamage

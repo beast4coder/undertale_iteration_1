@@ -234,6 +234,7 @@
     internal class Player: Sprite_Handler
     {
         private string Name;
+        private int Level;
         private int Health;
         private int MaxHealth;
         private int Box_Position;
@@ -244,10 +245,11 @@
         public bool Wait_For_Input = false;
         private List<Item> Inventory = new List<Item>();
 
-        public Player(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, string pName)
+        public Player(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, string pName, int pLevel)
         : base(pSheet, pBackground_Colour, pSize, pRows_Cols, pOffset, pPadding, pLoc)
         {
             Name = pName;
+            Level = pLevel;
             Health = 20;
             MaxHealth = 20;
             Box_Position = 0;
@@ -267,6 +269,18 @@
         public void Set_Name(string pName)
         {
             Name = pName;
+        }
+        #endregion
+        #region Level
+        //get level
+        public int Get_Level()
+        {
+            return Level;
+        }
+        //set level
+        public void Set_Level(int pLevel)
+        {
+            Level = pLevel;
         }
         #endregion
         #region Health
@@ -446,6 +460,7 @@
         protected int Turn_Selector;
         protected string[] Actions;
         protected string Flavour_Text;
+        protected int Turn_Running = -1;
         protected bool Mercy = false;
 
         #region Get/Set methods
@@ -533,16 +548,20 @@
             else return (int)Sprites[0].Get_Size().Y;
         }
         #endregion
+        
         //empty methods that will be overloaded by child classes
         //virtual methods return nothing and will always be overloaded by child classes
         public virtual void Select_Turn() {}
+        public virtual void Run_Turn(int turn_clock) {}
         public virtual string Choose_Arena_Text() {return "";}
+        
         //just returns Actions[] attribute
         public string[] Get_Actions() 
         {
             return Actions;
         }
         public virtual string Select_Action(int pAction) {return "";}
+        
         //all enemies will have the check act
         public string Check_Action()
         {

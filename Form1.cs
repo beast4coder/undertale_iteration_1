@@ -19,11 +19,11 @@ namespace undertale_iteration_1
 
         //arena
         Rectangle Arena_Hitbox;
-        const int int_ARENA_WALL_SIZE = 5;
-        const int int_PLAYER_TURN_ARENA_X = 38;
-        const int int_PLAYER_TURN_ARENA_Y = 254;
-        const int int_PLAYER_TURN_ARENA_WIDTH = 565;
-        const int int_PLAYER_TURN_ARENA_HEIGHT = 130;
+        public const int int_ARENA_WALL_SIZE = 5;
+        public const int int_PLAYER_TURN_ARENA_X = 38;
+        public const int int_PLAYER_TURN_ARENA_Y = 254;
+        public const int int_PLAYER_TURN_ARENA_WIDTH = 565;
+        public const int int_PLAYER_TURN_ARENA_HEIGHT = 130;
         public const int int_DEFAULT_ARENA_X = 230;
         public const int int_DEFAULT_ARENA_Y = 199;
         public const int int_DEFAULT_ARENA_WIDTH = 180;
@@ -38,6 +38,8 @@ namespace undertale_iteration_1
         Label lblArenaOpt2;
         Label lblArenaOpt3;
         Label lblArenaOpt4;
+        PictureBox pbProjectileCover_Left;
+        PictureBox pbProjectileCover_Right;
 
         //turn variables
         public static bool Player_Turn = true;
@@ -50,15 +52,20 @@ namespace undertale_iteration_1
         bool Draw_Slash_Sprite = false;
         List<Sprite_Handler> Attack_Numbers = new List<Sprite_Handler>();
         bool Draw_Attack_Numbers = false;
+        Label lblPlayerName;
+        Label lblPlayerLevel;
+        Label lblPlayerHPText;
+        Label lblPlayerHealth;
+        Rectangle Player_Remaining_Health;
+        Rectangle Player_Lost_Health;
+
         
 
         //enemies
         List<Enemy> Enemies = new List<Enemy>();
-
-        //controls
-        Label lblPlayerHealth;
+        int Enemy_Turn_Timer = 0;
         
-
+        //IT'S TIME! TO D- D- D- D- D- D- D- D- DEBUG
         Label debug_label;
 
         //consts
@@ -66,15 +73,12 @@ namespace undertale_iteration_1
         public const float flt_FORM_WIDTH = 640f;
         public const float flt_FORM_HEIGHT = 480f;
 
-        //time counter
-        //int int_time_counter = 0;
-
         #endregion
 
         private void GameForm_Load(object sender, EventArgs e)
         {
             Arena_Setup();
-            Spawn_Player();
+            Player_Setup();
             Spawn_Test_Enemy();
         }
 
@@ -222,29 +226,34 @@ namespace undertale_iteration_1
             Target_Sprite = new Sprite_Handler(sheet, size, offset, loc);
             #endregion
 
-            //spawn all controls required
-            #region lblPlayerHealth
-            //lblPlayerHealth = new Label
-            //{
-            //    AutoSize = true,
-            //    ForeColor = Color.White,
-            //    Location = new Point(411, 363),
-            //    Name = "lblPlayerHealth",
-            //    Size = new Size(36, 15),
-            //    TabIndex = 1,
-            //    Text = player.GetHealth() + "/20",
-            //};
-            //this.Controls.Add(lblPlayerHealth);
-            //lblPlayerHealth.BringToFront();
+            #region Spawn Covers
+            pbProjectileCover_Left = new PictureBox
+            {
+                BackColor = Color.Black,
+                Location = new Point(0, int_DEFAULT_ARENA_Y - 3),
+                Name = "pbProjectileCover_Left",
+                Size = new Size(int_DEFAULT_ARENA_X - 5, int_DEFAULT_ARENA_HEIGHT + 5),
+                TabIndex = 1,
+                TabStop = false,
+            };
+            Controls.Add(pbProjectileCover_Left);
+            pbProjectileCover_Left.BringToFront();
 
+            pbProjectileCover_Right = new PictureBox
+            {
+                BackColor = Color.Black,
+                Location = new Point(int_DEFAULT_ARENA_X + int_DEFAULT_ARENA_WIDTH + 5, int_DEFAULT_ARENA_Y),
+                Name = "pbProjectileCover_Right",
+                Size = new Size((int)flt_FORM_WIDTH - int_DEFAULT_ARENA_X - int_DEFAULT_ARENA_WIDTH, int_DEFAULT_ARENA_HEIGHT),
+                TabIndex = 1,
+                TabStop = false,
+            };
+            Controls.Add(pbProjectileCover_Right);
+            pbProjectileCover_Right.BringToFront();
             #endregion
 
 
 
-
-
-
-            //spawn debug label
             #region debug_label
             debug_label = new Label
             {
@@ -263,7 +272,7 @@ namespace undertale_iteration_1
 
         }
 
-        private void Spawn_Player()
+        private void Player_Setup()
         {
             //define player objects
             #region Spawn Player
@@ -274,7 +283,7 @@ namespace undertale_iteration_1
             PointF offset = new PointF(7, 6);
             PointF padding = new PointF(0, 0);
             PointF loc = new PointF((flt_FORM_WIDTH - size.X) / 2, (flt_FORM_HEIGHT - size.Y) / 2);
-            player = new Player(sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc, "TEST1");
+            player = new Player(sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc, "TEST1", 1);
             #endregion
 
             #region Define Player Projectile Sprite
@@ -304,6 +313,73 @@ namespace undertale_iteration_1
             player.Add_Item(Item_ID.Temmie_Flakes);
             player.Add_Item(Item_ID.ButterScotch_Pie);
             #endregion
+        
+            #region Display Player Stats
+            PrivateFontCollection my_fonts = new PrivateFontCollection();
+            my_fonts.AddFontFile("Resources/8bitoperator_jve.ttf");
+            FontFamily pixel_font = my_fonts.Families[0];
+            
+            //labale locations eyeballed
+            lblPlayerName = new Label
+            {
+                AutoSize = true,
+                ForeColor = Color.White,
+                Location = new Point(38, (int)flt_FORM_HEIGHT - 81),
+                Name = "lblPlayerName",
+                Size = new Size(16, 16),
+                TabIndex = 1,
+                Text = player.Get_Name(),
+                Font = new Font(pixel_font, 16, FontStyle.Bold)
+            };
+            Controls.Add(lblPlayerName);
+            lblPlayerName.BringToFront();
+
+            lblPlayerLevel = new Label
+            {
+                AutoSize = true,
+                ForeColor = Color.White,
+                Location = new Point(124, (int)flt_FORM_HEIGHT - 81),
+                Name = "lblPlayerLevel",
+                Size = new Size(16, 16),
+                TabIndex = 1,
+                Text = "LV " + player.Get_Level(),
+                Font = new Font(pixel_font, 16, FontStyle.Bold)
+            };
+            Controls.Add(lblPlayerLevel);
+            lblPlayerLevel.BringToFront();
+
+            lblPlayerHPText = new Label
+            {
+                AutoSize = true,
+                ForeColor = Color.White,
+                Location = new Point(231, (int)flt_FORM_HEIGHT - 78),
+                Name = "lblPlayerHPText",
+                Size = new Size(16, 16),
+                TabIndex = 1,
+                Text = "HP",
+                Font = new Font(pixel_font, 14, FontStyle.Bold)
+            };
+            Controls.Add(lblPlayerHPText);
+            lblPlayerHPText.BringToFront();
+
+            Player_Remaining_Health = new Rectangle(266, (int)flt_FORM_HEIGHT - 76, player.Get_Health() + 1, 16);
+            Player_Lost_Health = new Rectangle(266 + player.Get_Health() + 1, (int)flt_FORM_HEIGHT - 76, player.Get_MaxHealth() - player.Get_Health() + 1, 16);
+            
+            lblPlayerHealth = new Label
+            {
+                AutoSize = true,
+                ForeColor = Color.White,
+                Location = new Point(Player_Lost_Health.X + Player_Lost_Health.Width + 10, (int)flt_FORM_HEIGHT - 81),
+                Name = "lblPlayerHealth",
+                Size = new Size(16, 16),
+                TabIndex = 1,
+                Text = player.Get_Health() + " / " + player.Get_MaxHealth(),
+                Font = new Font(pixel_font, 16, FontStyle.Regular)
+            };
+            Controls.Add(lblPlayerHealth);
+            lblPlayerHealth.BringToFront();
+
+            #endregion
         }
 
         private void Spawn_Test_Enemy()
@@ -317,16 +393,7 @@ namespace undertale_iteration_1
 
         private void Update_Sprites(object sender, PaintEventArgs e)
         {
-            //Draw the arena box
-            Rectangle arena_wall = new Rectangle(
-                Arena_Hitbox.X - (int)Math.Ceiling((float)int_ARENA_WALL_SIZE/2),
-                Arena_Hitbox.Y - (int)Math.Ceiling((float)int_ARENA_WALL_SIZE/2),
-                Arena_Hitbox.Width + int_ARENA_WALL_SIZE,
-                Arena_Hitbox.Height + int_ARENA_WALL_SIZE
-            );
-            e.Graphics.DrawRectangle(new Pen(Color.White, int_ARENA_WALL_SIZE), arena_wall);
-
-            //Draw the option boxes
+            //Draw the turn boxes
             FightBox.Draw(e.Graphics);
             ActBox.Draw(e.Graphics);
             ItemBox.Draw(e.Graphics);
@@ -341,14 +408,24 @@ namespace undertale_iteration_1
                 }
 
                 List<Projectile> projectiles = enemy.Get_Projectiles();
-                if(projectiles != null)
+                foreach (Projectile projectile in projectiles)
                 {
-                    foreach (Projectile projectile in projectiles)
-                    {
-                        projectile.Draw(e.Graphics);
-                    }
+                    projectile.Draw(e.Graphics);
                 }
             }
+
+            //refresh the covers
+            pbProjectileCover_Left.Refresh();
+            pbProjectileCover_Right.Refresh();
+
+            //Draw the arena box
+            Rectangle arena_wall = new Rectangle(
+                Arena_Hitbox.X - (int)Math.Ceiling((float)int_ARENA_WALL_SIZE/2),
+                Arena_Hitbox.Y - (int)Math.Ceiling((float)int_ARENA_WALL_SIZE/2),
+                Arena_Hitbox.Width + int_ARENA_WALL_SIZE,
+                Arena_Hitbox.Height + int_ARENA_WALL_SIZE
+            );
+            e.Graphics.DrawRectangle(new Pen(Color.White, int_ARENA_WALL_SIZE), arena_wall);
 
             //Ony draws if the player is attacking
             if (player.Get_Box_Position() == -8)
@@ -366,6 +443,10 @@ namespace undertale_iteration_1
                     }
                 }
             }
+
+            //Draw the player health bar
+            e.Graphics.FillRectangle(new SolidBrush(Color.Yellow), Player_Remaining_Health);
+            e.Graphics.FillRectangle(new SolidBrush(Color.Red), Player_Lost_Health);
 
             //Draw player sprite last so it is on top
             player.Draw(e.Graphics);
@@ -493,20 +574,17 @@ namespace undertale_iteration_1
 
             //lblPlayerHealth.Text = player.GetHealth() + "/20";
 
-            //player turn exclusives ;)
+            //player turn dependant
             if (Player_Turn) Player_Turn_Systems();
+            else Enemy_Turn_System();
 
             //run the systems
             JustPressed_System();
             Player_Movement_System();
-            debug_label.Text = "box_pos : " + player.Get_Box_Position();
             Damage_System();
-            Turn_System();
+            Change_Turn_System();
 
-            //increment the timer
-            //int_time_counter++;
-
-            
+            //debug_label.Text = "box_pos : " + player.Get_Box_Position();
         }
 
         #region Player Turn Logic
@@ -685,6 +763,7 @@ namespace undertale_iteration_1
                 player.Use_Item(player.Get_Option_Position() - 1);
                 Play_Sound_Effect("snd_select");
                 player.Wait_For_Input = true;
+                Update_Player_Health_Stats();
             }
             else
             {
@@ -877,7 +956,7 @@ namespace undertale_iteration_1
             }
         }        
 
-        private void Turn_System()
+        private void Change_Turn_System()
         {
             //handles calling new turns so there are no issues with threads
             if (Turn_Ended)
@@ -905,31 +984,34 @@ namespace undertale_iteration_1
                     }
                     else
                     {
-                        Update_Arena_Text();
-                        Update_Arena_Hitbox();
-                        player.Set_Center(new PointF(Arena_Hitbox.X + Arena_Hitbox.Width / 2, Arena_Hitbox.Y + Arena_Hitbox.Height / 2));
-                        //foreach later
-                        Enemies[0].Select_Turn();
+                        Enemy_Turn_Start();
                     }
                     Turn_Ended = false;
                 }
             }
         }
+        private void Enemy_Turn_System()
+        {
+            Enemies[0].Run_Turn(Enemy_Turn_Timer);
+            Enemy_Turn_Timer++;
+        }
         
         private void Damage_System()
         {
+            //runs all the time in case for some cheeky player turn attacks ;)
             Rectangle player_hitbox = player.Get_Hitbox();
             foreach (Enemy enemy in Enemies)
             {
-                if(enemy.Get_Projectiles != null)
+                //game shits itself if you foreach the real list and modify it part way through
+                List<Projectile> projectiles_clone = new List<Projectile>(enemy.Get_Projectiles());
+                foreach (Projectile projectile in projectiles_clone)
                 {
-                    foreach (Projectile projectile in enemy.Get_Projectiles())
+                    if(player_hitbox.IntersectsWith(projectile.Get_Hitbox()))
                     {
-                        if(player_hitbox.IntersectsWith(projectile.Get_Hitbox()))
-                        {
-                            player.Set_Health(player.Get_Health() - projectile.Get_Damage());
-                            enemy.Get_Projectiles().Remove(projectile);
-                        }
+                        player.Set_Health(player.Get_Health() - projectile.Get_Damage());
+                        Update_Player_Health_Stats();
+                        Check_Player();
+                        enemy.Get_Projectiles().Remove(projectile);
                     }
                 }
             }
@@ -1082,12 +1164,37 @@ namespace undertale_iteration_1
                 }
         }
 
+        private void Update_Player_Health_Stats()
+        {
+            Player_Remaining_Health = new Rectangle(266, (int)flt_FORM_HEIGHT - 76, player.Get_Health() + 1, 16);
+            Player_Lost_Health = new Rectangle(266 + player.Get_Health() + 1, (int)flt_FORM_HEIGHT - 76, player.Get_MaxHealth() - player.Get_Health() + 1, 16);
+            lblPlayerHealth.Text = player.Get_Health() + " / " + player.Get_MaxHealth();        
+        }
+
         private void Player_Turn_Start()
         {
             Update_Arena_Hitbox();
             Update_Arena_Text();
             player.Reset_Selected_Option();
             player.Set_Option_Position(1);
+            pbProjectileCover_Left.SendToBack();
+            pbProjectileCover_Right.SendToBack();
+        }
+
+        private void Enemy_Turn_Start()
+        {
+            Update_Arena_Text();
+            Update_Arena_Hitbox();
+            player.Set_Center(new PointF(Arena_Hitbox.X + Arena_Hitbox.Width / 2, Arena_Hitbox.Y + Arena_Hitbox.Height / 2));
+            //foreach later
+            Enemies[0].Select_Turn();
+            Enemy_Turn_Timer = 0;
+            pbProjectileCover_Left.BringToFront();
+            pbProjectileCover_Right.BringToFront();
+            lblPlayerName.BringToFront();
+            lblPlayerLevel.BringToFront();
+            lblPlayerHPText.BringToFront();
+            lblPlayerHealth.BringToFront();
         }
 
         private void Check_Enemies()
@@ -1104,6 +1211,7 @@ namespace undertale_iteration_1
 
         private void Check_Player()
         {
+            //if player dead, game over man
             if (player.Get_Health() == 0)
             {
                 Animate_Player_Death();
@@ -1145,7 +1253,7 @@ namespace undertale_iteration_1
                 Draw_Slash_Sprite = true;
                 for (int i = 0; i < 6; i++)
                 {
-                    Thread.Sleep(150);
+                    Thread.Sleep(100);
                     Slash_Sprite.Next();
                 }
                 Draw_Slash_Sprite = false;
@@ -1235,8 +1343,10 @@ namespace undertale_iteration_1
             //break it
             player.Set_Size(new PointF(20, 16));
             player.New_Offset(new PointF(7, 114));
+            //paint it
+            this.Refresh();
             Play_Sound_Effect("snd_break1");
-            Thread.Sleep(300);
+            Thread.Sleep(1000);
             Play_Sound_Effect("snd_break2");
         }
         #endregion
