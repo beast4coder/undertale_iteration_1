@@ -4,6 +4,7 @@ using System.Drawing.Text;
 using System.Threading;
 using System.Diagnostics;
 using System.Media;
+using System.Diagnostics.Eventing.Reader;
 
 namespace undertale_iteration_1
 {
@@ -495,7 +496,7 @@ namespace undertale_iteration_1
             //increment the timer
             //int_time_counter++;
 
-            debug_label.Text = "box pos: " + player.Get_Box_Position() + "\noption pos: " + player.Get_Option_Position() + "\nselected option: " + player.Get_Selected_Option() + "\nwait for input: " + player.Wait_For_Input + "\nZ_Pressed: " + Z_Pressed;
+            //debug_label.Text = "box pos: " + player.Get_Box_Position() + "\noption pos: " + player.Get_Option_Position() + "\nselected option: " + player.Get_Selected_Option() + "\nwait for input: " + player.Wait_For_Input + "\nZ_Pressed: " + Z_Pressed;
         }
 
         #region Player Turn Logic
@@ -656,7 +657,6 @@ namespace undertale_iteration_1
         {
             if(!player.Wait_For_Input)
             {
-                Z_Pressed = false;
                 Update_Arena_Text();
                 player.Use_Item(player.Get_Option_Position() - 1);
                 Play_Sound_Effect("snd_select");
@@ -731,24 +731,25 @@ namespace undertale_iteration_1
                     int player_option_pos = player.Get_Option_Position();
                     //check how many options the player has
                     int num_options = 1;
-                    if (player_box_pos > -5 && player_box_pos != -2)
+                    if (player_box_pos > -6 && player_box_pos < -2)
                     {
+                        //display enemy list for fight, act or spare
                         num_options = Enemies.Count;
                     }
-                    else if (player_box_pos == -2)
+                    if (player_box_pos == -2)
                     {
                         //pick an item
                         num_options = player.Get_Inventory().Count;
                     }
-                    else if (player_box_pos == -7)
-                    {
-                        //enemy selected to act on
-                        num_options = Enemies[player.Get_Selected_Option() - 1].Get_Actions().Length;
-                    }
-                    else if (player_box_pos == -5)
+                    else if (player_box_pos == -1)
                     {
                         //spare or flee
                         num_options = 2;
+                    }
+                    else if (player_box_pos == -7)
+                    {
+                        //enemy selected to act on, select action
+                        num_options = Enemies[player.Get_Selected_Option() - 1].Get_Actions().Length;
                     }
                     
                     if (Left_Pressed)
@@ -895,6 +896,7 @@ namespace undertale_iteration_1
             lblArenaOpt2.Text = "";
             lblArenaOpt3.Text = "";
             lblArenaOpt4.Text = "";
+            //then update
             if (Player_Turn)
             {
                 float box_pos = player.Get_Box_Position();
@@ -904,11 +906,12 @@ namespace undertale_iteration_1
                     lblArenaGeneral.Location = new Point(65, 270);
                     lblArenaGeneral.Text = "* " + Enemies[0].Choose_Arena_Text();
                 }
-                else if (box_pos == -4 || box_pos == -3 || box_pos == -1)
+                else if (box_pos == -4 || box_pos == -3 || box_pos == -5)
                 {
-                    lblArenaGeneral.Text = "";
-                    //implement foreach later
                     lblArenaOpt1.Text = "* " + Enemies[0].Get_Name();
+                    if (Enemies.Count > 1) lblArenaOpt2.Text = "* " + Enemies[1].Get_Name();
+                    if (Enemies.Count > 2) lblArenaOpt3.Text = "* " + Enemies[2].Get_Name();
+                    if (Enemies.Count > 3) lblArenaOpt4.Text = "* " + Enemies[3].Get_Name();
                 }
                 else if (box_pos == -2)
                 {
@@ -920,6 +923,11 @@ namespace undertale_iteration_1
                         if (items.Count > 2) lblArenaOpt3.Text = "* " + items[2].Get_Name();
                         if (items.Count > 3) lblArenaOpt4.Text = "* " + items[3].Get_Name();
                     }
+                }
+                else if (box_pos == -1)
+                {
+                    lblArenaOpt1.Text = "* Spare";
+                    lblArenaOpt2.Text = "* Flee";
                 }
                 //enemy selected to fight
                 else if (box_pos == -8) lblArenaGeneral.Text = "";

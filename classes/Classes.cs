@@ -375,9 +375,8 @@
             {
                 int heal = Inventory[pItem_Index].Get_Heal();
                 output_text = Inventory[pItem_Index].Get_Flavour_Text();
-                if (Health + heal >= MaxHealth) output_text += "\nYour HP was maxed out!";
-                else output_text += "\nYou restored " + heal + "HP.";
-                Inventory.RemoveAt(pItem_Index);
+                if (Health + heal >= MaxHealth) output_text += "\n* Your HP was maxed out!";
+                else output_text += "\n* You restored " + heal + "HP.";
             }
             return output_text;
         }

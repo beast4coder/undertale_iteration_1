@@ -13,7 +13,7 @@ namespace undertale_iteration_1
         {
             Name = "Monster Candy";
             Heal = 10;
-            Flavour_Text = "You ate the Monster Candy. \nVery un-licorice-like.";
+            Flavour_Text = "* You ate the Monster Candy. \n* Very un-licorice-like.";
         }
     }
     internal class Spider_Cider : Item
@@ -22,7 +22,7 @@ namespace undertale_iteration_1
         {
             Name = "Spider Cider";
             Heal = 24;
-            Flavour_Text = "You drank the Spider Cider. \nCrunchy...";
+            Flavour_Text = "* You drank the Spider Cider. \n* Crunchy...";
         }
     }
     internal class Temmie_Flakes : Item
@@ -33,13 +33,13 @@ namespace undertale_iteration_1
             Heal = 2;
             Random rand = new Random();
             string[] Extra_Flavour = new string[] {
-                "aN oRiGiNaL bReAkFaSt",
-                "iT's sO gOoD yOu cAn'T tAsTe iT",
-                "dOn'T fOrGeT tO dIgEsT iT",
-                "tEmMiE fLaKeS iN yOuR mOuTh",
+                "An OrIgInAl BrEaKfAsT",
+                "It'S sO gOoD yOu CaN't TaStE iT",
+                "DoN't FoRgEt To DiGeSt It",
+                "TeMmIe FlAkEs In YoUr MoUtH",
                 "This completed none of my breakfast."
             };
-            Flavour_Text = "You ate the Temmie Flakes. \n" + Extra_Flavour[rand.Next(Extra_Flavour.Length)];
+            Flavour_Text = "* You ate the Temmie Flakes. \n* " + Extra_Flavour[rand.Next(Extra_Flavour.Length)];
         }
     }
     internal class ButterScotch_Pie : Item
@@ -48,7 +48,7 @@ namespace undertale_iteration_1
         {
             Name = "ButterScotch Pie";
             Heal = 99;
-            Flavour_Text = "You ate the Butterscotch Pie. \nReminds you of home...";
+            Flavour_Text = "* You ate the Butterscotch Pie. \n* Reminds you of home...";
         }
     }
 }
