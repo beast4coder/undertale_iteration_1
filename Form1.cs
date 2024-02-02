@@ -73,47 +73,17 @@ namespace undertale_iteration_1
         private void GameForm_Load(object sender, EventArgs e)
         {
             Arena_Setup();
+            Spawn_Player();
+            Spawn_Test_Enemy();
         }
 
+        #region Setup
         private void Arena_Setup()
         {
-            //define player objects
-            #region Spawn Player
-            Bitmap sheet = Resource1.Souls_Sprite_Sheet;
-            string background_colour = "#FFFF66FF";
-            PointF size = new PointF(16, 16);
-            PointF rows_cols = new PointF(1, 1);
-            PointF offset = new PointF(7, 6);
-            PointF padding = new PointF(0, 0);
-            PointF loc = new PointF((flt_FORM_WIDTH - size.X) / 2, (flt_FORM_HEIGHT - size.Y) / 2);
-            player = new Player(sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc, "TEST1");
-            #endregion
-
-            #region Define Player Projectile Sprite
-            sheet = Resource1.Attack_Effects_Sprite_Sheet;
-            size = new PointF(14, 128);
-            rows_cols = new PointF(1, 2);
-            offset = new PointF(1139, 23);
-            padding = new PointF(5, 0);
-            loc = new PointF(0, 0);
-            Player_Attack_Sprite = new Sprite_Handler(sheet, size, rows_cols, offset, padding, loc);
-            #endregion
-
-            #region Define Slash Sprite
-            sheet = Resource1.Attack_Effects_Sprite_Sheet;
-            background_colour = "#FFC386FF";
-            size = new PointF(26, 110);
-            rows_cols = new PointF(1, 6);
-            offset = new PointF(910, 235);
-            padding = new PointF(5, 0);
-            loc = new PointF(0, 0);
-            Slash_Sprite = new Sprite_Handler(sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
-            #endregion
-
             //define arena size, objects and controls
             #region Set Arena Size
-            size = new PointF(int_DEFAULT_ARENA_WIDTH, int_DEFAULT_ARENA_HEIGHT);
-            loc = new PointF(int_DEFAULT_ARENA_X, int_DEFAULT_ARENA_Y);
+            PointF size = new PointF(int_DEFAULT_ARENA_WIDTH, int_DEFAULT_ARENA_HEIGHT);
+            PointF loc = new PointF(int_DEFAULT_ARENA_X, int_DEFAULT_ARENA_Y);
             Arena_Hitbox = new Rectangle((int)loc.X, (int)loc.Y, (int)size.X, (int)size.Y);
             #endregion
 
@@ -206,12 +176,12 @@ namespace undertale_iteration_1
             #endregion
 
             #region Spawn FightBox
-            sheet = Resource1.Battle_Menu_Sprite_Sheet;
-            background_colour = "#FFC386FF";
+            Bitmap sheet = Resource1.Battle_Menu_Sprite_Sheet;
+            string background_colour = "#FFC386FF";
             size = new PointF(112, 44);
-            rows_cols = new PointF(2, 1);
-            offset = new PointF(7, 110);
-            padding = new PointF(0, 3);
+            PointF rows_cols = new PointF(2, 1);
+            PointF offset = new PointF(7, 110);
+            PointF padding = new PointF(0, 3);
             loc = new PointF(39, flt_FORM_HEIGHT - size.Y - 5);
             FightBox = new Sprite_Handler(sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
             #endregion
@@ -249,11 +219,6 @@ namespace undertale_iteration_1
             offset = new PointF(5, 23);
             loc = new PointF(int_PLAYER_TURN_ARENA_X + 1, int_PLAYER_TURN_ARENA_Y + 1);
             Target_Sprite = new Sprite_Handler(sheet, size, offset, loc);
-            #endregion
-
-            //spawn enemy
-            #region Spawn Enemy
-            Enemies.Add(new Test_Enemy());
             #endregion
 
             //spawn all controls required
@@ -296,6 +261,58 @@ namespace undertale_iteration_1
 
 
         }
+
+        private void Spawn_Player()
+        {
+            //define player objects
+            #region Spawn Player
+            Bitmap sheet = Resource1.Souls_Sprite_Sheet;
+            string background_colour = "#FFFF66FF";
+            PointF size = new PointF(16, 16);
+            PointF rows_cols = new PointF(1, 1);
+            PointF offset = new PointF(7, 6);
+            PointF padding = new PointF(0, 0);
+            PointF loc = new PointF((flt_FORM_WIDTH - size.X) / 2, (flt_FORM_HEIGHT - size.Y) / 2);
+            player = new Player(sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc, "TEST1");
+            #endregion
+
+            #region Define Player Projectile Sprite
+            sheet = Resource1.Attack_Effects_Sprite_Sheet;
+            size = new PointF(14, 128);
+            rows_cols = new PointF(1, 2);
+            offset = new PointF(1139, 23);
+            padding = new PointF(5, 0);
+            loc = new PointF(0, 0);
+            Player_Attack_Sprite = new Sprite_Handler(sheet, size, rows_cols, offset, padding, loc);
+            #endregion
+
+            #region Define Slash Sprite
+            sheet = Resource1.Attack_Effects_Sprite_Sheet;
+            background_colour = "#FFC386FF";
+            size = new PointF(26, 110);
+            rows_cols = new PointF(1, 6);
+            offset = new PointF(910, 235);
+            padding = new PointF(5, 0);
+            loc = new PointF(0, 0);
+            Slash_Sprite = new Sprite_Handler(sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc);
+            #endregion
+
+            #region Add Items
+            player.Add_Item(Item_ID.Monster_Candy);
+            player.Add_Item(Item_ID.Spider_Cider);
+            player.Add_Item(Item_ID.Temmie_Flakes);
+            player.Add_Item(Item_ID.ButterScotch_Pie);
+            #endregion
+        }
+
+        private void Spawn_Test_Enemy()
+        {
+            //spawn enemy
+            #region Spawn Enemy
+            Enemies.Add(new Test_Enemy());
+            #endregion
+        }
+        #endregion
 
         private void Update_Sprites(object sender, PaintEventArgs e)
         {
@@ -459,22 +476,49 @@ namespace undertale_iteration_1
         }
         #endregion
 
+        private void tmrGameTimer_Tick(object sender, EventArgs e)
+        {
+            //refresh the controls
+            pbBackground.Refresh();
+
+            //lblPlayerHealth.Text = player.GetHealth() + "/20";
+
+            //player turn exclusives ;)
+            if (Player_Turn) Player_Turn_Systems();
+
+            //run the systems
+            JustPressed_System();
+            Turn_System();
+            Player_Movement_System();
+            /*Damage_System();*/
+
+            //increment the timer
+            //int_time_counter++;
+
+            debug_label.Text = "box pos: " + player.Get_Box_Position() + "\noption pos: " + player.Get_Option_Position() + "\nselected option: " + player.Get_Selected_Option() + "\nwait for input: " + player.Wait_For_Input;
+        }
+
         #region Player Turn Logic
         public void Player_Turn_Option_System()
         {
             int player_box_pos = player.Get_Box_Position();
-            if (player_box_pos > -1 && Z_Pressed)
+            if (player_box_pos > -1)
             {
-                Play_Sound_Effect("snd_select");
-                player.Set_Box_Position(player_box_pos - 4);
-                Update_Arena_Text();
+                if(Z_Pressed)
+                {
+                    Play_Sound_Effect("snd_select");
+                    if(player_box_pos != 2 || player.Get_Inventory().Count > 0)
+                    {
+                        player.Set_Box_Position(player_box_pos - 4);
+                        Update_Arena_Text();
+                    }
+                }
             }
             else if (player_box_pos > -5)
             {
                 //if z is pressed then select the box
                 if (Z_Pressed)
                 {
-                    player.Set_Selected_Option();
                     if (player_box_pos == -4)
                     {
                         Play_Sound_Effect("snd_select");
@@ -483,16 +527,15 @@ namespace undertale_iteration_1
                         Thread Fight_Logic_Thread = new Thread (Fight_Logic);
                         Fight_Logic_Thread.Start();
                     }
-                    if (player_box_pos == -2)
+                    else if (player_box_pos == -2)
                     {
                         Play_Sound_Effect("snd_select");
                         player.Set_Box_Position(player_box_pos - 4);
-                        Update_Arena_Text();
-                        Thread Item_Logic_Thread = new Thread(Item_Logic);
-                        Item_Logic_Thread.Start();
+                        Item_Logic();
                     }
                     else
                     {
+                        player.Set_Selected_Option();
                         Play_Sound_Effect("snd_select");
                         player.Set_Box_Position(player_box_pos - 4);
                         Update_Arena_Text();
@@ -501,6 +544,7 @@ namespace undertale_iteration_1
                 else if (X_Pressed)
                 {
                     player.Set_Box_Position(player_box_pos + 4);
+                    player.Reset_Selected_Option();
                     Update_Arena_Text();
                 }
             }
@@ -519,6 +563,11 @@ namespace undertale_iteration_1
                     Update_Arena_Text();
                 }
             }
+            else if (player_box_pos == -6)
+            {
+                //more item logic
+                Item_Logic();
+            }
             else if(player_box_pos == -5)
             {
                 //run mercy logic
@@ -534,6 +583,7 @@ namespace undertale_iteration_1
             //if statement is needed for the actual logic, however there are multiple break conditions
             bool break_condition = false;
             Stopwatch stopwatch = new Stopwatch();
+            //slower pcs sometimes attack immediately, this should fix it, allows z_pressed to be set false again
             Thread.Sleep(100);            
             while(!break_condition)
             {
@@ -551,9 +601,6 @@ namespace undertale_iteration_1
                     //if player attacked, calculate damage
                     if(Z_Pressed)
                     {
-                        //slower pcs sometimes attack immediately, this should fix it
-                        Z_Pressed = false;
-
                         //apply undertale damage algorithm
                         //borrowed from u/spiceytomato at https://www.reddit.com/r/Underminers/comments/56xm7x/damage_calculation/
                         int projectile_center = (int)Player_Attack_Sprite.Get_Location().X + (int)(Player_Attack_Sprite.Get_Size().X / 2);
@@ -592,6 +639,7 @@ namespace undertale_iteration_1
         {
             if(!player.Wait_For_Input)
             {
+                Z_Pressed = false;
                 Play_Sound_Effect("snd_select");
                 player.Wait_For_Input = true;
                 Update_Arena_Text();
@@ -607,11 +655,21 @@ namespace undertale_iteration_1
 
         private void Item_Logic()
         {
-            //not implemented yet, probs not this iteration, display text in the meantime
-            Thread.Sleep(800);
-            player.Set_Box_Position(2);
-            Player_Turn = true;
-            Turn_Ended = true;
+            if(!player.Wait_For_Input)
+            {
+                Thread.Sleep(20);
+                Update_Arena_Text();
+                player.Use_Item(player.Get_Option_Position() - 1);
+                Play_Sound_Effect("snd_select");
+                player.Wait_For_Input = true;
+            }
+            else
+            {
+                player.Wait_For_Input = false;
+                player.Set_Box_Position(2);
+                Player_Turn = false;
+                Turn_Ended = true;
+            }
         }
 
         private void Mercy_Logic()
@@ -623,35 +681,12 @@ namespace undertale_iteration_1
         #endregion
         #endregion
 
-        private void tmrGameTimer_Tick(object sender, EventArgs e)
-        {
-            //refresh the controls
-            pbBackground.Refresh();
-            lblArenaGeneral.Refresh();
-
-            //lblPlayerHealth.Text = player.GetHealth() + "/20";
-
-            //player turn exclusives ;)
-            if (Player_Turn) Player_Turn_Systems();
-
-            //run the systems
-            JustPressed_System();
-            Turn_System();
-            Player_Movement_System();
-            /*Damage_System();*/
-
-            //increment the timer
-            //int_time_counter++;
-
-            debug_label.Text = "box pos: " + player.Get_Box_Position() + "\noption pos: " + player.Get_Option_Position() + "\nselected option: " + player.Get_Selected_Option() + "\nwait for input: " + player.Wait_For_Input;
-        }
-
         //all systems that run per tick
         #region Systems
         private void Player_Turn_Systems()
         {
             //update option boxes shouldn't be here for efficiency reasons but itll do for now
-            Update_Option_Boxes();
+            Update_Turn_Boxes();
             Player_Turn_Option_System();
         }
 
@@ -701,24 +736,20 @@ namespace undertale_iteration_1
                     {
                         num_options = Enemies.Count;
                     }
-                    else if (player_box_pos < -4)
+                    else if (player_box_pos == -2)
                     {
-                        switch (player_box_pos)
-                        {
-                            case -7:
-                                //enemy selected to act on
-                                num_options = Enemies[player.Get_Selected_Option() - 1].Get_Actions().Length;
-                                break;
-                            case -6:
-                                //item selected to consume (probably)
-                                break;
-                            case -5:
-                                //spare or flee
-                                num_options = 2;
-                                break;
-                            default:
-                                break;
-                        }
+                        //pick an item
+                        num_options = player.Get_Inventory().Count;
+                    }
+                    else if (player_box_pos == -7)
+                    {
+                        //enemy selected to act on
+                        num_options = Enemies[player.Get_Selected_Option() - 1].Get_Actions().Length;
+                    }
+                    else if (player_box_pos == -5)
+                    {
+                        //spare or flee
+                        num_options = 2;
                     }
                     
                     if (Left_Pressed)
@@ -753,7 +784,7 @@ namespace undertale_iteration_1
                             player.Set_Location(new PointF(65, 277));
                             break;
                         case 2:
-                            //other values haven't been mined but are rough guesses and suitable for the project
+                            //other values haven't been mined but are calculated based on the mined location and suitable for the project
                             player.Set_Location(new PointF(65, 332));
                             break;
                         case 3:
@@ -882,9 +913,14 @@ namespace undertale_iteration_1
                 }
                 else if (box_pos == -2)
                 {
-                    //implement real code later
-                    lblArenaGeneral.Text = "";
-                    lblArenaOpt1.Text = "* Hidden Secret???";
+                    List<Item> items = player.Get_Inventory();
+                    if(items.Count > 0)
+                    {
+                        lblArenaOpt1.Text = "* " + items[0].Get_Name();
+                        if (items.Count > 1) lblArenaOpt2.Text = "* " + items[1].Get_Name();
+                        if (items.Count > 2) lblArenaOpt3.Text = "* " + items[2].Get_Name();
+                        if (items.Count > 3) lblArenaOpt4.Text = "* " + items[3].Get_Name();
+                    }
                 }
                 //enemy selected to fight
                 else if (box_pos == -8) lblArenaGeneral.Text = "";
@@ -907,12 +943,11 @@ namespace undertale_iteration_1
                 //item selected to consume
                 else if (box_pos == -6)
                 {
-                    //implement real code later
-                    lblArenaGeneral.Text = "* CONGRATULATIONS!!! \n* YOU'VE FOUND A BUG!!!";
+                    lblArenaGeneral.Text = player.Get_Use_Item_Text(player.Get_Option_Position() - 1);
                 }
             }
         }
-        private void Update_Option_Boxes()
+        private void Update_Turn_Boxes()
         {
             //resets all the boxes
             PointF Box_Default = new PointF(0, 0);

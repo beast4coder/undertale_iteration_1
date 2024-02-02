@@ -218,6 +218,7 @@
         private int Attack;
         private int Defense;
         public bool Wait_For_Input = false;
+        private List<Item> Inventory = new List<Item>();
 
         public Player(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, string pName)
         : base(pSheet, pBackground_Colour, pSize, pRows_Cols, pOffset, pPadding, pLoc)
@@ -246,7 +247,7 @@
         #endregion
         #region Health
         //get health
-        public int GetHealth()
+        public int Get_Health()
         {
             return Health;
         }
@@ -282,7 +283,7 @@
             Box_Position = pBox_Position;
         }
         #endregion
-        #region OptionPosition
+        #region Option Position
         //get option position
         public int Get_Option_Position()
         {
@@ -294,7 +295,7 @@
             Option_Position = pOption_Position;
         }
         #endregion
-        #region SelectedOption
+        #region Selected Option
         //get selected option
         public int Get_Selected_Option()
         {
@@ -335,6 +336,60 @@
             Defense = pDefense;
         }
         #endregion
+        #endregion
+    
+        #region Inventory
+        //get inventory
+        public List<Item> Get_Inventory()
+        {
+            return Inventory;
+        }
+        //add item
+        public void Add_Item(Item_ID pItem_ID)
+        {
+            Item item = null;
+            switch(pItem_ID)
+            {
+                case Item_ID.Monster_Candy:
+                    item = new Monster_Candy();
+                    break;
+                case Item_ID.Spider_Cider:
+                    item = new Spider_Cider();
+                    break;
+                case Item_ID.Temmie_Flakes:
+                    item = new Temmie_Flakes();
+                    break;
+                case Item_ID.ButterScotch_Pie:
+                    item = new ButterScotch_Pie();
+                    break;
+                default:
+                    break;
+            }
+            if (item != null && Inventory.Count < 4) Inventory.Add(item);
+        }
+        //get the text that appears when the item is used
+        public string Get_Use_Item_Text(int pItem_Index)
+        {
+            string output_text = "";
+            if (Inventory.Count > 0)
+            {
+                int heal = Inventory[pItem_Index].Get_Heal();
+                output_text = Inventory[pItem_Index].Get_Flavour_Text();
+                if (Health + heal >= MaxHealth) output_text += "\nYour HP was maxed out!";
+                else output_text += "\nYou restored " + heal + "HP.";
+                Inventory.RemoveAt(pItem_Index);
+            }
+            return output_text;
+        }
+        //use the item
+        public void Use_Item(int pItem_Index)
+        {
+            if (Inventory.Count > pItem_Index)
+            {
+                Set_Health(Health + Inventory[pItem_Index].Get_Heal());
+                Inventory.RemoveAt(pItem_Index);
+            }
+        }
         #endregion
     }
 
@@ -451,5 +506,31 @@
         {
             return Name + "\nATK: " + Damage + "      DEF: " + Defense + "\n" + Flavour_Text;
         }
+    }
+
+    internal class Item
+    {
+        protected string Name;
+        protected int Heal;
+        protected string Flavour_Text;
+        
+        //no sets here :O
+        #region Get methods
+        //get name
+        public string Get_Name()
+        {
+            return Name;
+        }
+        //get heal
+        public int Get_Heal()
+        {
+            return Heal;
+        }
+        //get flavour text
+        public string Get_Flavour_Text()
+        {
+            return Flavour_Text;
+        }
+        #endregion
     }
 }
