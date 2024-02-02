@@ -106,7 +106,7 @@ namespace undertale_iteration_1
         {
             string output_text;
             if(Happiness <= 0) output_text = "* You complimented the Test Enemy. \n* It didn't respond.";
-            else output_text = "* You marveled at the genius Coursework Project \n* Deep in the dev's soul... \n* You feel something resonate within him.";
+            else output_text = "* You vocally marvel at this genius implementation \n* Deep in the dev's soul... \n* You feel something resonate within him.";
             Happiness += 1;
             if(Happiness >= 2) Mercy = true;
             return output_text;
