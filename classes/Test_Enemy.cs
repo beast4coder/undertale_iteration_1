@@ -1,7 +1,10 @@
+using System.Xml;
+
 namespace undertale_iteration_1
 {
     internal class Test_Enemy : Enemy
     {
+        private int Happiness = 0;
         public Test_Enemy()
         {
             Name = "Test_Enemy";
@@ -38,6 +41,7 @@ namespace undertale_iteration_1
             Actions = new string[] {
                 "Check",
                 "Filler",
+                "Compliment"
             };
             #endregion
         
@@ -86,14 +90,26 @@ namespace undertale_iteration_1
                 case 2:
                     output_text = Filler_Action();
                     break;
+                case 3:
+                    output_text = Compliment_Action();
+                    break;
                 default:
                     break;
             }
             return output_text;
         }
-        public string Filler_Action()
+        private string Filler_Action()
         {
-            return "Filler text goes here";
+            return "* Filler text goes here";
+        }
+        private string Compliment_Action()
+        {
+            string output_text;
+            if(Happiness <= 0) output_text = "* You complimented the Test Enemy. \n* It didn't respond.";
+            else output_text = "* You marveled at the genius Coursework Project \n* Deep in the dev's soul... \n* You feel something resonate within him.";
+            Happiness += 1;
+            if(Happiness >= 2) Mercy = true;
+            return output_text;
         }
         #endregion
     }

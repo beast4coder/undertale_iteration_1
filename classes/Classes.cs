@@ -126,7 +126,24 @@
             Update_SpriteArea();
         }
 
+        public void New_Rows_Cols(PointF new_Rows_Cols)
+        {
+            Ttl_Rows_Cols = new_Rows_Cols;
+            Crnt_Row_Col = new PointF(0, 0);
+            Update_SpriteArea();
+        }
+        
+        public void New_Offset(PointF new_Offset)
+        {
+            Offset = new_Offset;
+            Update_SpriteArea();
+        }
 
+        public void New_Padding(PointF new_Padding)
+        {
+            Padding = new_Padding;
+            Update_SpriteArea();
+        }
         #endregion
 
         #region Get/Set methods
@@ -421,6 +438,7 @@
         protected int Turn_Selector;
         protected string[] Actions;
         protected string Flavour_Text;
+        protected bool Mercy = false;
 
         #region Get/Set methods
         #region Name
@@ -479,6 +497,23 @@
         public List<Projectile> Get_Projectiles()
         {
             return Projectiles;
+        }
+        #endregion
+        #region Mercy
+        //get mercy
+        public bool Get_Mercy()
+        {
+            return Mercy;
+        }
+        //show mercy
+        public void Show_Mercy()
+        {
+            Mercy = true;
+        }
+        //no mercy
+        public void No_Mercy()
+        {
+            Mercy = false;
         }
         #endregion
         #endregion

@@ -496,7 +496,7 @@ namespace undertale_iteration_1
             //increment the timer
             //int_time_counter++;
 
-            //debug_label.Text = "box pos: " + player.Get_Box_Position() + "\noption pos: " + player.Get_Option_Position() + "\nselected option: " + player.Get_Selected_Option() + "\nwait for input: " + player.Wait_For_Input + "\nZ_Pressed: " + Z_Pressed;
+            debug_label.Text = " mercy: " + Enemies[0].Get_Mercy();
         }
 
         #region Player Turn Logic
@@ -534,17 +534,22 @@ namespace undertale_iteration_1
                         player.Set_Box_Position(player_box_pos - 4);
                         Item_Logic();
                     }
-                    else
+                    else if (player_box_pos != -1 || player.Get_Option_Position() != 2)
                     {
                         player.Set_Selected_Option();
                         Play_Sound_Effect("snd_select");
                         player.Set_Box_Position(player_box_pos - 4);
                         Update_Arena_Text();
                     }
+                    else
+                    {
+                        Flee_Logic();
+                    }
                 }
                 else if (X_Pressed)
                 {
                     player.Set_Box_Position(player_box_pos + 4);
+                    player.Set_Option_Position(1);
                     player.Reset_Selected_Option();
                     Update_Arena_Text();
                 }
@@ -569,11 +574,20 @@ namespace undertale_iteration_1
                 //more item logic
                 Item_Logic();
             }
-            else if(player_box_pos == -5 && Z_Pressed)
+            else if(player_box_pos == -5)
             {
-                //run mercy logic
-                //Thread Mercy_Logic_Thread = new Thread(Mercy_Logic);
-                //Mercy_Logic_Thread.Start();
+                if(Z_Pressed)
+                {
+                    //run spare logic
+                    Spare_Logic();
+                }
+                else if (X_Pressed)
+                {
+                    player.Set_Box_Position(player_box_pos + 4);
+                    player.Set_Option_Position(1);
+                    player.Reset_Selected_Option();
+                    Update_Arena_Text();
+                }
             }
         }
 
@@ -671,12 +685,30 @@ namespace undertale_iteration_1
             }
         }
 
-        private void Mercy_Logic()
+        private void Spare_Logic()
         {
+            if(Enemies[player.Get_Option_Position() - 1].Get_Mercy())
+            {
+                Play_Sound_Effect("snd_dumbvictory");
+                //Enemies.RemoveAt(player.Get_Box_Position() - 1);
+            }
+            else
+            {
+                Play_Sound_Effect("snd_select");
+            }
             player.Set_Box_Position(3);
             Player_Turn = false;
             Turn_Ended = true;
         }
+
+        private void Flee_Logic()
+        {
+            player.Set_Box_Position(-9);
+            Play_Sound_Effect("snd_escaped");
+            Thread flee_thread = new Thread(Animate_Fleeing);
+            flee_thread.Start();
+        }
+
         #endregion
         #endregion
 
@@ -797,6 +829,8 @@ namespace undertale_iteration_1
                             break;
                     }
                 }
+                //exclude fleeing from the moving system
+                else if (player_box_pos == -9) ;
                 else
                 {
                     //no idea what happened if it gets this bad, but leave to screen to tell me
@@ -896,6 +930,10 @@ namespace undertale_iteration_1
             lblArenaOpt2.Text = "";
             lblArenaOpt3.Text = "";
             lblArenaOpt4.Text = "";
+            lblArenaOpt1.ForeColor = Color.White;
+            lblArenaOpt2.ForeColor = Color.White;
+            lblArenaOpt3.ForeColor = Color.White;
+            lblArenaOpt4.ForeColor = Color.White;
             //then update
             if (Player_Turn)
             {
@@ -908,10 +946,26 @@ namespace undertale_iteration_1
                 }
                 else if (box_pos == -4 || box_pos == -3 || box_pos == -5)
                 {
-                    lblArenaOpt1.Text = "* " + Enemies[0].Get_Name();
-                    if (Enemies.Count > 1) lblArenaOpt2.Text = "* " + Enemies[1].Get_Name();
-                    if (Enemies.Count > 2) lblArenaOpt3.Text = "* " + Enemies[2].Get_Name();
-                    if (Enemies.Count > 3) lblArenaOpt4.Text = "* " + Enemies[3].Get_Name();
+                    if (Enemies.Count > 0)
+                    {
+                        lblArenaOpt1.Text = "* " + Enemies[0].Get_Name();
+                        if (Enemies[0].Get_Mercy()) lblArenaOpt1.ForeColor = Color.Yellow;
+                    }
+                    if (Enemies.Count > 1)
+                    {
+                        lblArenaOpt2.Text = "* " + Enemies[1].Get_Name();
+                        if (Enemies[1].Get_Mercy()) lblArenaOpt2.ForeColor = Color.Yellow;
+                    }
+                    if (Enemies.Count > 2)
+                    {
+                        lblArenaOpt3.Text = "* " + Enemies[2].Get_Name();
+                        if (Enemies[2].Get_Mercy()) lblArenaOpt3.ForeColor = Color.Yellow;
+                    }
+                    if (Enemies.Count > 3)
+                    {
+                        lblArenaOpt4.Text = "* " + Enemies[3].Get_Name();
+                        if (Enemies[3].Get_Mercy()) lblArenaOpt4.ForeColor = Color.Yellow;
+                    }
                 }
                 else if (box_pos == -2)
                 {
@@ -1089,6 +1143,24 @@ namespace undertale_iteration_1
             Slash_Sprite.Set_Row_Col(new PointF(0, 0));
             //check if null first, if not it shits itself
             if (Attack_Numbers != null) Attack_Numbers.Clear();
+        }
+
+        private void Animate_Fleeing()
+        {
+            //redfine player sprite to walk
+            player.Set_Size(new PointF(16, 24));
+            player.New_Offset(new PointF(7, 79));
+            player.New_Rows_Cols(new PointF(1, 2));
+            player.New_Padding(new PointF(8, 0));
+            while (player.Get_Location().X > -16)
+            {
+                Thread.Sleep(50);
+                //walk
+                player.Move(-5, 0);
+                player.Next();
+            }
+            //close the form
+            Close();
         }
         #endregion
 
