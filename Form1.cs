@@ -704,6 +704,7 @@ namespace undertale_iteration_1
         private void Flee_Logic()
         {
             player.Set_Box_Position(-9);
+            Update_Arena_Text();
             Play_Sound_Effect("snd_escaped");
             Thread flee_thread = new Thread(Animate_Fleeing);
             flee_thread.Start();
@@ -1005,6 +1006,18 @@ namespace undertale_iteration_1
                 else if (box_pos == -6)
                 {
                     lblArenaGeneral.Text = player.Get_Use_Item_Text(player.Get_Option_Position() - 1);
+                }
+                else if (box_pos == -9)
+                {
+                    Random rand = new Random();
+                    string[] flee_text = new string[] { 
+                        "* Escaped...", 
+                        "* Coward.", 
+                        "* Really?",
+                        "* Run Forest Run",
+                        "* What did I even make this project for...",
+                        "* You feel like you're going to have a bad time... \n* Not playing this sick nasty cool game!"};
+                    lblArenaGeneral.Text = flee_text[rand.Next(flee_text.Length)];
                 }
             }
         }
