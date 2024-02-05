@@ -1323,8 +1323,8 @@ namespace undertale_iteration_1
         private void Animate_Fleeing()
         {
             //redfine player sprite to walk
-            player.Set_Size(new PointF(16, 24));
             player.New_Offset(new PointF(7, 79));
+            player.Set_Size(new PointF(16, 24));
             player.New_Rows_Cols(new PointF(1, 2));
             player.New_Padding(new PointF(8, 0));
             while (player.Get_Location().X > -16)
