@@ -279,9 +279,9 @@ namespace undertale_iteration_1
             Bitmap sheet = Resource1.Souls_Sprite_Sheet;
             string background_colour = "#FFFF66FF";
             PointF size = new PointF(16, 16);
-            PointF rows_cols = new PointF(1, 1);
+            PointF rows_cols = new PointF(2, 1);
             PointF offset = new PointF(7, 6);
-            PointF padding = new PointF(0, 0);
+            PointF padding = new PointF(0, 30);
             PointF loc = new PointF((flt_FORM_WIDTH - size.X) / 2, (flt_FORM_HEIGHT - size.Y) / 2);
             player = new Player(sheet, ColorTranslator.FromHtml(background_colour), size, rows_cols, offset, padding, loc, "TEST1", 1);
             #endregion
@@ -582,6 +582,7 @@ namespace undertale_iteration_1
             JustPressed_System();
             Player_Movement_System();
             Damage_System();
+            player.Immunity_System();
             Change_Turn_System();
 
             //debug_label.Text = "box_pos : " + player.Get_Box_Position();
@@ -706,16 +707,17 @@ namespace undertale_iteration_1
                     {
                         //apply undertale damage algorithm
                         //borrowed from u/spiceytomato at https://www.reddit.com/r/Underminers/comments/56xm7x/damage_calculation/
-                        int projectile_center = (int)Player_Attack_Sprite.Get_Location().X + (int)(Player_Attack_Sprite.Get_Size().X / 2);
-                        int distance = Math.Abs(projectile_center - (int)(Target_Sprite.Get_Size().X /2) + (int)Target_Sprite.Get_Location().X);
+                        int projectile_center = (int)Player_Attack_Sprite.Get_Location().X + (int)(Player_Attack_Sprite.Get_Size().X / 2) - (int)Target_Sprite.Get_Location().X;
+                        int distance = Math.Abs(projectile_center - (int)(Target_Sprite.Get_Size().X /2));
                         Random rand = new Random();
+                        debug_label.Text = "distance : " + distance/Target_Sprite.Get_Size().X;
                         if(distance <= 12)
                         {
-                            damage = (int)Math.Round((player.Get_Attack() - Enemies[0].Get_Defense() + rand.Next(3)) * 2.2);
+                            damage = (int)Math.Round((player.Get_Attack() - Enemies[0].Get_Defense() + rand.Next(2)) * 2.2);
                         }
                         else
                         {
-                            damage = (int)Math.Round((player.Get_Attack() - Enemies[0].Get_Defense() + rand.Next(3)) * (1 - distance/Target_Sprite.Get_Size().X) * 2);
+                            damage = (int)Math.Round((player.Get_Attack() - Enemies[0].Get_Defense() + rand.Next(2)) * (1 - distance/(Target_Sprite.Get_Size().X / 2)) * 2);
                         }
                     }
                     //if player didn't attack, set damage to -1 as an indicator that player didn't attack
@@ -998,20 +1000,25 @@ namespace undertale_iteration_1
         
         private void Damage_System()
         {
-            //runs all the time in case for some cheeky player turn attacks ;)
-            Rectangle player_hitbox = player.Get_Hitbox();
-            foreach (Enemy enemy in Enemies)
+            if (player.Get_Immunity() == 0)
             {
-                //game shits itself if you foreach the real list and modify it part way through
-                List<Projectile> projectiles_clone = new List<Projectile>(enemy.Get_Projectiles());
-                foreach (Projectile projectile in projectiles_clone)
+                //runs all the time in case for some cheeky player turn attacks ;)
+                Rectangle player_hitbox = player.Get_Hitbox();
+                foreach (Enemy enemy in Enemies)
                 {
-                    if(player_hitbox.IntersectsWith(projectile.Get_Hitbox()))
+                    //game shits itself if you foreach the real list and modify it part way through
+                    List<Projectile> projectiles_clone = new List<Projectile>(enemy.Get_Projectiles());
+                    foreach (Projectile projectile in projectiles_clone)
                     {
-                        player.Set_Health(player.Get_Health() - projectile.Get_Damage());
-                        Update_Player_Health_Stats();
-                        Check_Player();
-                        enemy.Get_Projectiles().Remove(projectile);
+                        if(player_hitbox.IntersectsWith(projectile.Get_Hitbox()))
+                        {
+                            Play_Sound_Effect("snd_hurt1");
+                            player.Hit();
+                            player.Set_Health(player.Get_Health() - projectile.Get_Damage());
+                            Update_Player_Health_Stats();
+                            Check_Player();
+                            enemy.Get_Projectiles().Remove(projectile);
+                        }
                     }
                 }
             }

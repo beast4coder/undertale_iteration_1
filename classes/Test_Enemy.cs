@@ -72,7 +72,7 @@ namespace undertale_iteration_1
             switch(Turn_Running)
             {
                 case 0:
-                    Test_Turn(turn_clock);
+                    Test_Turn_2(turn_clock);
                     break;
                 default:
                     break;
@@ -85,9 +85,10 @@ namespace undertale_iteration_1
             GameForm.Turn_Ended = true;
             GameForm.Player_Turn = true;
         }
+        
         public void Test_Turn(int turn_clock)
         {
-            //spawn projectile at start of turn
+            //spawn projectile at start of loop
             if(turn_clock == 0)
             {
                 Random rand = new Random();
@@ -99,6 +100,30 @@ namespace undertale_iteration_1
                 Projectiles[0].Move();
             }
             //if projectile is offscreen, remove it and end turn
+            if(Projectiles.Count > 0 && Projectiles[0].Get_Location().X - Projectiles[0].Get_Size().X > GameForm.int_DEFAULT_ARENA_X + GameForm.int_DEFAULT_ARENA_WIDTH)
+            {
+                Projectiles.RemoveAt(0);
+            }
+            if(Projectiles.Count == 0)
+            {
+                End_Turn();
+            }
+        }
+
+        public void Test_Turn_2(int turn_clock)
+        {
+            if (turn_clock == 0)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    Random rand = new Random();
+                    Projectiles.Add(new Test_Projectile(Damage, new PointF(GameForm.int_DEFAULT_ARENA_X - 33, GameForm.int_DEFAULT_ARENA_Y + rand.Next(GameForm.int_DEFAULT_ARENA_HEIGHT -30))));
+                }
+            }
+            if(Projectiles.Count > 0 && turn_clock > 25)
+            {
+                Projectiles[0].Move();
+            }
             if(Projectiles.Count > 0 && Projectiles[0].Get_Location().X - Projectiles[0].Get_Size().X > GameForm.int_DEFAULT_ARENA_X + GameForm.int_DEFAULT_ARENA_WIDTH)
             {
                 Projectiles.RemoveAt(0);

@@ -244,6 +244,7 @@
         private int Defense;
         public bool Wait_For_Input = false;
         private List<Item> Inventory = new List<Item>();
+        private int Immunity;
 
         public Player(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, string pName, int pLevel)
         : base(pSheet, pBackground_Colour, pSize, pRows_Cols, pOffset, pPadding, pLoc)
@@ -256,6 +257,7 @@
             Option_Position = 1;
             Attack = 10;
             Defense = 5;
+            Immunity = 0;
         }
 
         #region Get/Set methods
@@ -374,6 +376,11 @@
             Defense = pDefense;
         }
         #endregion
+        //get immunity
+        public int Get_Immunity()
+        {
+            return Immunity;
+        }
         #endregion
     
         #region Inventory
@@ -425,6 +432,24 @@
             {
                 Set_Health(Health + Inventory[pItem_Index].Get_Heal());
                 Inventory.RemoveAt(pItem_Index);
+            }
+        }
+        #endregion
+    
+        #region Immunity
+        //get hit
+        public void Hit()
+        {
+            Immunity = 50;
+        }
+        public void Immunity_System()
+        {
+            if (Immunity > 0) 
+            {
+                Immunity--;
+                
+                //animate iframes
+                if (Immunity % 5 == 0) Next();
             }
         }
         #endregion
