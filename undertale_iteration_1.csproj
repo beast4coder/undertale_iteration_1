@@ -23,4 +23,8 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);CS8618</NoWarn>
+  </PropertyGroup>
+
 </Project>

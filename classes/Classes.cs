@@ -245,6 +245,7 @@
         public bool Wait_For_Input = false;
         private List<Item> Inventory = new List<Item>();
         private int Immunity;
+        private bool Just_Moved;
 
         public Player(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, string pName, int pLevel)
         : base(pSheet, pBackground_Colour, pSize, pRows_Cols, pOffset, pPadding, pLoc)
@@ -258,6 +259,7 @@
             Attack = 10;
             Defense = 5;
             Immunity = 0;
+            Just_Moved = false;
         }
 
         #region Get/Set methods
@@ -381,6 +383,18 @@
         {
             return Immunity;
         }
+        #region Just Moved
+        //get just moved
+        public bool Get_Just_Moved()
+        {
+            return Just_Moved;
+        }
+        //set just moved
+        public void Set_Just_Moved(bool pJust_Moved)
+        {
+            Just_Moved = pJust_Moved;
+        }
+        #endregion
         #endregion
     
         #region Inventory
@@ -440,7 +454,7 @@
         //get hit
         public void Hit()
         {
-            Immunity = 50;
+            Immunity = 25;
         }
         public void Immunity_System()
         {
@@ -451,6 +465,7 @@
                 //animate iframes
                 if (Immunity % 5 == 0) Next();
             }
+            else Set_Row_Col(new PointF(0, 0));
         }
         #endregion
     }
@@ -480,7 +495,6 @@
         protected int Defense;
         protected Sprite_Handler[] Sprites;
         protected List<Projectile> Projectiles;
-        protected Thread Arena_Text_Thread;
         protected string[] Arena_Text;
         protected int Turn_Selector;
         protected string[] Actions;

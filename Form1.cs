@@ -259,7 +259,7 @@ namespace undertale_iteration_1
             {
                 AutoSize = true,
                 ForeColor = Color.White,
-                Location = new Point(411, 363),
+                Location = new Point(411, 50),
                 Name = "debug_label",
                 Size = new Size(36, 15),
                 TabIndex = 1,
@@ -572,8 +572,6 @@ namespace undertale_iteration_1
             //refresh the controls
             pbBackground.Refresh();
 
-            //lblPlayerHealth.Text = player.GetHealth() + "/20";
-
             //player turn dependant
             if (Player_Turn) Player_Turn_Systems();
             else Enemy_Turn_System();
@@ -585,7 +583,8 @@ namespace undertale_iteration_1
             player.Immunity_System();
             Change_Turn_System();
 
-            //debug_label.Text = "box_pos : " + player.Get_Box_Position();
+            //debug label
+            debug_label.Text = "Just Moved: " + player.Get_Just_Moved().ToString(); 
         }
 
         #region Player Turn Logic
@@ -710,7 +709,6 @@ namespace undertale_iteration_1
                         int projectile_center = (int)Player_Attack_Sprite.Get_Location().X + (int)(Player_Attack_Sprite.Get_Size().X / 2) - (int)Target_Sprite.Get_Location().X;
                         int distance = Math.Abs(projectile_center - (int)(Target_Sprite.Get_Size().X /2));
                         Random rand = new Random();
-                        debug_label.Text = "distance : " + distance/Target_Sprite.Get_Size().X;
                         if(distance <= 12)
                         {
                             damage = (int)Math.Round((player.Get_Attack() - Enemies[0].Get_Defense() + rand.Next(2)) * 2.2);
@@ -953,8 +951,16 @@ namespace undertale_iteration_1
                 if (loc.Y + size.Y + y > Arena_Hitbox.Bottom) y = Arena_Hitbox.Bottom - loc.Y - size.Y;
 
 
-                //moves player final x and y values
-                player.Move(x, y);
+                //moves player final x and y values if not and manages just pressed attribute
+                if(x != 0 || y != 0)
+                {
+                    player.Move(x, y);
+                    player.Set_Just_Moved(true);
+                }
+                else
+                {
+                    player.Set_Just_Moved(false);
+                }
             }
         }        
 
@@ -1186,6 +1192,7 @@ namespace undertale_iteration_1
             player.Set_Option_Position(1);
             pbProjectileCover_Left.SendToBack();
             pbProjectileCover_Right.SendToBack();
+            player.Set_Just_Moved(false);
         }
 
         private void Enemy_Turn_Start()
@@ -1202,6 +1209,7 @@ namespace undertale_iteration_1
             lblPlayerLevel.BringToFront();
             lblPlayerHPText.BringToFront();
             lblPlayerHealth.BringToFront();
+            player.Set_Just_Moved(false);
         }
 
         private void Check_Enemies()
