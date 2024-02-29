@@ -92,7 +92,7 @@ namespace undertale_iteration_1
             if(turn_clock == 0)
             {
                 Random rand = new Random();
-                Projectiles.Add(new Test_Projectile(Damage, new PointF(GameForm.int_DEFAULT_ARENA_X - 33, GameForm.int_DEFAULT_ARENA_Y + rand.Next(GameForm.int_DEFAULT_ARENA_HEIGHT -30))));
+                Projectiles.Add(new Test_Projectile(Damage, new PointF(GameForm.int_DEFAULT_ARENA_X - 33, GameForm.int_DEFAULT_ARENA_Y + rand.Next(GameForm.int_DEFAULT_ARENA_HEIGHT -30)), Projectile_Colour.White));
             }
             //tick every 20ms, move the projectile every tick once 500ms has passed
             if(Projectiles.Count > 0 && turn_clock > 25)
@@ -117,7 +117,8 @@ namespace undertale_iteration_1
                 for (int i = 0; i < 3; i++)
                 {
                     Random rand = new Random();
-                    Projectiles.Add(new Test_Projectile(Damage, new PointF(GameForm.int_DEFAULT_ARENA_X - 33, GameForm.int_DEFAULT_ARENA_Y + rand.Next(GameForm.int_DEFAULT_ARENA_HEIGHT -30))));
+                    Projectile_Colour colour = (Projectile_Colour)rand.Next(3);
+                    Projectiles.Add(new Test_Projectile(Damage, new PointF(GameForm.int_DEFAULT_ARENA_X - 33, GameForm.int_DEFAULT_ARENA_Y + rand.Next(GameForm.int_DEFAULT_ARENA_HEIGHT -30)), colour));
                 }
             }
             if(Projectiles.Count > 0 && turn_clock > 25)
@@ -175,7 +176,7 @@ namespace undertale_iteration_1
     internal class Test_Projectile : Projectile
     {
         private int Speed = 5;
-        public Test_Projectile(int pDamage, PointF pLoc)
+        public Test_Projectile(int pDamage, PointF pLoc, Projectile_Colour pColour)
         : base(
             //define the projectile
             Resource1.Napstablook_and_Dummies_Sheet,
@@ -185,7 +186,8 @@ namespace undertale_iteration_1
             new PointF(142, 302),
             new PointF(0, 0),
             pLoc,
-            pDamage
+            pDamage,
+            pColour
         ) {}
         public override void Move()
         {

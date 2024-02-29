@@ -473,18 +473,76 @@
     internal class Projectile : Sprite_Handler
     {
         protected int Damage;
+        protected Projectile_Colour Colour;
 
-        public Projectile(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, int pDamage)
+        public Projectile(Bitmap pSheet, Color pBackground_Colour, PointF pSize, PointF pRows_Cols, PointF pOffset, PointF pPadding, PointF pLoc, int pDamage, Projectile_Colour pColour)
         : base(pSheet, pBackground_Colour, pSize, pRows_Cols, pOffset, pPadding, pLoc)
         {
             Damage = pDamage;
+            Colour = pColour;
+            Colour_Projectile();
         }
 
         public int Get_Damage()
         {
             return Damage;
         }
+        public Projectile_Colour Get_Colour()
+        {
+            return Colour;
+        }
+        #region colouring projectiles
+        public void Colour_Projectile()
+        {
+            //changes every non-transparent or black pixel in the sprite to the desired colour
+            
+            //declares and sets default
+            Color target_colour = Color.White;
+            
+            //define the target colour, if bed shits stay white
+            switch (Colour)
+            {
+                case Projectile_Colour.White:
+                    target_colour = Color.White;
+                    break;
+                case Projectile_Colour.Blue:
+                    target_colour = Color.Blue;
+                    break;
+                case Projectile_Colour.Orange:
+                    target_colour = Color.Orange;
+                    break;
+                default:
+                    break;
+            }
+
+            //get the offset of the sprite within the sheet to use as bounds in the for loop
+            int Ttl_Offset_X = (int)Offset.X + (int)((Padding.X+Size.X)*Crnt_Row_Col.Y);
+            int Ttl_Offset_Y = (int)Offset.Y + (int)((Padding.Y+Size.Y)*Crnt_Row_Col.X);
+
+            //check all pixels on the sheet that the sprite is being mapped to
+            for (int x = Ttl_Offset_X; x < Ttl_Offset_X + Size.X; x++)
+            {
+                for (int y = Ttl_Offset_Y; y < Ttl_Offset_Y + Size.Y; y++)
+                {
+                    //if pixel is not transparent or black, change colour
+                    if (Sheet.GetPixel(x, y).A != 0 && Sheet.GetPixel(x, y) != Color.FromArgb(255,0,0,0))
+                    {
+                        Sheet.SetPixel(x, y, target_colour);
+                    }
+                }
+            }
+
+            //update the sprite w the new sheet
+            Update_SpriteArea();
+        }
+        #endregion
         public virtual void Move() {}
+    }
+    internal enum Projectile_Colour
+    {
+        White,
+        Blue,
+        Orange,
     }
 
     internal class Enemy

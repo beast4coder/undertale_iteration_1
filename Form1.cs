@@ -1018,12 +1018,21 @@ namespace undertale_iteration_1
                     {
                         if(player_hitbox.IntersectsWith(projectile.Get_Hitbox()))
                         {
-                            Play_Sound_Effect("snd_hurt1");
-                            player.Hit();
-                            player.Set_Health(player.Get_Health() - projectile.Get_Damage());
-                            Update_Player_Health_Stats();
-                            Check_Player();
-                            enemy.Get_Projectiles().Remove(projectile);
+                            switch (projectile.Get_Colour())
+                            {
+                                case Projectile_Colour.White:
+                                    Projectile_Hit(enemy, projectile);
+                                    break;
+                                case Projectile_Colour.Blue:
+                                    if (player.Get_Just_Moved()) Projectile_Hit(enemy, projectile);
+                                    break;
+                                case Projectile_Colour.Orange:
+                                    if (!player.Get_Just_Moved()) Projectile_Hit(enemy, projectile);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            
                         }
                     }
                 }
@@ -1034,6 +1043,15 @@ namespace undertale_iteration_1
 
         //all funcitons that update something on the form
         #region Updating Functions
+        private void Projectile_Hit(Enemy enemy, Projectile projectile)
+        {
+            Play_Sound_Effect("snd_hurt1");
+            player.Hit();
+            player.Set_Health(player.Get_Health() - projectile.Get_Damage());
+            Update_Player_Health_Stats();
+            Check_Player();
+            enemy.Get_Projectiles().Remove(projectile);
+        }
         private void Update_Arena_Hitbox()
         {
             //redefines the arena box
