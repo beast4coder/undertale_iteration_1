@@ -506,10 +506,10 @@
                     target_colour = Color.White;
                     break;
                 case Projectile_Colour.Blue:
-                    target_colour = Color.Blue;
+                    target_colour = Color.FromArgb(255,66,252,255);
                     break;
                 case Projectile_Colour.Orange:
-                    target_colour = Color.Orange;
+                    target_colour = Color.FromArgb(255,236,111,0);
                     break;
                 default:
                     break;
